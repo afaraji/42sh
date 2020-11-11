@@ -10,19 +10,56 @@
 #                                                                              #
 # **************************************************************************** #
 
-NAME = 21sh
+NAME = 42sh
 
 SRC_SHL = ./src/list_to_tab.c ./src/my_printf.c ./src/signal.c ./src/main.c	\
 	./src/proc_manage.c ./src/verify_type.c
 
-SRC_AST =
-SRC_AUTOCMPLT =
-SRC_BUILTINS =
-SRC_EXEC =
-SRC_FREE =
-SRC_HIST =
-SRC_READLINE =
-SRC_PARSE =
+FILE_AST = add_redirect.c add_tokens.c alias.c alias_ast.c ast.c dollar_sub.c\
+	get_pipe_sec.c get_splited_and_or.c get_suffix.c here_doc.c lexer.c		\
+	tilde_sub.c
+
+FILE_AUTOCMPLT = auto_complete.c auto_complete_2.c cmd_completion_1.c		\
+	f_d_completion_1.c f_d_completion_3.c variables_completion.c 			\
+	auto_complete_1.c cmd_completion.c f_d_completion.c f_d_completion_2.c	\
+	print_completion.c
+
+FILE_BUILTINS = builtins.c change_pwd.c export.c ft_cd_1.c ft_cd_2.c		\
+	ft_cd_old.c  ft_echo.c  setenv.c  unalias.c unsetenv.c
+
+FILE_EXEC = do_assignement.c do_sufix_prefix.c exec.c exec_nofork.c			\
+	exit_status.c get_cmdargs.c get_cmdpath.c io_redirect.c io_redirect_aggr.c\
+
+FILE_FREE = ft_free.c ft_free_ast.c ft_free_g_var.c ft_strsplit_2.c
+
+FILE_HIST = history_search.c manage_history.c navigate_history.c			\
+	navigate_history_2.c
+
+FILE_READLINE = copy.c get_next_line.c get_unprintable_char.c go_left.c go_up.c\
+	init_shell.c left_select.c manage_line.c manage_terminal.c move_curs.c	\
+	readline.c trim.c cut.c get_printable_char.c go_down.c go_right.c		\
+	home_end.c join_line.c line_util.c manage_newline.c move_by_word.c past.c\
+	right_select.c
+
+FILE_PARSE = append_and_verify.c ft_tokenize.c join_tokens.c reserved_words.c\
+	tokens_translate.c verify_tokens.c
+
+SRC_AST = ./src/ast/$(FILE_AST)
+
+SRC_AUTOCMPLT = ./src/autocomplete/$(FILE_AUTOCMPLT)
+
+SRC_BUILTINS = ./src/builtins/$(FILE_BUILTINS)
+
+SRC_EXEC = ./src/exec/$(FILE_EXEC)
+
+SRC_FREE = ./src/ft_free/$(FILE_FREE)
+
+SRC_HIST = ./src/history/$(FILE_HIST)
+
+SRC_READLINE = ./src/readline/$(FILE_READLINE)
+
+SRC_PARSE = ./src/parse/$(FILE_PARSE)
+
 
 LIBFTA = ./libft/libft.a
 
@@ -37,17 +74,37 @@ CFLAGS = -Wall -Werror -Wextra
 
 OBJ_SHL = $(SRC_SHL:.c=.o)
 
+OBJ_AST = $(SRC_AST:.c=.o)
+
+OBJ_AUTOCMPLT = $(SRC_AUTOCMPLT:.c=.o)
+
+OBJ_BUILTINS = $(SRC_BUILTINS:.c=.o)
+
+OBJ_EXEC = $(SRC_EXEC:.c=.o)
+
+OBJ_FREE = $(SRC_FREE:.c=.o)
+
+OBJ_HIST = $(SRC_HIST:.c=.o)
+
+OBJ_PARSE = $(SRC_PARSE:.c=.o)
+
+OBJ_READLINE = $(SRC_READLINE:.c=.o)
+
 OBJ_LF = $(SRC_LF:.c=.o)
 
 all : $(NAME)
 
-$(NAME) : $(OBJ_SHL) $(OBJ_LF)
+$(NAME) : $(OBJ_SHL) $(OBJ_LF) $(OBJ_AST) $(OBJ_AUTOCMPLT) $(OBJ_BUILTINS)	\
+		$(OBJ_EXEC) $(OBJ_FREE) $(OBJ_HIST) $(OBJ_PARSE) $(OBJ_READLINE)
 	@$(MAKE) -C ./libft
-	@gcc $(FLAGS) $(OBJ_SHL) $(LIBFTA) -ltermcap -o $(NAME)
+	@gcc $(FLAGS) $(OBJ_SHL) $(LIBFTA) $(OBJ_AST) $(OBJ_AUTOCMPLT)			\
+		$(OBJ_BUILTINS) $(OBJ_EXEC) $(OBJ_FREE) $(OBJ_HIST) $(OBJ_PARSE)	\
+		$(OBJ_READLINE) -ltermcap -o $(NAME)
 
 clean :
 	@printf "removing OBJ files ./src/\n"
-	@/bin/rm -f $(OBJ_SHL)
+	@/bin/rm -f $(OBJ_SHL) $(OBJ_AST) $(OBJ_AUTOCMPLT) $(OBJ_BUILTINS)		\
+		$(OBJ_EXEC) $(OBJ_FREE) $(OBJ_HIST) $(OBJ_PARSE) $(OBJ_READLINE)
 	@$(MAKE) -C ./libft/ clean
 
 fclean : clean
