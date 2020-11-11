@@ -1,0 +1,12 @@
+*.o
+*.a
+libft/*.a
+*.dylib
+*.out
+42sh
+21sh
+*.dSYM/
+*.log
+.vscode
+.myshell_history
+.DS_Store
