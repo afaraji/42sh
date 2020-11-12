@@ -12,8 +12,7 @@
 
 NAME = 42sh
 
-SRC_SHL = ./src/list_to_tab.c ./src/my_printf.c ./src/signal.c ./src/main.c	\
-	./src/proc_manage.c ./src/verify_type.c
+SRC_SHL = ./src/main.c
 
 FILE_AST = add_redirect.c add_tokens.c alias.c alias_ast.c ast.c dollar_sub.c\
 	get_pipe_sec.c get_splited_and_or.c get_suffix.c here_doc.c lexer.c		\
@@ -41,34 +40,31 @@ FILE_READLINE = copy.c get_next_line.c get_unprintable_char.c go_left.c go_up.c\
 	home_end.c join_line.c line_util.c manage_newline.c move_by_word.c past.c\
 	right_select.c
 
+FILE_UTIL = list_to_tab.c my_printf.c signal.c proc_manage.c verify_type.c
+
 FILE_PARSE = append_and_verify.c ft_tokenize.c join_tokens.c reserved_words.c\
 	tokens_translate.c verify_tokens.c
 
-SRC_AST = ./src/ast/$(FILE_AST)
+SRC_AST = $(foreach file,$(FILE_AST), ./src/ast/$(file))
 
-SRC_AUTOCMPLT = ./src/autocomplete/$(FILE_AUTOCMPLT)
+SRC_AUTOCMPLT = $(foreach file,$(FILE_AUTOCMPLT), ./src/autocomplete/$(file))
 
-SRC_BUILTINS = ./src/builtins/$(FILE_BUILTINS)
+SRC_BUILTINS = $(foreach file,$(FILE_BUILTINS), ./src/builtins/$(file))
 
-SRC_EXEC = ./src/exec/$(FILE_EXEC)
+SRC_EXEC = $(foreach file,$(FILE_EXEC), ./src/exec/$(file))
 
-SRC_FREE = ./src/ft_free/$(FILE_FREE)
+SRC_FREE = $(foreach file,$(FILE_FREE), ./src/ft_free/$(file))
 
-SRC_HIST = ./src/history/$(FILE_HIST)
+SRC_HIST = $(foreach file,$(FILE_HIST), ./src/history/$(file))
 
-SRC_READLINE = ./src/readline/$(FILE_READLINE)
+SRC_READLINE = $(foreach file,$(FILE_READLINE), ./src/readline/$(file))
 
-SRC_PARSE = ./src/parse/$(FILE_PARSE)
+SRC_PARSE = $(foreach file,$(FILE_PARSE), ./src/parse/$(file))
+
+SRC_UTIL = $(foreach file,$(FILE_UTIL), ./src/util/$(file))
 
 
 LIBFTA = ./libft/libft.a
-
-SRC_LF = ./libft/ft_bzero.c ./libft/ft_isalnum.c ./libft/ft_isalpha.c		\
-	./libft/ft_isdigit.c ./libft/ft_memalloc.c ./libft/ft_putstr.c			\
-	./libft/ft_strcat.c ./libft/ft_strchr.c ./libft/ft_strcmp.c				\
-	./libft/ft_strcpy.c ./libft/ft_strdup.c ./libft/ft_strjoin.c			\
-	./libft/ft_strlen.c ./libft/ft_strnew.c	./libft/ft_strsplit.c			\
-	./libft/ft_strsub.c
 
 CFLAGS = -Wall -Werror -Wextra
 
@@ -90,11 +86,11 @@ OBJ_PARSE = $(SRC_PARSE:.c=.o)
 
 OBJ_READLINE = $(SRC_READLINE:.c=.o)
 
-OBJ_LF = $(SRC_LF:.c=.o)
+OBJ_UTIL = $(SRC_UTIL:.c=.o)
 
 all : $(NAME)
 
-$(NAME) : $(OBJ_SHL) $(OBJ_LF) $(OBJ_AST) $(OBJ_AUTOCMPLT) $(OBJ_BUILTINS)	\
+$(NAME) : $(OBJ_SHL) $(OBJ_AST) $(OBJ_AUTOCMPLT) $(OBJ_BUILTINS)	\
 		$(OBJ_EXEC) $(OBJ_FREE) $(OBJ_HIST) $(OBJ_PARSE) $(OBJ_READLINE)
 	@$(MAKE) -C ./libft
 	@gcc $(FLAGS) $(OBJ_SHL) $(LIBFTA) $(OBJ_AST) $(OBJ_AUTOCMPLT)			\
