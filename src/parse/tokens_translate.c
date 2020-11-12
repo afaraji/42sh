@@ -10,13 +10,13 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../inc/ft_21sh.h"
-#include "../inc/builtins.h"
-#include "../inc/parse.h"
-#include "../inc/ast.h"
-#include "../inc/exec.h"
-#include "../inc/ft_free.h"
-#include "../inc/readline.h"
+#include "../../inc/ft_21sh.h"
+#include "../../inc/builtins.h"
+#include "../../inc/parse.h"
+#include "../../inc/ast.h"
+#include "../../inc/exec.h"
+#include "../../inc/ft_free.h"
+#include "../../inc/readline.h"
 
 int		is_op_2(char c, char c2)
 {

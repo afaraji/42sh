@@ -10,13 +10,13 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../inc/ft_21sh.h"
-#include "../inc/builtins.h"
-#include "../inc/parse.h"
-#include "../inc/ast.h"
-#include "../inc/exec.h"
-#include "../inc/ft_free.h"
-#include "../inc/readline.h"
+#include "../../inc/ft_21sh.h"
+#include "../../inc/builtins.h"
+#include "../../inc/parse.h"
+#include "../../inc/ast.h"
+#include "../../inc/exec.h"
+#include "../../inc/ft_free.h"
+#include "../../inc/readline.h"
 
 void	io_here_err(t_list_token **cmd, t_list_token **end)
 {

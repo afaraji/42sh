@@ -10,13 +10,13 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../inc/ft_21sh.h"
-#include "../inc/builtins.h"
-#include "../inc/parse.h"
-#include "../inc/ast.h"
-#include "../inc/exec.h"
-#include "../inc/ft_free.h"
-#include "../inc/readline.h"
+#include "../../inc/ft_21sh.h"
+#include "../../inc/builtins.h"
+#include "../../inc/parse.h"
+#include "../../inc/ast.h"
+#include "../../inc/exec.h"
+#include "../../inc/ft_free.h"
+#include "../../inc/readline.h"
 
 void	freeleak_down_2(t_terminal *term, char *old_line)
 {

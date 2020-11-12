@@ -12,7 +12,8 @@
 
 NAME = 42sh
 
-SRC_SHL = ./src/main.c
+SRC_SHL = ./src/main.c ./src/list_to_tab.c ./src/my_printf.c ./src/signal.c	\
+	./src/proc_manage.c ./src/verify_type.c
 
 FILE_AST = add_redirect.c add_tokens.c alias.c alias_ast.c ast.c dollar_sub.c\
 	get_pipe_sec.c get_splited_and_or.c get_suffix.c here_doc.c lexer.c		\
@@ -40,8 +41,6 @@ FILE_READLINE = copy.c get_next_line.c get_unprintable_char.c go_left.c go_up.c\
 	home_end.c join_line.c line_util.c manage_newline.c move_by_word.c past.c\
 	right_select.c
 
-FILE_UTIL = list_to_tab.c my_printf.c signal.c proc_manage.c verify_type.c
-
 FILE_PARSE = append_and_verify.c ft_tokenize.c join_tokens.c reserved_words.c\
 	tokens_translate.c verify_tokens.c
 
@@ -60,9 +59,6 @@ SRC_HIST = $(foreach file,$(FILE_HIST), ./src/history/$(file))
 SRC_READLINE = $(foreach file,$(FILE_READLINE), ./src/readline/$(file))
 
 SRC_PARSE = $(foreach file,$(FILE_PARSE), ./src/parse/$(file))
-
-SRC_UTIL = $(foreach file,$(FILE_UTIL), ./src/util/$(file))
-
 
 LIBFTA = ./libft/libft.a
 
@@ -86,16 +82,16 @@ OBJ_PARSE = $(SRC_PARSE:.c=.o)
 
 OBJ_READLINE = $(SRC_READLINE:.c=.o)
 
-OBJ_UTIL = $(SRC_UTIL:.c=.o)
-
 all : $(NAME)
 
 $(NAME) : $(OBJ_SHL) $(OBJ_AST) $(OBJ_AUTOCMPLT) $(OBJ_BUILTINS)	\
 		$(OBJ_EXEC) $(OBJ_FREE) $(OBJ_HIST) $(OBJ_PARSE) $(OBJ_READLINE)
 	@$(MAKE) -C ./libft
+	@printf "linking OBJ files... "
 	@gcc $(FLAGS) $(OBJ_SHL) $(LIBFTA) $(OBJ_AST) $(OBJ_AUTOCMPLT)			\
 		$(OBJ_BUILTINS) $(OBJ_EXEC) $(OBJ_FREE) $(OBJ_HIST) $(OBJ_PARSE)	\
 		$(OBJ_READLINE) -ltermcap -o $(NAME)
+	@echo "done"
 
 clean :
 	@printf "removing OBJ files ./src/\n"
