@@ -72,6 +72,9 @@ t_terminal	*initiate_unprint_var(void)
 		return (NULL);
 	term->index = 0;
 	term->tab_on = 0;
+	/*************** this is new **********/
+	term->search_on = 0;
+	/*************** this is new **********/
 	if (!(term->select = (t_select *)malloc(sizeof(t_select))))
 		return (NULL);
 	term->select->on = 0;

@@ -70,6 +70,21 @@ void		unprint_manage(t_terminal *term, t_hist **his_head, char **to_past)
 		ft_putstr(term->line->str);
 	}
 }
+/*************** this is new **********/
+int			ctrl_r(t_terminal *term)
+{
+	int i;
+
+	tputs(tgetstr("do", NULL), 1, ft_intputchar);
+	ft_putstr("bck-i-search: ");
+	i = 14;
+	while (i >= 0)
+	{
+		go_right(term->line);
+		i--;
+	}
+	return (0);
+}
 
 char		*manage_line(char *prompt, t_hist **his_head, int mult_line)
 {
@@ -87,6 +102,16 @@ char		*manage_line(char *prompt, t_hist **his_head, int mult_line)
 			return (ctrl_c_d(term, mult_line));
 		if (term->buff == CTRL_L && mult_line == 0)
 			ctrl_l(term->line->str);
+		/*************** this is new **********/
+		if (term->buff == CTRL_R)
+		{
+			//printf("****0****\n");
+			ctrl_r(term);
+			//printf("****1****\n");
+			//ft_putstr(incremental_search(his_head, term));
+			term->search_on = 1;
+		}
+		/*************** this is new **********/
 		if (printable(term, his_head, mult_line))
 			break ;
 		else if (!(ft_isprint(term->buff)))

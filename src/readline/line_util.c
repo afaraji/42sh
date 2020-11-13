@@ -41,6 +41,20 @@ void	display_line(t_line *line)
 	tputs(tgetstr("rc", NULL), 1, ft_intputchar);
 }
 
+// void	display_search_line(t_terminal *term)
+// {
+// 	int	i;
+
+// 	tputs(tgetstr("rc", NULL), 1, ft_intputchar);
+// 	i = term->line->curs;
+// 	while (i < (int)ft_strlen(term->line->str))
+// 	{
+// 		ft_putchar(term->line->str[i]);
+// 		i++;
+// 	}
+// 	//tputs(tgetstr("rc", NULL), 1, ft_intputchar);
+// }
+
 void	display_line_from_begin(t_line *line)
 {
 	int	i;

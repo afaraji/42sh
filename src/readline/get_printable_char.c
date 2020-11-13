@@ -67,6 +67,30 @@ void	printable_1(t_terminal *term)
 	display_line_from_begin(term->line);
 	tputs(tgetstr("rc", NULL), 1, ft_intputchar);
 }
+/*************** this is new **********/
+int	incremental_search(t_hist **his_head, t_terminal *term)
+{
+	t_hist *node;
+
+	node = *his_head;
+	if (!node)
+		return (0);
+	while (node->next)
+		node = node->next;
+	while (node->prec)
+	{
+		if (ft_strnequ(node->hist_str, term->line->str, ft_strlen(node->hist_str)) == 0)
+		{
+			tputs(tgetstr("sc", NULL), 1, ft_intputchar);
+			tputs(tgetstr("up", NULL), 1, ft_intputchar);
+			ft_putstr(node->hist_str);
+			tputs(tgetstr("rc", NULL), 1, ft_intputchar);
+			return (1);
+		}
+		node = node->prec;
+	}
+	return (0);
+}
 
 int		printable(t_terminal *term, t_hist **his_head, int mult_line)
 {
@@ -75,6 +99,12 @@ int		printable(t_terminal *term, t_hist **his_head, int mult_line)
 	if ((ft_isprint(term->buff) || term->buff == ENTER))
 	{
 		term->tab_on = 0;
+		/*************** this is new **********/
+		if (term->search_on == 1)
+		{
+			incremental_search(his_head, term);
+		}
+		/*************** this is new **********/
 		if (term->select->on == 1)
 			printable_1(term);
 		else
