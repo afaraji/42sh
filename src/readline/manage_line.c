@@ -152,13 +152,12 @@ int			ft_putline(t_terminal *term, char *line)
 		tputs(tgetstr("do", NULL), 1, ft_intputchar);
 		i = 13 + ft_strlen(term->line->str);
 		move_right(i);
-		ft_strdel(&line);
 		return (1);
 	}
 	return (0);
 }
 
-void		print_search(t_terminal *term, t_hist **head, int *indice)
+char		*print_search(t_terminal *term, t_hist **head, int *indice)
 {
 	char	*line;
 
@@ -167,6 +166,7 @@ void		print_search(t_terminal *term, t_hist **head, int *indice)
 	display_line(term->line);
 	go_right(term->line);
 	ft_putline(term, line);
+	return (line);
 }
 
 char		*bck_i_search(t_terminal *term, t_hist **head, int mult_line)
@@ -191,14 +191,14 @@ char		*bck_i_search(t_terminal *term, t_hist **head, int mult_line)
 		}
 		if (ft_isprint(term->buff))
 		{
-			print_search(term, head, &indice);
+			line = print_search(term, head, &indice);
 			continue;
 		}
 		if (term->buff == DEL)// !!!
 		{
 			indice = 0;
 		 	del_char(term->line);
-			continue;
+			//continue;
 		}
 		if (term->buff == ENTER)
 		{
@@ -216,8 +216,6 @@ char		*bck_i_search(t_terminal *term, t_hist **head, int mult_line)
 		}
 		else
 		{
-			if (line)
-				ft_strdel(&line);
 			ft_putchar('\n');
 			return (ft_strdup(""));
 		}
