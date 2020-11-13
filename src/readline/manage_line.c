@@ -70,8 +70,36 @@ void		unprint_manage(t_terminal *term, t_hist **his_head, char **to_past)
 		ft_putstr(term->line->str);
 	}
 }
-/*************** this is new **********/
-int			ctrl_r(t_terminal *term)
+/*************** this is new **********
+int	incremental_search(t_hist **his_head, t_terminal *term)
+{
+	t_hist *node;
+
+	node = *his_head;
+	if (!node)
+		return (0);
+	while (node->next)
+		node = node->next;
+	while (node->prec)
+	{
+		//ft_putchar('\n');
+		//ft_putstr(node->hist_str);
+		ft_putchar('\n');
+		printf("|%s|\n",term->line->str);
+		// if (!(ft_strncmp(node->hist_str, term->line->str, ft_strlen(term->line->str))))
+		// {
+		// 	tputs(tgetstr("sc", NULL), 1, ft_intputchar);
+		// 	tputs(tgetstr("up", NULL), 1, ft_intputchar);
+		// 	ft_putstr(node->hist_str);
+		// 	tputs(tgetstr("rc", NULL), 1, ft_intputchar);
+		// 	return (1);
+		// }
+		node = node->prec;
+	}
+	return (0);
+}
+
+char			*ctrl_r(t_terminal *term)
 {
 	int i;
 
@@ -83,8 +111,9 @@ int			ctrl_r(t_terminal *term)
 		go_right(term->line);
 		i--;
 	}
-	return (0);
+	return (term->line->str);
 }
+*************** this is new **********/
 
 char		*manage_line(char *prompt, t_hist **his_head, int mult_line)
 {
@@ -102,16 +131,6 @@ char		*manage_line(char *prompt, t_hist **his_head, int mult_line)
 			return (ctrl_c_d(term, mult_line));
 		if (term->buff == CTRL_L && mult_line == 0)
 			ctrl_l(term->line->str);
-		/*************** this is new **********/
-		if (term->buff == CTRL_R)
-		{
-			//printf("****0****\n");
-			ctrl_r(term);
-			//printf("****1****\n");
-			//ft_putstr(incremental_search(his_head, term));
-			term->search_on = 1;
-		}
-		/*************** this is new **********/
 		if (printable(term, his_head, mult_line))
 			break ;
 		else if (!(ft_isprint(term->buff)))
