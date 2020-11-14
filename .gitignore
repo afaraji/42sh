@@ -10,3 +10,4 @@ libft/*.a
 .vscode
 .myshell_history
 .DS_Store
+makefile_script*

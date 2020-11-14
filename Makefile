@@ -12,8 +12,7 @@
 
 NAME = 42sh
 
-SRC_SHL = ./src/main.c ./src/list_to_tab.c ./src/my_printf.c ./src/signal.c	\
-	./src/proc_manage.c ./src/verify_type.c
+SRC_SHL = ./src/main.c ./src/list_to_tab.c ./src/my_printf.c ./src/verify_type.c
 
 FILE_AST = add_redirect.c add_tokens.c alias.c alias_ast.c ast.c dollar_sub.c\
 	get_pipe_sec.c get_splited_and_or.c get_suffix.c here_doc.c lexer.c		\
@@ -44,6 +43,8 @@ FILE_READLINE = copy.c get_next_line.c get_unprintable_char.c go_left.c go_up.c\
 FILE_PARSE = append_and_verify.c ft_tokenize.c join_tokens.c reserved_words.c\
 	tokens_translate.c verify_tokens.c
 
+FILE_JOBS = proc_manage.c signal.c
+
 SRC_AST = $(foreach file,$(FILE_AST), ./src/ast/$(file))
 
 SRC_AUTOCMPLT = $(foreach file,$(FILE_AUTOCMPLT), ./src/autocomplete/$(file))
@@ -60,9 +61,13 @@ SRC_READLINE = $(foreach file,$(FILE_READLINE), ./src/readline/$(file))
 
 SRC_PARSE = $(foreach file,$(FILE_PARSE), ./src/parse/$(file))
 
+SRC_JOBS = $(foreach file,$(FILE_JOBS), ./src/jobs/$(file))
+
 LIBFTA = ./libft/libft.a
 
 CFLAGS = -Wall -Werror -Wextra
+
+.SILENT:
 
 OBJ_SHL = $(SRC_SHL:.c=.o)
 
@@ -78,31 +83,37 @@ OBJ_FREE = $(SRC_FREE:.c=.o)
 
 OBJ_HIST = $(SRC_HIST:.c=.o)
 
+OBJ_JOBS = $(SRC_JOBS:.c=.o)
+
 OBJ_PARSE = $(SRC_PARSE:.c=.o)
 
 OBJ_READLINE = $(SRC_READLINE:.c=.o)
 
-all : $(NAME)
+all : msg $(NAME)
 
-$(NAME) : $(OBJ_SHL) $(OBJ_AST) $(OBJ_AUTOCMPLT) $(OBJ_BUILTINS)	\
+$(NAME) : $(OBJ_SHL) $(OBJ_AST) $(OBJ_AUTOCMPLT) $(OBJ_BUILTINS) $(OBJ_JOBS)\
 		$(OBJ_EXEC) $(OBJ_FREE) $(OBJ_HIST) $(OBJ_PARSE) $(OBJ_READLINE)
-	@$(MAKE) -C ./libft
-	@printf "linking OBJ files... "
-	@gcc $(FLAGS) $(OBJ_SHL) $(LIBFTA) $(OBJ_AST) $(OBJ_AUTOCMPLT)			\
+	$(MAKE) -C ./libft
+	printf "linking OBJ files... "
+	gcc $(FLAGS) $(OBJ_SHL) $(LIBFTA) $(OBJ_AST) $(OBJ_AUTOCMPLT) $(OBJ_JOBS)\
 		$(OBJ_BUILTINS) $(OBJ_EXEC) $(OBJ_FREE) $(OBJ_HIST) $(OBJ_PARSE)	\
 		$(OBJ_READLINE) -ltermcap -o $(NAME)
-	@echo "done"
+	echo "done"
 
 clean :
-	@printf "removing OBJ files ./src/\n"
-	@/bin/rm -f $(OBJ_SHL) $(OBJ_AST) $(OBJ_AUTOCMPLT) $(OBJ_BUILTINS)		\
-		$(OBJ_EXEC) $(OBJ_FREE) $(OBJ_HIST) $(OBJ_PARSE) $(OBJ_READLINE)
-	@$(MAKE) -C ./libft/ clean
+	printf "removing OBJ files ./src/\n"
+	/bin/rm -f $(OBJ_SHL) $(OBJ_AST) $(OBJ_AUTOCMPLT) $(OBJ_BUILTINS)		\
+		$(OBJ_EXEC) $(OBJ_FREE) $(OBJ_HIST) $(OBJ_PARSE) $(OBJ_READLINE)	\
+		$(OBJ_JOBS)
+	$(MAKE) -C ./libft/ clean
 
 fclean : clean
-	@printf "removing executable\n"
-	@/bin/rm -f $(NAME)
-#	@/bin/rm -f /tmp/.myshell_history
-	@$(MAKE) -C ./libft/ fclean
+	printf "removing executable\n"
+	/bin/rm -f $(NAME)
+#	/bin/rm -f /tmp/.myshell_history
+	$(MAKE) -C ./libft/ fclean
 
 re : fclean all
+
+msg :
+	echo "compiling OBJ files with $(CFLAGS)"
