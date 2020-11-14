@@ -18,21 +18,39 @@
 #include "../inc/ft_free.h"
 #include "../inc/readline.h"
 
+typedef	struct			s_process
+{
+	char				**argv;
+	pid_t				pid;
+	struct s_process	*next;
+}						process;
+
+typedef	struct			s_job
+{
+	int					stdin;
+	int					stdout;
+	int					stderr;
+	process				*first_process;
+	pid_t				pgid;
+	struct s_job		*next;
+}						job;
+
 void	launch_process (process *p, pid_t pgid, int infile, int outfile, int errfile, int foreground)
 {
 	pid_t pid;
 
-	if (shell_is_interactive)
+	if (1)//is_ineractive
 	{
 	  /* Put the process into the process group and give the process group
 		 the terminal, if appropriate.
 		 This has to be done both by the shell and in the individual
 		 child processes because of potential race conditions.  */
 		pid = getpid ();
-		if (pgid == 0) pgid = pid;
-			setpgid (pid, pgid);
+		if (pgid == 0)
+			pgid = pid;
+		setpgid (pid, pgid);
 		if (foreground)
-			tcsetpgrp (shell_terminal, pgid);
+			tcsetpgrp (shell_terminal, pgid);//to get shell_terminal use getpwnam()->pw_shell
 
 	  /* Set the handling for job control signals back to the default.  */
 		signal (SIGINT, SIG_DFL);
@@ -66,8 +84,7 @@ void	launch_process (process *p, pid_t pgid, int infile, int outfile, int errfil
 	exit (1);
 }
 
-void
-launch_job (job *j, int foreground)
+void	launch_job (job *j, int foreground)
 {
 	process *p;
 	pid_t pid;
@@ -104,7 +121,7 @@ launch_job (job *j, int foreground)
 		{
 			/* This is the parent process.  */
 			p->pid = pid;
-			if (shell_is_interactive)
+			if (1)//is_interactive
 			{
 				if (!j->pgid)
 					j->pgid = pid;
