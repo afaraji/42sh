@@ -77,7 +77,6 @@ char				*join_line(char *str, char c, int curs);
 char				*join_line_1(char *str, char *s1, int i, int j);
 char				*trim_pos(char *str, int curs);
 void				display_line(t_line *line);
-void				display_search_line(t_terminal *term);
 void				move_curs_right(t_line *line);
 void				freeleak_up_down(t_terminal *term, t_hist *to_print);
 void				freeleak_down_2(t_terminal *term, char *old_line);

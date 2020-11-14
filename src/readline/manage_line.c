@@ -17,6 +17,7 @@
 #include "../../inc/exec.h"
 #include "../../inc/ft_free.h"
 #include "../../inc/readline.h"
+FILE *ttyfd;
 
 t_terminal	*init_term(char *prmt)
 {
@@ -39,7 +40,9 @@ char		*ctrl_c_d(t_terminal *term, int mult_line)
 		ft_putstr_fd("^C\n", 1);
 		tputs(tgetstr("cd", NULL), 1, ft_intputchar);
 		if (mult_line != 0)
+		{
 			return (ft_strdup("\033"));
+		}
 		return (ft_strdup(""));
 	}
 	else
@@ -70,56 +73,115 @@ void		unprint_manage(t_terminal *term, t_hist **his_head, char **to_past)
 		ft_putstr(term->line->str);
 	}
 }
-/*************** this is new **********
-int	incremental_search(t_hist **his_head, t_terminal *term)
+char		*incremental_search(t_terminal *term, t_hist **head)
 {
-	t_hist *node;
+	t_hist	*node;
 
-	node = *his_head;
-	if (!node)
-		return (0);
-	while (node->next)
-		node = node->next;
-	while (node->prec)
+	node = *head;
+	if (node)
 	{
-		//ft_putchar('\n');
-		//ft_putstr(node->hist_str);
-		ft_putchar('\n');
-		printf("|%s|\n",term->line->str);
-		// if (!(ft_strncmp(node->hist_str, term->line->str, ft_strlen(term->line->str))))
-		// {
-		// 	tputs(tgetstr("sc", NULL), 1, ft_intputchar);
-		// 	tputs(tgetstr("up", NULL), 1, ft_intputchar);
-		// 	ft_putstr(node->hist_str);
-		// 	tputs(tgetstr("rc", NULL), 1, ft_intputchar);
-		// 	return (1);
-		// }
-		node = node->prec;
+		while (node->next)
+			node = node->next;
+		while (node)
+		{
+			if (ft_strstr(node->hist_str, term->line->str) != NULL)// haystack, needle: find needl in haystack
+			{
+				return (ft_strdup(node->hist_str));
+			}
+			node = node->prec;
+		}
 	}
-	return (0);
+	return (NULL);
 }
 
-char			*ctrl_r(t_terminal *term)
+void		move_right(int i)
 {
-	int i;
-
-	tputs(tgetstr("do", NULL), 1, ft_intputchar);
-	ft_putstr("bck-i-search: ");
-	i = 14;
 	while (i >= 0)
 	{
-		go_right(term->line);
+		tputs(tgetstr("nd", NULL), 1, ft_intputchar);
 		i--;
 	}
-	return (term->line->str);
 }
-*************** this is new **********/
+
+char		*manage_bck_search(t_terminal *term, t_hist **head)
+{
+	char	*line;
+	int		j;
+	int		i;
+
+	term->line->str = join_line(term->line->str, term->buff, term->line->curs);
+	line = incremental_search(term, head);
+	display_line(term->line);
+	go_right(term->line);
+	if (line)
+	{
+		tputs(tgetstr("up", NULL), 1, ft_intputchar);
+		j = 10 + ft_strlen(term->line->str);
+		while (j >= 0)
+		{
+			tputs(tgetstr("le", NULL), 1, ft_intputchar);
+			j--;
+		}
+		ft_putstr(line);
+		tputs(tgetstr("do", NULL), 1, ft_intputchar);
+		i = 13 + ft_strlen(term->line->str);
+		move_right(i);
+	//	ft_strdel(&line);
+		//return (1);
+	}
+	return (line);
+}
+
+char		*bck_i_search(t_terminal *term, t_hist **head, int mult_line)
+{
+	char	*line;
+	while (1)
+	{
+		read(0, &term->buff, 4);
+		if (term->buff == CTRL_C || (term->buff == CTRL_D &&
+											!ft_strcmp(term->line->str, "")))
+			return (ctrl_c_d(term, mult_line));
+		if (term->buff == CTRL_L && mult_line == 0)
+			ctrl_l(term->line->str);
+		if (ft_isprint(term->buff))
+		{
+			line = manage_bck_search(term, head);
+			continue;
+		}
+		if (term->buff == DEL)
+		{
+		 	del_char(term->line);
+			continue;
+		}
+		if (term->buff == ENTER)
+		{
+			ft_putchar('\n');
+		 	return (line);
+		}
+		else
+		{
+			ft_putchar('\n');
+			return (ft_strdup(""));
+		}
+	}
+	return (ft_strdup(""));
+}
+
+char		*ctrl_r(t_terminal *term, t_hist **head, int mult_line)
+{
+	if (!head || !term)
+		return (NULL);
+	tputs(tgetstr("do", NULL), 1, ft_intputchar);
+	ft_putstr("bck-i-search: ");
+	return (bck_i_search(term, head, mult_line));
+}
 
 char		*manage_line(char *prompt, t_hist **his_head, int mult_line)
 {
 	t_terminal	*term;
 	char		*tmp;
 
+	ttyfd = fopen("/dev/ttys003", "w");
 	if (!(term = init_term(prompt)))
 		return (NULL);
 	while (1)
@@ -131,6 +193,8 @@ char		*manage_line(char *prompt, t_hist **his_head, int mult_line)
 			return (ctrl_c_d(term, mult_line));
 		if (term->buff == CTRL_L && mult_line == 0)
 			ctrl_l(term->line->str);
+		if (term->buff == CTRL_R)
+			return(ctrl_r(term, his_head, mult_line));
 		if (printable(term, his_head, mult_line))
 			break ;
 		else if (!(ft_isprint(term->buff)))

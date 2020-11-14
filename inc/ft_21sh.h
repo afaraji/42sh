@@ -57,9 +57,6 @@ typedef struct			s_terminal
 	t_line				*line;
 	t_select			*select;
 	int					tab_on;
-	/*************** this is new **********
-	int					search_on;
-	*************** this is new **********/
 	int					index;
 	int					buff;
 }						t_terminal;
