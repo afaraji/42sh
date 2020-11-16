@@ -68,30 +68,60 @@ void	printable_1(t_terminal *term)
 	tputs(tgetstr("rc", NULL), 1, ft_intputchar);
 }
 
+int		is_all_print(char *str, int size)
+{
+	int		i;
+
+	i = 0;
+	while (i < size && str[i])
+	{
+		if (!ft_isprint(str[i]) && str[i] != '\n' && str[i] != '\t')
+		{
+			return (0);
+		}
+		i++;
+	}
+	return (1);
+}
+
 int		printable(t_terminal *term, t_hist **his_head, int mult_line)
 {
 	int	curs;
+	int i;
+	char	buff[4];
+	int		tmp;
 
-	if ((ft_isprint(term->buff) || term->buff == ENTER))
+	i = 0;
+	ft_memcpy(buff, &(term->buff), 4);
+	tmp = term->buff;
+	if (!is_all_print(buff, 4))
+		return (0);
+	while (i < 4)
 	{
-		term->tab_on = 0;
-		if (term->select->on == 1)
-			printable_1(term);
-		else
+		term->buff = buff[i];
+		if ((ft_isprint(term->buff) || term->buff == ENTER))
 		{
-			get_cmd(term, his_head, mult_line);
-			if (term->buff == ENTER)
+			term->tab_on = 0;
+			if (term->select->on == 1)
+				printable_1(term);
+			else
 			{
-				curs = term->line->curs;
-				while (curs <= (int)ft_strlen(term->line->str))
+				get_cmd(term, his_head, mult_line);
+				if (term->buff == ENTER)
 				{
-					go_right(term->line);
-					curs++;
+					curs = term->line->curs;
+					while (curs <= (int)ft_strlen(term->line->str))
+					{
+						go_right(term->line);
+						curs++;
+					}
+					ft_putchar('\n');
+					return (1);
 				}
-				ft_putchar('\n');
-				return (1);
 			}
 		}
+		i++;
 	}
+	term->buff = tmp;
 	return (0);
 }
