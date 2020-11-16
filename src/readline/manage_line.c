@@ -73,25 +73,35 @@ void		unprint_manage(t_terminal *term, t_hist **his_head, char **to_past)
 		ft_putstr(term->line->str);
 	}
 }
-char		*incremental_search(t_terminal *term, t_hist **head)
+char		*incremental_search(t_terminal *term, t_hist **head, int *indice)
 {
 	t_hist	*node;
 
 	node = *head;
 	if (node)
 	{
-		while (node->next)
+		while (node->next && node->index != *indice)
 			node = node->next;
 		while (node)
 		{
 			if (ft_strstr(node->hist_str, term->line->str) != NULL)// haystack, needle: find needl in haystack
 			{
+				*indice = (node->index > 1) ? node->index : 1;
 				return (ft_strdup(node->hist_str));
 			}
 			node = node->prec;
 		}
 	}
 	return (NULL);
+}
+
+void		move_left(int j)
+{	
+	while (j >= 0)
+	{
+		tputs(tgetstr("le", NULL), 1, ft_intputchar);
+		j--;
+	}
 }
 
 void		move_right(int i)
@@ -103,63 +113,111 @@ void		move_right(int i)
 	}
 }
 
-char		*manage_bck_search(t_terminal *term, t_hist **head)
+void		delet_line(t_terminal *term, int len)
 {
-	char	*line;
+	int	i;
+
+	i = len;
+	if (!term)
+		return;
+	while (i)
+	{
+		tputs(tgetstr("nd", NULL), len, ft_intputchar);
+		i--;
+	}
+	while (i < len)
+	{
+		tputs(tgetstr("le", NULL), len, ft_intputchar);
+		tputs(tgetstr("dc", NULL), len, ft_intputchar);
+		i++;
+	}
+}
+
+int			ft_putline(t_terminal *term, char *line)
+{
+	static	int	len;
 	int		j;
 	int		i;
 
-	term->line->str = join_line(term->line->str, term->buff, term->line->curs);
-	line = incremental_search(term, head);
-	display_line(term->line);
-	go_right(term->line);
+	i = 0;
+	j = 0;
 	if (line)
 	{
 		tputs(tgetstr("up", NULL), 1, ft_intputchar);
 		j = 10 + ft_strlen(term->line->str);
-		while (j >= 0)
-		{
-			tputs(tgetstr("le", NULL), 1, ft_intputchar);
-			j--;
-		}
+		move_left(j);
+		delet_line(term, len);
 		ft_putstr(line);
+		len = ft_strlen(line);
 		tputs(tgetstr("do", NULL), 1, ft_intputchar);
 		i = 13 + ft_strlen(term->line->str);
 		move_right(i);
-	//	ft_strdel(&line);
-		//return (1);
+		ft_strdel(&line);
+		return (1);
 	}
-	return (line);
+	return (0);
+}
+
+void		print_search(t_terminal *term, t_hist **head, int *indice)
+{
+	char	*line;
+
+	term->line->str = join_line(term->line->str, term->buff, term->line->curs);
+	line = incremental_search(term, head, indice);
+	display_line(term->line);
+	go_right(term->line);
+	ft_putline(term, line);
 }
 
 char		*bck_i_search(t_terminal *term, t_hist **head, int mult_line)
 {
 	char	*line;
+	int		indice;
+
+	indice = 0;
+	line = NULL;
 	while (1)
 	{
+		term->buff = 0;
 		read(0, &term->buff, 4);
 		if (term->buff == CTRL_C || (term->buff == CTRL_D &&
 											!ft_strcmp(term->line->str, "")))
+		{
 			return (ctrl_c_d(term, mult_line));
+		}
 		if (term->buff == CTRL_L && mult_line == 0)
+		{
 			ctrl_l(term->line->str);
+		}
 		if (ft_isprint(term->buff))
 		{
-			line = manage_bck_search(term, head);
+			print_search(term, head, &indice);
 			continue;
 		}
-		if (term->buff == DEL)
+		if (term->buff == DEL)// !!!
 		{
+			indice = 0;
 		 	del_char(term->line);
 			continue;
 		}
 		if (term->buff == ENTER)
 		{
 			ft_putchar('\n');
-		 	return (line);
+			if (line)
+		 		return (line);
+			else
+				return (ft_strdup(""));	
+		}
+		if (term->buff == CTRL_R)
+		{
+			indice--;
+			line = incremental_search(term, head, &indice);
+			ft_putline(term, line);
 		}
 		else
 		{
+			if (line)
+				ft_strdel(&line);
 			ft_putchar('\n');
 			return (ft_strdup(""));
 		}
@@ -181,7 +239,7 @@ char		*manage_line(char *prompt, t_hist **his_head, int mult_line)
 	t_terminal	*term;
 	char		*tmp;
 
-	ttyfd = fopen("/dev/ttys003", "w");
+	ttyfd = fopen("/dev/ttys002", "w");
 	if (!(term = init_term(prompt)))
 		return (NULL);
 	while (1)
