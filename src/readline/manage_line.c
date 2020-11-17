@@ -198,7 +198,7 @@ char		*bck_i_search(t_terminal *term, t_hist **head, int mult_line)
 		{
 			indice = 0;
 		 	del_char(term->line);
-			//continue;
+			continue;
 		}
 		if (term->buff == ENTER)
 		{
