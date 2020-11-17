@@ -47,7 +47,7 @@ The shell maintains a table of jobs. Before every prompt for a command, the shel
 	After recording the child as a suspended job in the shell's table of jobs and
 	resetting SIGTTOU, the shell proceeds probably prompting for the next command.
 
-	If the shell wishes to run the child in the background, then no waitpid( ) is
+*	If the shell wishes to run the child in the background, then no waitpid( ) is
 	done and the terminal's process group remains that of the shell. The entire
 	child process group will be sent a SIGTTIN or SIGTTOU and become suspended if
 	any descendent attempts I/O on the terminal. If no attempt is made the child
@@ -63,3 +63,40 @@ The shell maintains a table of jobs. Before every prompt for a command, the shel
 	sent to the child's process group and the shell proceeds without doing a
 	waitpid( ).
 */
+
+void	job_control(t_and_or *cmd, int bg)
+{
+	int		status;
+	pid_t	pid;
+
+	pid = waitpid(-1, &status, WNOHANG | WUNTRACED);
+	if (pid > 0)
+	{
+		printf("pid[%d] has changed state to [%x]\n", pid, status);
+	}
+	if ((pid = fork()) < 0)
+		return ;
+	if (pid == 0)
+	{
+		pid = setsid();
+		if (!bg)
+			tcsetpgrp (STDIN, pid); // STDIN !!!!! dont forget return value
+		signal (SIGINT, SIG_DFL);
+		signal (SIGQUIT, SIG_DFL);
+		signal (SIGTSTP, SIG_DFL);
+		signal (SIGTTIN, SIG_DFL);
+		signal (SIGTTOU, SIG_DFL);
+		signal (SIGCHLD, SIG_DFL);
+		// exec cmd;
+	}
+	else
+	{
+		setpgid(pid, pid);
+		if (!bg)
+			waitpid(pid, &status, 0);
+		// The shell determines that a stop was sent to the child by looking at the status value
+		signal (SIGTTOU, SIG_IGN);
+		tcsetpgrp (STDIN, getpid()); // STDIN !!!!! dont forget return value
+		// add child as suspended process in process list
+	}
+}

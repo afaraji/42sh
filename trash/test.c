@@ -37,7 +37,8 @@ typedef	struct			s_job
 
 void	launch_process (process *p, pid_t pgid, int infile, int outfile, int errfile, int foreground)
 {
-	pid_t pid;
+	pid_t	pid;
+	int		shell_terminal = 0;
 
 	if (1)//is_ineractive
 	{
@@ -50,7 +51,7 @@ void	launch_process (process *p, pid_t pgid, int infile, int outfile, int errfil
 			pgid = pid;
 		setpgid (pid, pgid);
 		if (foreground)
-			tcsetpgrp (shell_terminal, pgid);//to get shell_terminal use getpwnam()->pw_shell
+			tcsetpgrp (shell_terminal, pgid);
 
 	  /* Set the handling for job control signals back to the default.  */
 		signal (SIGINT, SIG_DFL);
@@ -88,6 +89,7 @@ void	launch_job (job *j, int foreground)
 {
 	process *p;
 	pid_t pid;
+	int shell_is_interactive = 0;
 	int mypipe[2], infile, outfile;
 
 	infile = j->stdin;
@@ -149,6 +151,11 @@ void	launch_job (job *j, int foreground)
 
 int			main(int ac, char **av, char **env)
 {
+	int fd;
+	pid_t ret;
 
+	fd = STDIN;
+	ret = tcgetpgrp(fd);
+	printf("ret = [%d]\tfd[%d]\n", ret, fd);
 	return (0);
 }
