@@ -35,6 +35,12 @@ typedef	struct			s_job
 	struct s_job		*next;
 }						job;
 
+int		format_job_info (job *j, char *str)
+{
+	printf("job [%d] has %s\n", j->pgid, str);
+	return (0);
+}
+
 void	launch_process (process *p, pid_t pgid, int infile, int outfile, int errfile, int foreground)
 {
 	pid_t	pid;
@@ -87,13 +93,14 @@ void	launch_process (process *p, pid_t pgid, int infile, int outfile, int errfil
 
 void	launch_job (job *j, int foreground)
 {
-	process *p;
-	pid_t pid;
-	int shell_is_interactive = 0;
-	int mypipe[2], infile, outfile;
+	process	*p;
+	pid_t	pid;
+	int		shell_is_interactive = 0;
+	int		mypipe[2], infile, outfile;
 
 	infile = j->stdin;
-	for (p = j->first_process; p; p = p->next)
+	p = j->first_process;
+	while (p)
 	{
 		/* Set up pipes, if necessary.  */
 		if (p->next)
@@ -108,11 +115,11 @@ void	launch_job (job *j, int foreground)
 		else
 			outfile = j->stdout;
 
-	  /* Fork the child processes.  */
-	  pid = fork ();
-	  if (pid == 0)
+		/* Fork the child processes.  */
+		pid = fork ();
+		if (pid == 0)
 		/* This is the child process.  */
-		launch_process (p, j->pgid, infile,	outfile, j->stderr, foreground);
+			launch_process (p, j->pgid, infile,	outfile, j->stderr, foreground);
 		else if (pid < 0)
 		{
 			/* The fork failed.  */
@@ -137,6 +144,7 @@ void	launch_job (job *j, int foreground)
 		if (outfile != j->stdout)
 			close (outfile);
 		infile = mypipe[0];
+		p = p->next;
 	}
 
 	format_job_info (j, "launched");

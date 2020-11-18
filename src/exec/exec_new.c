@@ -101,8 +101,13 @@ int		exec_ast(t_pipe_seq *cmd, int bg)
 	child = fork();
 	if (child == 0)
 	{
-		ft_set_attr(1);
+		// ft_set_attr(1);
 		signal(SIGINT, SIG_DFL);
+		signal(SIGQUIT, SIG_DFL);
+		signal(SIGTSTP, SIG_DFL);
+		signal(SIGTTIN, SIG_DFL);
+		signal(SIGTTOU, SIG_DFL);
+		signal(SIGCHLD, SIG_DFL);
 		exec_pipe(cmd);
 	}
 	else if (!bg)

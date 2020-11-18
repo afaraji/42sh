@@ -47,7 +47,7 @@ int	is_valid_file(char *file, t_list_token *node)
 	}
 	return (1);
 }
-
+int		job_control(t_and_or *cmd, int bg);
 int	manage_cmd_list(t_cmdlist *cmdlist)
 {
 	t_cmdlist		*node;
@@ -58,6 +58,7 @@ int	manage_cmd_list(t_cmdlist *cmdlist)
 	while (node)
 	{
 		ret = execute(node->and_or, node->bg);
+		// ret = job_control(node->and_or, node->bg);
 		node = node->next;
 	}
 	free_cmd_list(cmdlist);

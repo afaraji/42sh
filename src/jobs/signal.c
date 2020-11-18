@@ -48,11 +48,15 @@ void		child_handler(int signum)
 	t_proc	*proc;
 
 	proc = g_var.proc;
-	pid = waitpid(0, &status, WNOWAIT);
+	ft_print(STDOUT, "child_handler1 -->");
+	pid = waitpid(-1 , &status, WNOHANG);
+	if (pid < 0)
+		perror("waiterror:");
 	while (proc)
 	{
 		if (proc->ppid == pid)
 		{
+			ft_print(STDOUT, "child_handler2 pid[%d] = sig[%d]\n", pid, signum);
 			proc->status = status;
 			waitpid(pid, &status, 0);
 			proc->done = 1;
@@ -60,6 +64,7 @@ void		child_handler(int signum)
 		}
 		proc = proc->next;
 	}
+	ft_print(STDOUT, "child_handler3 pid[%d] = sig[%d]\n", pid, signum);
 	(void)signum;
 }
 

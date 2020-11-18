@@ -43,7 +43,7 @@ FILE_READLINE = copy.c get_next_line.c get_unprintable_char.c go_left.c go_up.c\
 FILE_PARSE = append_and_verify.c ft_tokenize.c join_tokens.c reserved_words.c\
 	tokens_translate.c verify_tokens.c
 
-FILE_JOBS = proc_manage.c signal.c
+FILE_JOBS = proc_manage.c signal.c jobs.c
 
 SRC_AST = $(foreach file,$(FILE_AST), ./src/ast/$(file))
 

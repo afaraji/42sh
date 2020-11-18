@@ -44,7 +44,7 @@ void	add_proc(pid_t pid)
 	node->next->status = -1;
 	node->next->str = last_in_hist();
 	node->next->next = NULL;
-	ft_putstr("[");
+	ft_putstr("add proc func[");
 	ft_putnbr(node->next->index);
 	ft_putstr("] ");
 	ft_putnbr(pid);
