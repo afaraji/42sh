@@ -119,13 +119,13 @@ char	*ft_strsignal(int sig)
 
 int		killed_by(int sig)
 {
-	ft_print(STDERR, "killed by signal: %d\n", sig);
+	ft_print(STDERR, "%s: [%d]\n", ft_strsignal(sig), sig);
 	return (sig);
 }
 
 int		stopped_by(int sig)
 {
-	ft_print(STDERR, "stopped by signal: %d\n", sig);
+	ft_print(STDERR, "%s: [%d]\n", ft_strsignal(sig), sig);
 	return (sig);
 }
 
@@ -152,6 +152,7 @@ int		job_control(t_and_or *cmd, int bg)
 		signal (SIGTTIN, SIG_DFL);
 		signal (SIGTTOU, SIG_DFL);
 		signal (SIGCHLD, SIG_DFL);
+		ft_set_attr(1);
 		// exec cmd;
 	}
 	else
@@ -159,21 +160,83 @@ int		job_control(t_and_or *cmd, int bg)
 		setpgid(pid, pid);
 		if (!bg)
 		{
+			signal (SIGTTOU, SIG_IGN);
+			signal (SIGTTIN, SIG_IGN);
 			if (waitpid(pid, &status, WUNTRACED | WCONTINUED) < 0)
 				return (-2);
 			// The shell determines that a stop was sent to the child by looking at the status value
+			update_proc(pid, status);
 			if (WIFEXITED(status))
 				return (WEXITSTATUS(status));
 			if (WIFSIGNALED(status))
 				return (killed_by(WTERMSIG(status)));
 			if (WIFSTOPPED(status))
 				return (stopped_by(WSTOPSIG(status)));
-			signal (SIGTTOU, SIG_IGN);
-			signal (SIGTTIN, SIG_IGN);
 			tcsetpgrp (STDIN, getpid()); // dont forget return value !!!
 			// add child as suspended process in process list
 		}
+		else
+		{
+			add_proc(pid);
+			ft_set_attr(0);
+		}
+	}
+	return (0);
+}
 
+int		putjob_forground(pid_t pid)
+{
+	int	status;
+
+	ft_set_attr(1);
+	tcsetpgrp(STDIN, pid);// dont forget return value !!!
+	kill(pid, SIGCONT);	// return value !!
+	if (waitpid(pid, &status, WUNTRACED | WCONTINUED) < 0)
+		return (-2);
+	update_proc(pid, status);
+	if (WIFEXITED(status))
+		return (WEXITSTATUS(status));
+	if (WIFSIGNALED(status))
+		return (killed_by(WTERMSIG(status)));
+	if (WIFSTOPPED(status))
+		return (stopped_by(WSTOPSIG(status)));
+	tcsetpgrp (STDIN, getpid());
+	ft_set_attr(0);
+	return (0);
+}
+
+int		putjob_background(pid_t pid)
+{
+	// ???
+	return (0);
+}
+
+void	delet_proc(pid_t pid);
+
+int		update_proc(pid_t pid, int status)
+{
+	t_proc	*p;
+	int		state;
+
+	p = g_var.proc;
+	while (p)
+	{
+		if (p->ppid == pid)
+			break ;
+		p = p->next;
+	}
+	if ((WIFEXITED(status) || WIFSIGNALED(status)) && p)
+		delet_proc(pid);
+	else if (WIFSTOPPED(status))
+	{
+		if (p)
+		{
+			p->done = 0; // add running/done/stoped ?
+			p->status = status; // #define STOPPED x ?
+		}
+		else
+			add_proc(pid);
+		return (1);
 	}
 	return (0);
 }
