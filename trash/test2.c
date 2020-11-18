@@ -1,47 +1,62 @@
-#include <stdio.h>
-#include <signal.h>
-#include <stddef.h>
 #include <sys/wait.h>
-#include <sys/ioctl.h>
-#include <sys/termios.h>
-#include "../inc/ft_21sh.h"
-#include "../inc/builtins.h"
-#include "../inc/parse.h"
-#include "../inc/ast.h"
-#include "../inc/exec.h"
-#include "../inc/ft_free.h"
-#include "../inc/readline.h"
+#include <stdlib.h>
+#include <unistd.h>
+#include <stdio.h>
 
-
-/* NOTE: This example illustrates tcsetgrp() and setpgrp(), but doesn’t function correctly because SIGTTIN and SIGTTOU aren’t handled.*/
-int main() 
+struct s_test
 {
-    int status;
-    int cpid;
-    int ppid;
-    char buf[256];
-    sigset_t blocked;
+	//
+};
 
-    ppid = getpid();
-    if (!(cpid=fork()))
-    {
-        setpgid(0,0);
-        tcsetpgrp (0, getpid());
-        execl ("/usr/bin/vim", "vim", NULL);
-        exit (-1);
-    }
-    if (cpid < 0)
-        exit(-1);
-    setpgid(cpid, cpid);
-    tcsetpgrp (0, cpid);
-    waitpid (cpid, NULL, 0);
-    tcsetpgrp (0, ppid);
-    while (1)
-    {
-        memset (buf, 0, 256);
-        fgets (buf, 256, stdin);
-        puts ("ECHO: ");
-        puts (buf);
-        puts ("\n");
-    }
+
+int	main(int argc, char *argv[])
+{
+	pid_t cpid, w;
+	int status;
+	struct s_test var1;
+
+
+	cpid = fork();
+	if (cpid == -1) {
+		perror("fork");
+		exit(EXIT_FAILURE);
+	}
+
+	if (cpid == 0)
+	{            /* Code executed by child */
+		printf("Child PID is %ld\n", (long) getpid());
+		if (argc == 1)
+			pause();                    /* Wait for signals */
+		_exit(atoi(argv[1]));
+	}
+	else
+	{                    /* Code executed by parent */
+		do
+		{
+			w = waitpid(cpid, &status, WUNTRACED | WCONTINUED);
+			if (w == -1)
+			{
+				perror("waitpid");
+				exit(EXIT_FAILURE);
+			}
+			if (WIFEXITED(status))
+			{
+				printf("exited, status=%d\n", WEXITSTATUS(status));
+			}
+			else if (WIFSIGNALED(status))
+			{
+				printf("killed by signal %d\n", WTERMSIG(status));
+			}
+			else if (WIFSTOPPED(status))
+			{
+				printf("stopped by signal %d\n", WSTOPSIG(status));
+			}
+			else if (WIFCONTINUED(status))
+			{
+				printf("continued\n");
+			}
+		}
+		while (!WIFEXITED(status) && !WIFSIGNALED(status));
+		exit(EXIT_SUCCESS);
+	}
 }
