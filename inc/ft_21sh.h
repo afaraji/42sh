@@ -41,6 +41,7 @@ typedef struct			s_hist
 {
 	char				*hist_str;
 	int					index;
+	char				*s_chr;
 	struct s_hist		*next;
 	struct s_hist		*prec;
 }						t_hist;
