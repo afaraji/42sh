@@ -18,8 +18,6 @@
 #include "../../inc/ft_free.h"
 #include "../../inc/readline.h"
 
-FILE *ttyfd;
-
 t_terminal	*init_term(char *prmt)
 {
 	int			tmp;
@@ -260,7 +258,6 @@ char		*manage_line(char *prompt, t_hist **his_head, int mult_line)
 	t_terminal	*term;
 	char		*tmp;
 
-	ttyfd = fopen("/dev/ttys002", "w");
 	if (!(term = init_term(prompt)))
 		return (NULL);
 	while (1)
