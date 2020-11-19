@@ -71,5 +71,6 @@ void		child_handler(int signum)
 void		ft_signal(void)
 {
 	signal(SIGINT, &signal_callback_handler);
-	signal(SIGCHLD, &child_handler);
+	// signal(SIGCHLD, &child_handler);
+	signal(SIGCHLD, SIG_DFL);
 }

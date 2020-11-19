@@ -66,6 +66,7 @@ The shell maintains a table of jobs. Before every prompt for a command, the shel
 
 FILE	*ttp;
 FILE	*ttc;
+extern int errno;
 
 int		update_proc(pid_t pid, int status);
 
@@ -174,7 +175,7 @@ int		exec_ast_fg(t_pipe_seq *cmd)
 		ret = waitpid(child, &status, WUNTRACED | WCONTINUED);
 		if (ret < 0)
 		{
-			fprintf(ttp, "------4----[%d]\n", ret);
+			fprintf(ttp, "------4----[%d] - {err: %s}\n", ret, strerror(errno));
 		}
 		fprintf(ttp, "------5----[%d]\n", ret);
 		fprintf(ttp, "--6---- returned from wait [%x]\n", status);
@@ -267,8 +268,8 @@ int		job_control(t_and_or *cmd, int bg)
 	pid_t	pid;
 	// return (execute(cmd, bg)); //uncoment to go back to old execution
 	//************************************************************************
-	ttp = fopen("/dev/ttys006", "w");
-	ttc = fopen("/dev/ttys007", "w");
+	ttp = fopen("/dev/ttys001", "w");
+	ttc = fopen("/dev/ttys002", "w");
 	fprintf(ttp, "\033[H\033[2J");
 	fprintf(ttc, "\033[H\033[2J");
 	fprintf(ttp, "++++++++++++ debuging ++++++++++++\n");
