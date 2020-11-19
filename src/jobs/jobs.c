@@ -369,6 +369,69 @@ int		update_proc(pid_t pid, int status)
 	return (0);
 }
 
+int		get_opt(char **av, char *opt_list, int *index)
+{
+	int		i;
+	int		j;
+	int		opt;
+
+	i = 1;
+	opt = 0;
+	while (av[i] && (av[i][0] == '-' && av[i][1]))
+	{
+		j = 1;
+		while (av[i][j])
+		{
+			if (av[i][j] == 'l')
+				opt = 1;
+			else if (av[i][j] == 'p')
+				opt = 2;
+			else
+				return (-(av[i][j]));
+			j++;
+		}
+		i++;
+	}
+	*index = i;
+	return (opt);
+}
+
+int		ft_fg(char **av, char **env)
+{
+
+	(void)env;
+	//
+	return (0);
+}
+int		ft_bg(char **av, char **env)
+{
+
+	(void)env;
+	//
+	return (0);
+}
+int		ft_jobs(char **av, char **env)
+{
+	t_proc	*p;
+	int		i;
+	int		opt;
+
+	opt = get_opt(av, "lp", &i);
+	if (opt < 0)
+	{
+		ft_print(STDERR, "shell: jobs: -");
+		ft_putchar_fd(-opt, STDERR);
+		ft_print(STDERR, ": invalid option.\n");
+		return (2);
+	}
+	if (opt[0])
+	{
+
+	}
+	(void)env;
+	return (0);
+}
+
 // int		job_control(t_and_or *cmd, int bg)
 // {
 // 	int		status;
