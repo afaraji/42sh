@@ -333,11 +333,12 @@ int		putjob_forground(pid_t pid)
 	return (0);
 }
 
-// int		putjob_background(pid_t pid)
-// {
-// 	// ???
-// 	return (0);
-// }
+int		putjob_background(pid_t pid)
+{
+	kill(pid, SIGCONT);
+	update_proc(pid, status);
+	return (0);
+}
 
 void	delet_proc(pid_t pid);
 
@@ -396,20 +397,101 @@ int		get_opt(char **av, char *opt_list, int *index)
 	return (opt);
 }
 
-int		ft_fg(char **av, char **env)
+int		ft_fg(char **av)
 {
+	int	ret;
 
-	(void)env;
-	//
+	ret = 0;
+	if (av[1])
+	{
+		if (av[1][0] == '%')
+		{
+			if (av[1][1] == '+' || av[1][1] == '+')
+			{
+				// current job;
+			}
+			else if (av[1][1] == '-')
+			{
+				// previous job
+			}
+			else if (is_all_digits(&av[1][1]))
+			{
+				// job with index ft_atoi(&av[1][1])
+			}
+			else
+			{
+				// job with str &av[1][1]
+			}
+		}
+		else
+		{
+			// job with str av[1]
+		}
+	}
+	else
+	{
+		//current job
+	}
+	return (ret);
+}
+
+int		ft_bg(char **av)
+{
+	int	ret;
+
+	ret = 0;
+	if (av[1])
+	{
+		if (av[1][0] == '%')
+		{
+			if (av[1][1] == '+' || av[1][1] == '+')
+			{
+				// current job;
+			}
+			else if (av[1][1] == '-')
+			{
+				// previous job
+			}
+			else if (is_all_digits(&av[1][1]))
+			{
+				// job with index ft_atoi(&av[1][1])
+			}
+			else
+			{
+				// job with str &av[1][1]
+			}
+		}
+		else
+		{
+			// job with str av[1]
+		}
+	}
+	else
+	{
+		//current job
+	}
+	return (ret);
+}
+
+int		ft_jobs_(char **av)
+{
+	int		i;
+	t_proc	*p;
+
+	i = 0;
+	while (av && av[i])
+	{
+		i++;
+	}
+	p = g_var.proc;
+	while (p)
+	{
+		printf("[%d]-[%d]\tdone[%d]\tstatus[%d]\t%s", p->index, p->ppid, p->done, p->status, p->str);
+		p = p->next;
+	}
 	return (0);
 }
-int		ft_bg(char **av, char **env)
-{
 
-	(void)env;
-	//
-	return (0);
-}
 int		ft_jobs(char **av, char **env)
 {
 	t_proc	*p;
@@ -424,9 +506,17 @@ int		ft_jobs(char **av, char **env)
 		ft_print(STDERR, ": invalid option.\n");
 		return (2);
 	}
-	if (opt[0])
+	if (opt == 1)//l
 	{
-
+		ft_jobs_(&av[i]);
+	}
+	else if (opt == 2)//p
+	{
+		ft_jobs_(&av[i]);
+	}
+	else
+	{
+		ft_jobs_(&av[i]);
 	}
 	(void)env;
 	return (0);
