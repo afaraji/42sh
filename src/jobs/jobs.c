@@ -335,7 +335,11 @@ int		putjob_forground(pid_t pid)
 
 int		putjob_background(pid_t pid)
 {
+	int	status;
+
+	status = 0;
 	kill(pid, SIGCONT);
+	pid = waitpid(pid, &status, WNOHANG | WUNTRACED);
 	update_proc(pid, status);
 	return (0);
 }
@@ -370,7 +374,7 @@ int		update_proc(pid_t pid, int status)
 	return (0);
 }
 
-int		get_opt(char **av, char *opt_list, int *index)
+int		get_opt(char **av, int *index)
 {
 	int		i;
 	int		j;
@@ -494,11 +498,10 @@ int		ft_jobs_(char **av)
 
 int		ft_jobs(char **av, char **env)
 {
-	t_proc	*p;
 	int		i;
 	int		opt;
 
-	opt = get_opt(av, "lp", &i);
+	opt = get_opt(av, &i);
 	if (opt < 0)
 	{
 		ft_print(STDERR, "shell: jobs: -");
