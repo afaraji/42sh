@@ -84,6 +84,27 @@ int		cd_builtin(char **av, char **env)
 	return (1);
 }
 
+int		builtins_2(char *cmd, char **av)
+{
+	if (ft_strcmp(cmd, "jobs") == 0)
+		return (ft_jobs(av));
+	else if (ft_strcmp(cmd, "fg") == 0)
+		return (ft_fg(av));
+	else if (ft_strcmp(cmd, "bg") == 0)
+		return (ft_bg(av));
+	if (ft_strcmp(cmd, "test") == 0)
+	{
+		ft_print(1,"buitin [test] not implimented yet.\n");
+		return (0);
+	}
+	else if (ft_strcmp(cmd, "hash") == 0)
+	{
+		ft_print(1,"buitin [hash] not implimented yet.\n");
+		return (0);
+	}
+	return (42);
+}
+
 int		builtins(char *cmd, char **av, char **env)
 {
 	if (ft_strcmp(cmd, "exit") == 0)
@@ -107,5 +128,6 @@ int		builtins(char *cmd, char **av, char **env)
 		return (ft_alias(av));
 	else if (ft_strcmp(cmd, "unalias") == 0)
 		return (ft_unalias(av));
-	return (42);
+	return (builtins_2(cmd, av));
+	// return (42);
 }

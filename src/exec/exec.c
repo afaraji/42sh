@@ -112,7 +112,7 @@ int		exec_ast(t_pipe_seq *cmd, int bg)
 	}
 	else
 	{
-		add_proc(child);
+		add_proc(child, 0);
 		ft_set_attr(0);
 	}
 	return (status);

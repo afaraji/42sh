@@ -94,6 +94,12 @@ typedef struct			s_alias
 	struct s_alias		*next;
 }						t_alias;
 
+/*
+**env == 0 --> part of env(eg. export).
+**env == 1 --> part of set && only tmp.
+**env == 2 --> part of set && permanent and read only.
+*/
+
 typedef struct			s_variable
 {
 	int					env;
@@ -101,17 +107,18 @@ typedef struct			s_variable
 	char				*value;
 	struct s_variable	*next;
 }						t_variable;
+
 /*
-**env == 0 --> part of env(eg. export).
-**env == 1 --> part of set && only tmp.
-**env == 2 --> part of set && permanent and read only.
+** status: 0 --> done, 1 --> running, 2 --> stopped
+** (c == +) --> current job; (c == -) --> previous job;
 */
 
 typedef struct			s_proc
 {
 	pid_t				ppid;
+	char				c;		// (c == '+') --> current job; (c == '-') --> previous job; (c == ' ') --> neither
 	int					index;
-	int					status;
+	int					status;	// status: 0 --> running, 1 --> done, 2 --> stopped
 	int					done;
 	char				*str;
 	struct s_proc		*next;

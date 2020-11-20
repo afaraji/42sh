@@ -125,13 +125,13 @@ char	*ft_strsignal(int sig)
 
 int		killed_by(int sig)
 {
-	ft_print(STDERR, "killed func: %s: [%d]\n", ft_strsignal(sig), sig);
+	fprintf(ttp, "killed func: %s: [%d]\n", ft_strsignal(sig), sig);
 	return (sig);
 }
 
 int		stopped_by(int sig)
 {
-	ft_print(STDERR, "stopped func: %s: [%d]\n", ft_strsignal(sig), sig);
+	fprintf(ttp, "stopped func: %s: [%d]\n", ft_strsignal(sig), sig);
 	return (sig);
 }
 
@@ -140,9 +140,13 @@ int		exec_ast_fg(t_pipe_seq *cmd)
 	int			child;
 	int			status;
 
+	fprintf(ttp, "-1--- exec_ast_fg:[is a buitin] ---\n");
 	if ((status = exec_no_fork(cmd, 0)) != -42)
+	{
+		fprintf(ttp, "-2--- exec_ast_fg:[is a buitin] --ret[%d]-\n", status);
 		return (status << 8);
-	fprintf(ttp, "---- exec_ast_fg:[not a buitin..forking] ---\n");
+	}
+	fprintf(ttp, "-3--- exec_ast_fg:[not a buitin..forking] ---\n");
 	status = 0;
 	child = fork();
 	if (child == 0)
@@ -259,7 +263,7 @@ int		execute_bg(t_and_or *cmd)
 		}
 		cmd = cmd->next;
 	}
-	return (ret);
+	exit(ret);
 }
 
 int		job_control(t_and_or *cmd, int bg)
@@ -268,8 +272,8 @@ int		job_control(t_and_or *cmd, int bg)
 	pid_t	pid;
 	// return (execute(cmd, bg)); //uncoment to go back to old execution
 	//************************************************************************
-	ttp = fopen("/dev/ttys001", "w");
-	ttc = fopen("/dev/ttys002", "w");
+	ttp = fopen("/dev/ttys005", "w");
+	ttc = fopen("/dev/ttys006", "w");
 	fprintf(ttp, "\033[H\033[2J");
 	fprintf(ttc, "\033[H\033[2J");
 	fprintf(ttp, "++++++++++++ debuging ++++++++++++\n");
@@ -278,7 +282,7 @@ int		job_control(t_and_or *cmd, int bg)
 	pid = waitpid(-1, &status, WNOHANG | WUNTRACED);
 	if (pid > 0)
 	{
-		printf("pid[%d] has changed state to [%x]\n", pid, status);
+		fprintf(ttp, "pid[%d] has changed state to [%x]\n", pid, status);
 		update_proc(pid, status);
 	}
 	if (bg)
@@ -300,7 +304,8 @@ int		job_control(t_and_or *cmd, int bg)
 		}
 		else
 		{
-			add_proc(pid);
+			fprintf(ttp, "---adding to job list\n");
+			add_proc(pid, 0);
 		}
 	}
 	else
@@ -308,20 +313,44 @@ int		job_control(t_and_or *cmd, int bg)
 		fprintf(ttp, "---- lunching job in FG ---parent[%d|%d]\n", getpid(), getpgrp());
 		execute_fg(cmd);
 	}
-
+	fprintf(ttp, "---parent done returning (0)\n");
 	return (0);
+}
+
+t_proc	*get_proc(pid_t pid)
+{
+	t_proc	*p;
+
+	p = (g_var.proc)->next;
+	while (p)
+	{
+		if (p->ppid == pid)
+			return (p);
+		p = p->next;
+	}
+	return (p);
 }
 
 int		putjob_forground(pid_t pid)
 {
-	int	status;
+	int		status;
+	t_proc	*p;int ret;// i was here why he dosent waitpid
 
+	if ((p = get_proc(pid)))
+	{
+		ft_print(STDOUT, "%s\n", p->str);
+	}
+	delet_proc(pid);
 	ft_set_attr(1);
 	tcsetpgrp(STDIN, pid);// dont forget return value !!!
 	kill(pid, SIGCONT);	// return value !!
-	if (waitpid(pid, &status, WUNTRACED | WCONTINUED) < 0)
+	if ((ret = waitpid(pid, &status, WUNTRACED | WCONTINUED)) < 0)
+	{
+		perror("error at waitpid:");
 		return (-2);
-	update_proc(pid, status);
+	}
+	fprintf (ttp, "proc done ?? ---> pid[%d]-ret[%d]\n", pid, ret);
+	// update_proc(pid, status);
 	if (WIFEXITED(status))
 		return (WEXITSTATUS(status));
 	if (WIFSIGNALED(status))
@@ -335,12 +364,17 @@ int		putjob_forground(pid_t pid)
 
 int		putjob_background(pid_t pid)
 {
-	int	status;
+	int		status;
+	t_proc	*p;
 
 	status = 0;
 	kill(pid, SIGCONT);
 	pid = waitpid(pid, &status, WNOHANG | WUNTRACED);
 	update_proc(pid, status);
+	if ((p = get_proc(pid)))
+	{
+		ft_print(STDOUT, "[%d]%c %s &\n", p->index, p->c, p->str);
+	}
 	return (0);
 }
 
@@ -349,26 +383,38 @@ void	delet_proc(pid_t pid);
 int		update_proc(pid_t pid, int status)
 {
 	t_proc	*p;
-	// int		state;
 
 	p = g_var.proc;
+	fprintf(ttp, "-1--update proc---\n");
 	while (p)
 	{
 		if (p->ppid == pid)
 			break ;
 		p = p->next;
 	}
+	fprintf(ttp, "-2--update proc---\n");
 	if ((WIFEXITED(status) || WIFSIGNALED(status)) && p)
+	{
+		// print new state ?
+		if (WIFEXITED(status))
+			ft_print(STDOUT, "[%d]%c  Done\t\t%s\n", p->index, p->c, p->str);
+		else
+			ft_print(STDOUT, "[%d]%c  Killed: %d\t\t%s\n", p->index, p->c, WTERMSIG(status), p->str);
 		delet_proc(pid);
+	}
 	else if (WIFSTOPPED(status))
 	{
 		if (p)
 		{
 			p->done = 0; // add running/done/stoped ?
-			p->status = status; // #define STOPPED x ?
+			p->status = 2; // #define STOPPED x ?
 		}
 		else
-			add_proc(pid);
+		{
+			add_proc(pid, 2);
+			p = get_proc(pid);
+		}
+		ft_print(STDOUT, "\n[%d]%c  Stopped\t\t%s\n", p->index, p->c, p->str);
 		return (1);
 	}
 	return (0);
@@ -401,80 +447,123 @@ int		get_opt(char **av, int *index)
 	return (opt);
 }
 
-int		ft_fg(char **av)
+pid_t	get_pid_str(char *s)
 {
-	int	ret;
+	t_proc	*p;
+	pid_t	pid;
+	int		len;
 
-	ret = 0;
-	if (av[1])
+	len = ft_strlen(s);
+	p = (g_var.proc)->next;
+	pid = 0;
+	if (*s == '?')
 	{
-		if (av[1][0] == '%')
+		s++;
+		while (p)
 		{
-			if (av[1][1] == '+' || av[1][1] == '+')
+			if (ft_strstr(p->str, s))
 			{
-				// current job;
+				pid = p->ppid;
+				break ;
 			}
-			else if (av[1][1] == '-')
-			{
-				// previous job
-			}
-			else if (is_all_digits(&av[1][1]))
-			{
-				// job with index ft_atoi(&av[1][1])
-			}
-			else
-			{
-				// job with str &av[1][1]
-			}
-		}
-		else
-		{
-			// job with str av[1]
+			p = p->next;
 		}
 	}
 	else
 	{
-		//current job
+		while (p)
+		{
+			if (!ft_strncmp(p->str, s, len))
+			{
+				pid = p->ppid;
+				break ;
+			}
+			p = p->next;
+		}
 	}
-	return (ret);
+	if (pid == 0)
+		ft_print(STDERR, "shell: job_util: %s: no such job.\n", s);
+	return (pid);
+}
+
+pid_t	get_pid_n_plus_min(char c, char *s)
+{
+	t_proc	*p;
+	int		index;
+
+	p = (g_var.proc)->next;
+	index = (s != NULL) ? ft_atoi(s) : -1;
+	while (p)
+	{
+		if (p->c == c || (c == -1 && p->index == index))
+			return (p->ppid);
+		p = p->next;
+	}
+	ft_putstr_fd("shell: job_util: ", STDERR);
+	if (c == '+')
+		ft_putstr_fd("current", STDERR);
+	else if (c == '-')
+		ft_putstr_fd("previous", STDERR);
+	else
+		ft_putstr_fd(s, STDERR);
+	ft_putstr_fd(": no such job.\n", STDERR);
+	return (0);
 }
 
 int		ft_bg(char **av)
 {
-	int	ret;
+	pid_t	p;
 
-	ret = 0;
+	p = 0;
 	if (av[1])
 	{
 		if (av[1][0] == '%')
 		{
-			if (av[1][1] == '+' || av[1][1] == '+')
-			{
-				// current job;
-			}
+			if (av[1][1] == '+' || av[1][1] == '%')
+				p = get_pid_n_plus_min('+', NULL);
 			else if (av[1][1] == '-')
-			{
-				// previous job
-			}
+				p = get_pid_n_plus_min('-', NULL);
 			else if (is_all_digits(&av[1][1]))
-			{
-				// job with index ft_atoi(&av[1][1])
-			}
+				p = get_pid_n_plus_min(-1, &(av[1][1]));
 			else
-			{
-				// job with str &av[1][1]
-			}
+				p = get_pid_str(&av[1][1]);
 		}
 		else
-		{
-			// job with str av[1]
-		}
+			p = get_pid_str(av[1]);
 	}
 	else
+		p = get_pid_n_plus_min('+', NULL);
+	if (p == 0)
+		return (1);
+	return (putjob_background(p));
+}
+
+int		ft_fg(char **av)
+{
+	pid_t	p;
+
+	p = 0;
+	if (av[1])
 	{
-		//current job
+		if (av[1][0] == '%')
+		{
+			if (av[1][1] == '+' || av[1][1] == '%')
+				p = get_pid_n_plus_min('+', NULL);
+			else if (av[1][1] == '-')
+				p = get_pid_n_plus_min('-', NULL);
+			else if (is_all_digits(&av[1][1]))
+				p = get_pid_n_plus_min(-1, &(av[1][1]));
+			else
+				p = get_pid_str(&av[1][1]);
+		}
+		else
+			p = get_pid_str(av[1]);
 	}
-	return (ret);
+	else
+		p = get_pid_n_plus_min('+', NULL);
+	if (p == 0)
+		return (1);
+	return (putjob_forground(p));
 }
 
 int		ft_jobs_(char **av)
@@ -488,15 +577,17 @@ int		ft_jobs_(char **av)
 		i++;
 	}
 	p = g_var.proc;
+	p = p->next;
+	printf("jobs list:\n");
 	while (p)
 	{
-		printf("[%d]-[%d]\tdone[%d]\tstatus[%d]\t%s", p->index, p->ppid, p->done, p->status, p->str);
+		printf("[%d]-[%d]\tdone[%d]\tstatus[%d]\t%s\n", p->index, p->ppid, p->done, p->status, p->str);
 		p = p->next;
 	}
 	return (0);
 }
 
-int		ft_jobs(char **av, char **env)
+int		ft_jobs(char **av)
 {
 	int		i;
 	int		opt;
@@ -521,7 +612,6 @@ int		ft_jobs(char **av, char **env)
 	{
 		ft_jobs_(&av[i]);
 	}
-	(void)env;
 	return (0);
 }
 

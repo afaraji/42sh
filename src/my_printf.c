@@ -38,6 +38,12 @@ void	handle_percent(int fd, char **format, va_list args, int *i)
 		ft_putnbr_fd(nbr, fd);
 		*i += ft_ilen(nbr);
 	}
+	else if (**format == 'c')
+	{
+		nbr = va_arg(args, int);
+		ft_putchar_fd(nbr, fd);
+		*i += 1;
+	}
 }
 
 int		ft_print(int fd, char *format, ...)

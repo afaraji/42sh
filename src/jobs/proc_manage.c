@@ -30,7 +30,23 @@ char	*last_in_hist(void)
 	return (ft_strdup(""));
 }
 
-void	add_proc(pid_t pid)
+char	give_current()
+{
+	t_proc	*p;
+
+	p = (g_var.proc)->next;
+	while (p)
+	{
+		if (p->c == '-')
+			p->c = ' ';
+		else if (p->c == '+')
+			p->c = '-';
+		p = p->next;
+	}
+	return ('+');
+}
+
+void	add_proc(pid_t pid, int status)
 {
 	t_proc	*node;
 
@@ -41,14 +57,15 @@ void	add_proc(pid_t pid)
 	node->next->ppid = pid;
 	node->next->index = node->index + 1;
 	node->next->done = 0;
-	node->next->status = -1;
+	node->next->status = status;
 	node->next->str = last_in_hist();
 	node->next->next = NULL;
-	ft_putstr("add proc func[");
-	ft_putnbr(node->next->index);
-	ft_putstr("] ");
-	ft_putnbr(pid);
-	ft_putstr("\n");
+	node->next->c = give_current();
+	// ft_putstr("--> add proc func[");
+	// ft_putnbr(node->next->index);
+	// ft_putstr("] ");
+	// ft_putnbr(pid);
+	// ft_putstr("\n");
 }
 
 void	delet_proc(pid_t pid)

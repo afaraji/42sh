@@ -41,5 +41,10 @@ void		reset_in_out(int set);
 int			exec_ast(t_pipe_seq *cmd, int bg);
 int			execute(t_and_or *cmd, int bg);
 int			exec_no_fork(t_pipe_seq *cmd, int bg);
+void		delet_proc(pid_t pid);
+int			job_control(t_and_or *cmd, int bg);
+int			ft_jobs(char **av);
+int			ft_bg(char **av);
+int			ft_fg(char **av);
 
 #endif
