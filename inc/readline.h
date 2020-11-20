@@ -165,5 +165,19 @@ int					get_home_path(char **str);
 char				**auto_completion_1(t_line *line);
 int					is_all_digits(char *s);
 void				init_vars(t_l **f_dirs_list, char **file_dir, t_l **node);
+char				*ctrl_r(t_terminal *term, t_hist **head, int mult_line);
+char				*ctrl_c_d(t_terminal *term, int mult_line);
+char				*bck_search(t_terminal *term, t_hist **head, int mult_line);
+void				back_search_1(t_terminal *term, t_hist **head, char **line,
+					int *indice);
+char				*bck_search_2(t_terminal *term, t_hist **head, char *line,
+					int mlt_line);
+char				*print_search(t_terminal *term, t_hist **head, int *indice);
+void				ft_put_line(char *line, t_terminal *term, t_hist **head);
+void				display_result(t_terminal *term, char *s, t_hist **head);
+void				check_second_entry(t_terminal *term, char *s);
+void				check_first_entry(t_terminal *term, t_hist **head);
+char				*incremental_search(t_terminal *term, t_hist **head,
+					int *indice);
 
 #endif

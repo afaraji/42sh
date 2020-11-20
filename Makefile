@@ -45,6 +45,8 @@ FILE_PARSE = append_and_verify.c ft_tokenize.c join_tokens.c reserved_words.c\
 
 FILE_JOBS = proc_manage.c signal.c jobs.c
 
+FILE_SEARCH = back_search_1.c back_search_2.c
+
 SRC_AST = $(foreach file,$(FILE_AST), ./src/ast/$(file))
 
 SRC_AUTOCMPLT = $(foreach file,$(FILE_AUTOCMPLT), ./src/autocomplete/$(file))
@@ -62,6 +64,8 @@ SRC_READLINE = $(foreach file,$(FILE_READLINE), ./src/readline/$(file))
 SRC_PARSE = $(foreach file,$(FILE_PARSE), ./src/parse/$(file))
 
 SRC_JOBS = $(foreach file,$(FILE_JOBS), ./src/jobs/$(file))
+
+SRC_SEARCH = $(foreach file,$(FILE_SEARCH), ./src/incremental_search/$(file))
 
 LIBFTA = ./libft/libft.a
 
@@ -87,24 +91,27 @@ OBJ_JOBS = $(SRC_JOBS:.c=.o)
 
 OBJ_PARSE = $(SRC_PARSE:.c=.o)
 
+OBJ_SEARCH = $(SRC_SEARCH:.c=.o)
+
 OBJ_READLINE = $(SRC_READLINE:.c=.o)
 
 all : msg $(NAME)
 
 $(NAME) : $(OBJ_SHL) $(OBJ_AST) $(OBJ_AUTOCMPLT) $(OBJ_BUILTINS) $(OBJ_JOBS)\
-		$(OBJ_EXEC) $(OBJ_FREE) $(OBJ_HIST) $(OBJ_PARSE) $(OBJ_READLINE)
-	$(MAKE) -C ./libft
+		$(OBJ_EXEC) $(OBJ_FREE) $(OBJ_HIST) $(OBJ_PARSE) $(OBJ_READLINE) \
+		$(OBJ_SEARCH)
+		$(MAKE) -C ./libft
 	printf "linking OBJ files... "
 	gcc $(FLAGS) $(OBJ_SHL) $(LIBFTA) $(OBJ_AST) $(OBJ_AUTOCMPLT) $(OBJ_JOBS)\
-		$(OBJ_BUILTINS) $(OBJ_EXEC) $(OBJ_FREE) $(OBJ_HIST) $(OBJ_PARSE)	\
-		$(OBJ_READLINE) -ltermcap -o $(NAME)
+		$(OBJ_BUILTINS) $(OBJ_EXEC) $(OBJ_FREE) $(OBJ_HIST) $(OBJ_PARSE) \
+		$(OBJ_SEARCH) $(OBJ_READLINE) -ltermcap -o $(NAME)
 	echo "done"
 
 clean :
 	printf "removing OBJ files ./src/\n"
 	/bin/rm -f $(OBJ_SHL) $(OBJ_AST) $(OBJ_AUTOCMPLT) $(OBJ_BUILTINS)		\
 		$(OBJ_EXEC) $(OBJ_FREE) $(OBJ_HIST) $(OBJ_PARSE) $(OBJ_READLINE)	\
-		$(OBJ_JOBS)
+		$(OBJ_JOBS) $(OBJ_SEARCH)
 	$(MAKE) -C ./libft/ clean
 
 fclean : clean
