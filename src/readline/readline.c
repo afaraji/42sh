@@ -36,7 +36,7 @@ int			get_current_row(void)
 	ch = 0;
 	i = 0;
 	write(1, "\033[6n", 4);
-	while (ch != 'R')
+	while (i < 30 && ch != 'R')
 	{
 		read(0, &ch, 1);
 		buf[i] = ch;

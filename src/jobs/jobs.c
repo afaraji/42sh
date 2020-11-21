@@ -184,7 +184,7 @@ int		exec_ast_fg(t_pipe_seq *cmd)
 		fprintf(ttp, "------5----[%d]\n", ret);
 		fprintf(ttp, "--6---- returned from wait [%x]\n", status);
 		update_proc(child, status);
-		ret = tcsetpgrp (STDIN, getpid()); // dont forget return value !!!
+		ret = tcsetpgrp (STDIN, g_var.proc->ppid); // dont forget return value !!!
 		ft_set_attr(0);
 		exit_status(status);
 		fprintf(ttp, "--7---- ret_tcset[%d]\n", ret);
@@ -235,8 +235,8 @@ int		exec_ast_bg(t_pipe_seq *cmd)
 	{
 		if (waitpid(child, &status, WUNTRACED | WCONTINUED) < 0)
 			return (-2);
-		update_proc(child, status);
-		exit_status(status);
+		// update_proc(child, status);
+		// exit_status(status);
 		if (WIFEXITED(status))
 			return (WEXITSTATUS(status));
 		if (WIFSIGNALED(status))
@@ -258,7 +258,9 @@ int		execute_bg(t_and_or *cmd)
 		dp = cmd->dependent;
 		if (!dp || (dp == 1 && !ret) || (dp == 2 && ret))
 		{
+			fprintf(ttp, "-1--- BG - exec_ast_bg ---\n");
 			ret = exec_ast_bg(cmd->ast);
+			fprintf(ttp, "-2--- BG - exec_ast_bg ---\n");
 			exit_status(ret);
 		}
 		cmd = cmd->next;
@@ -272,8 +274,8 @@ int		job_control(t_and_or *cmd, int bg)
 	pid_t	pid;
 	// return (execute(cmd, bg)); //uncoment to go back to old execution
 	//************************************************************************
-	ttp = fopen("/dev/ttys005", "w");
-	ttc = fopen("/dev/ttys006", "w");
+	ttp = fopen("/dev/ttys002", "w");
+	ttc = fopen("/dev/ttys003", "w");
 	fprintf(ttp, "\033[H\033[2J");
 	fprintf(ttc, "\033[H\033[2J");
 	fprintf(ttp, "++++++++++++ debuging ++++++++++++\n");
@@ -292,7 +294,9 @@ int		job_control(t_and_or *cmd, int bg)
 			return (-1);//print error and exit instad ?!!
 		if (pid == 0)
 		{
-			pid = setsid();
+			pid = getpid();
+			setpgid(pid, pid);
+			tcsetpgrp (STDIN, g_var.proc->ppid);
 			signal(SIGINT, SIG_DFL);
 			signal(SIGQUIT, SIG_DFL);
 			signal(SIGTSTP, SIG_DFL);
@@ -304,8 +308,11 @@ int		job_control(t_and_or *cmd, int bg)
 		}
 		else
 		{
+			setpgid(pid, pid);
 			fprintf(ttp, "---adding to job list\n");
-			add_proc(pid, 0);
+			tcsetpgrp (STDIN, g_var.proc->ppid); // dont forget return value !!!
+			ft_set_attr(0);
+			update_proc(pid, 0);
 		}
 	}
 	else
@@ -334,31 +341,39 @@ t_proc	*get_proc(pid_t pid)
 int		putjob_forground(pid_t pid)
 {
 	int		status;
-	t_proc	*p;int ret;// i was here why he dosent waitpid
+	t_proc	*p;
 
 	if ((p = get_proc(pid)))
 	{
 		ft_print(STDOUT, "%s\n", p->str);
 	}
-	delet_proc(pid);
+	delet_proc(pid); // should i delete it ??
 	ft_set_attr(1);
 	tcsetpgrp(STDIN, pid);// dont forget return value !!!
 	kill(pid, SIGCONT);	// return value !!
-	if ((ret = waitpid(pid, &status, WUNTRACED | WCONTINUED)) < 0)
+	if (waitpid(pid, &status, WUNTRACED | WCONTINUED) < 0)
 	{
 		perror("error at waitpid:");
 		return (-2);
 	}
-	fprintf (ttp, "proc done ?? ---> pid[%d]-ret[%d]\n", pid, ret);
-	// update_proc(pid, status);
+	update_proc(pid, status);
+	if (WIFCONTINUED(status))
+	{
+		if (waitpid(pid, &status, WUNTRACED | WCONTINUED) < 0)
+		{
+			perror("error at waitpid:");
+			return (-2);
+		}
+	}
+	tcsetpgrp (STDIN, getpid());
+	ft_set_attr(0);
+	update_proc(pid, status);
 	if (WIFEXITED(status))
 		return (WEXITSTATUS(status));
 	if (WIFSIGNALED(status))
 		return (killed_by(WTERMSIG(status)));
 	if (WIFSTOPPED(status))
 		return (stopped_by(WSTOPSIG(status)));
-	tcsetpgrp (STDIN, getpid());
-	ft_set_attr(0);
 	return (0);
 }
 
