@@ -18,49 +18,98 @@
 #include "../../inc/ft_free.h"
 #include "../../inc/readline.h"
 
+FILE *ttyfd;
 void	open_vim()
 {
 	
 }
 
-void	fc_l()
+void	fc_l_print_1(t_hist *head)
 {
-	//list all history commands if less than 16 command
+	t_hist	*node;
 
-	//list 16 comands from history if they are more than 16
-
-
-	/* 
-	output : 
-	1      exit
-	2      fc -l
-	*/
+	node = head;
+	while (node)
+	{
+		ft_putnbr(node->index);
+		ft_putchar('\t');
+		ft_putstr(node->hist_str);
+		ft_putchar('\n');
+		node = node->next;
+	}
 }
 
-void	ft_fc(char **flag)
+void	fc_l_print_2(t_hist *head, int idx)
 {
-	if (flag[1] == NULL)
+	t_hist	*node;
+
+	node = head;
+	while (node->index < idx)
+		node = node->next;
+	while (node)
 	{
-		open_vim();//to edit the last commande in history
+		ft_putnbr(node->index);
+		ft_putchar('\t');
+		ft_putstr(node->hist_str);
+		ft_putchar('\n');
+		node = node->next;
 	}
-	else if ((ft_strequ(flag[1], "-l")))
+}
+
+int		fc_l(t_hist *head)
+{
+	t_hist	*node;
+	int		idx;
+
+	node = head;
+	while (node->next)
+		node = node->next;
+	if (node->index <= 16)
 	{
-		fc_l();
+		fc_l_print_1(head);
+		return (0);
 	}
-	else if ((ft_strequ(flag[1], "-r")))
+	else
 	{
-		fc_r();
+		idx = node->index - 16 + 1;
+		fc_l_print_2(head, idx);
+		return (0);
 	}
-	else if ((ft_strequ(flag[1], "-n")))
+	return (1);
+}
+
+int		ft_fc(char **flag)//return (0) on SUCCESS else return > 0
+{
+	t_hist *head;
+
+	head = g_var.history;
+	ttyfd = fopen("/dev/ttys004", "w");
+	if (head)
 	{
-		fc_n();
+		// if (flag[1] == NULL)
+		// {
+		// 	open_vim();//to edit the last commande in history
+		// }
+		if ((ft_strequ(flag[1], "-l")))
+		{
+			return (fc_l(head));
+		}
+		// else if ((ft_strequ(flag[1], "-r")))
+		// {
+		// 	fc_r();
+		// }
+		// else if ((ft_strequ(flag[1], "-n")))
+		// {
+		// 	fc_n();
+		// }
+		// else if ((ft_strequ(flag[1], "-e")))
+		// {
+		// 	fc_e();
+		// }
+		// else if ((ft_strequ(flag[1], "-s")))
+		// {
+		// 	fc_s();
+		// }
 	}
-	else if ((ft_strequ(flag[1], "-e")))
-	{
-		fc_e();
-	}
-	else if ((ft_strequ(flag[1], "-s")))
-	{
-		fc_s();
-	}
+	return (1);
 }

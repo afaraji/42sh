@@ -24,7 +24,7 @@ FILE_AUTOCMPLT = auto_complete.c auto_complete_2.c cmd_completion_1.c		\
 	print_completion.c
 
 FILE_BUILTINS = builtins.c change_pwd.c export.c ft_cd_1.c ft_cd_2.c		\
-	ft_cd_old.c  ft_echo.c  setenv.c  unalias.c unsetenv.c
+	ft_cd_old.c  ft_echo.c  setenv.c  unalias.c unsetenv.c ft_fc.c
 
 FILE_EXEC = do_assignement.c do_sufix_prefix.c exec.c exec_nofork.c			\
 	exit_status.c get_cmdargs.c get_cmdpath.c io_redirect.c io_redirect_aggr.c\

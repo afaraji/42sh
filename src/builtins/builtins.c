@@ -92,6 +92,8 @@ int		builtins_2(char *cmd, char **av)
 		return (ft_fg(av));
 	else if (ft_strcmp(cmd, "bg") == 0)
 		return (ft_bg(av));
+	else if (ft_strcmp(cmd, "fc") == 0)
+		return (ft_fc(av));
 	if (ft_strcmp(cmd, "test") == 0)
 	{
 		ft_print(1,"buitin [test] not implimented yet.\n");
