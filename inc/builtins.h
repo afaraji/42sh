@@ -14,6 +14,8 @@
 # define BUILTINS_H
 # include "ft_21sh.h"
 
+# define FLAGS "lenrs"
+
 int		get_next_line(const int fd, char **line);
 int		ft_cd(char *flag, char **env);
 int		ft_cd_1(char *flag, char **env);
