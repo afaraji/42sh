@@ -15,6 +15,7 @@
 # include "ft_21sh.h"
 
 # define FLAGS "lenrs"
+# define FLGSIZE 6
 
 int		get_next_line(const int fd, char **line);
 int		ft_cd(char *flag, char **env);
