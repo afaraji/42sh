@@ -114,10 +114,95 @@ t_hist	*reverse_list(t_hist *list)//not revers !!!!!
 	}
 }
 
-int		get_index_hist(char *s, int l)
+int		verify_index(int index)
 {
-	if (is_all_digits(s) || (s[0] == '-' && is_all_digits(&s[1])))
-		return (ft_atoi(s));
+	t_hist	*node;
+
+	node = g_var.history;
+	while (node)
+	{
+		if (index == node->index)
+			return (index);
+		node = node->next;
+	}
+	return (0);
+}
+
+int		get_str_index(char *s)
+{
+	int		len;
+	t_hist	*node;
+
+	len = ft_strlen(s);
+	node = g_var.history;
+	while (node->next)
+		node = node->next;
+	while (node)
+	{
+		if (!ft_strncmp(s, node->hist_str, len))
+			return (node->index);
+		node = node->prec;
+	}
+	return (0);
+}
+
+int		get_last_hist(void)
+{
+	t_hist	*node;
+
+	node = g_var.history;
+	while (node->next)
+		node = node->next;
+	return (node->index);
+}
+
+int		get_index_hist_first(char *s, int l)
+{
+	int		index;
+
+	if (s)
+	{
+		if (is_all_digits(s))
+			index = verify_index(ft_atoi(s));
+		else if (s[0] == '-' && is_all_digits(&s[1]))
+		{
+			index = get_last_hist() + ft_atoi(s) + 1;
+			index = (index > 0) ? index : g_var.history->index;
+		}
+		else
+			index = get_str_index(s);
+	}
+	else if (l)
+	{
+		index = get_last_hist();
+		index = (index <= 16) ? g_var.history->index : index - 15;
+	}
+	else
+		index = get_last_hist();
+	return (index);
+}
+
+int		get_index_hist_last(char *s, int l, int first_index)
+{
+	int		index;
+
+	if (s)
+	{
+		if (is_all_digits(s))
+			index = verify_index(ft_atoi(s));
+		else if (s[0] == '-' && is_all_digits(&s[1]))// ??!! was verifying this
+		{
+			index = get_last_hist() + ft_atoi(s) + 1;
+			index = (index > 0) ? index : g_var.history->index;
+		}
+		else
+			index = get_str_index(s);
+	}
+	else if (l)
+		index = get_last_hist();
+	else
+		index = first_index;
+	return (index);
 }
 
 t_hist	*get_fc_list(char *first, char *last, int r, int l)
@@ -126,10 +211,10 @@ t_hist	*get_fc_list(char *first, char *last, int r, int l)
 	int		first_index;
 	int		last_index;
 
-	first_index = get_index_hist(0, first, l);
-	last_index = get_index_hist(1, last, l);
-	if (r)
-		return (reverse_list(list));
+	first_index = get_index_hist_first(first, l);
+	last_index = get_index_hist_last(last, l, first_index);
+	if (!first_index || !last_index)
+		return (NULL);
 	return (list);
 }
 
@@ -183,6 +268,8 @@ int		ft_fc(char **av)
 	char	*first;
 	char	*last;
 
+	if (g_var.history == NULL)
+		return (-1);
 	i = get_opt_av(opt, av, &editor);
 	if (i == -1)
 		return (i);
