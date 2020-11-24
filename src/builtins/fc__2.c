@@ -89,43 +89,18 @@ int		get_opt_av(int opt[5], char **av, char **editor)
 	return (i);
 }
 
-t_hist	*reverse_list(t_hist *list)//not revers !!!!!
-{
-	t_hist	*node;
-
-	node = list;
-	if (reverse == 0)
-	{
-		while (node)
-		{
-			printf("%s", node->hist_str);
-			node = node->next;
-		}
-	}
-	else
-	{
-		while (node->next)
-			node = node->next;
-		while (node)
-		{
-			printf("%s", node->hist_str);
-			node = node->prec;
-		}
-	}
-}
-
 int		verify_index(int index)
 {
 	t_hist	*node;
 
 	node = g_var.history;
-	while (node)
+	while (node->next)
 	{
 		if (index == node->index)
 			return (index);
 		node = node->next;
 	}
-	return (0);
+	return (node->index);
 }
 
 int		get_str_index(char *s)
@@ -190,7 +165,7 @@ int		get_index_hist_last(char *s, int l, int first_index)
 	{
 		if (is_all_digits(s))
 			index = verify_index(ft_atoi(s));
-		else if (s[0] == '-' && is_all_digits(&s[1]))// ??!! was verifying this
+		else if (s[0] == '-' && is_all_digits(&s[1]))
 		{
 			index = get_last_hist() + ft_atoi(s) + 1;
 			index = (index > 0) ? index : g_var.history->index;
@@ -205,59 +180,124 @@ int		get_index_hist_last(char *s, int l, int first_index)
 	return (index);
 }
 
-t_hist	*get_fc_list(char *first, char *last, int r, int l)
+t_hist	*get_fc_list_2(t_hist *start, t_hist *end, int reverse)
 {
 	t_hist	*list;
-	int		first_index;
-	int		last_index;
+	t_hist	*node;
 
-	first_index = get_index_hist_first(first, l);
-	last_index = get_index_hist_last(last, l, first_index);
-	if (!first_index || !last_index)
-		return (NULL);
+	list = NULL;
+	while (start && start != end)
+	{
+		if (!list)
+		{
+			list = get_his_node(start->hist_str, NULL, start->index);
+			node = list;
+		}
+		else
+		{
+			node->next = get_his_node(start->hist_str, node, start->index);
+			node = node->next;
+		}
+		start = (reverse == 0) ? start->next : start->prec;
+	}
 	return (list);
 }
 
-int		fc_print_list(t_hist *list, int n)
+t_hist	*get_hist_node(int index)
 {
+	t_hist	*node;
+
+	node = g_var.history;
+	while (node)
+	{
+		if (node->index == index)
+			return (node);
+		node = node->next;
+	}
+	return (NULL);
+}
+
+t_hist	*get_fc_list(char *first_s, char *last_s, int l)
+{
+	int		first;
+	int		last;
+	int		reverse;
+	t_hist	*start;
+	t_hist	*end;
+
+	first = get_index_hist_first(first_s, l);
+	last = get_index_hist_last(last_s, l, first);
+	if (!first || !last)
+		return (NULL);
+	// reverse = ((first < last && r == 0) || (first > last && r == 1)) ? 0 : 1;
+	start = get_hist_node(first);
+	end = get_hist_node(last);
+	if (first < last)
+		return (get_fc_list_2(start, end, 0));
+	return (get_fc_list_2(start, end, 1));
+}
+
+/*
+**	if (first < last) ok		|	if (r == 0) ok
+**	if (first > last) reverse	|	if (r == 1) reverse
+*/
+
+int		fc_print_list(t_hist *list, int n, int r)
+{
+	t_hist	*node;
+
+	node = list;
+	while (r && node->next)
+		node = node->next;
 	if (n)
 	{
-		while (list)
+		while (node)
 		{
-			ft_print(STDOUT, "\t\t%s\n", list->hist_str);
-			list = list->next;
+			ft_print(STDOUT, "\t\t%s\n", node->hist_str);
+			node = (r) ? node->prec : node->next;
 		}
 	}
 	else
 	{
-		while (list)
+		while (node)
 		{
-			ft_print(STDOUT, "%d\t%s\n", list->index, list->hist_str);
-			list = list->next;
+			ft_print(STDOUT, "%d\t%s\n", node->index, node->hist_str);
+			node = (r) ? node->prec : node->next;
 		}
 	}
 	return (0);
 }
 
-int		fc_exec(t_hist *list, char *editor)
+int		fc_exec(t_hist *list, char *editor, int r)
 {
-	//
+	t_hist	*node;
+//	stoped here need to test this shit and if it prints good
+//	adress -S or continue to output to the file and exec then go back -s ?
+	node = list;
+	while (r && node->next)
+		node = node->next;
+	ft_print(STDOUT, "===== %s ====\n", editor);
+	while (node)
+	{
+		ft_print(STDOUT, "\t\t%s\n", node->hist_str);
+		node = (r) ? node->prec : node->next;
+	}
 }
 
 int		ft_fc_2(char *f, char *l, int opt[5], char *e)
 {
 	t_hist	*list;
 
-	list = get_fc_list(f, l, opt[R_OPT], opt[L_OPT]);
+	list = get_fc_list(f, l, opt[L_OPT]);
 	if (list == NULL)
 	{
 		ft_print(STDOUT, "fc: no events in that range\n");
 		return (1);
 	}
 	if (opt[L_OPT])
-		return (fc_print_list(list, opt[N_OPT]));
+		return (fc_print_list(list, opt[N_OPT], opt[R_OPT]));
 	else
-		return (fc_exec(list, e));
+		return (fc_exec(list, e, opt[R_OPT]));
 }
 
 int		ft_fc(char **av)
