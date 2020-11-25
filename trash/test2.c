@@ -54,19 +54,29 @@
 // 	}
 // }
 
-int		main(int ac, char **av)
-{
-	int	sleep_time = 0;
-	int	ret = 0;
+// int		main(int ac, char **av)
+// {
+// 	int	sleep_time = 0;
+// 	int	ret = 0;
 
-	if (ac != 3)
-	{
-		printf("usage: ./a.out [sleep in sec] [exit value]\n");
-		return (-1);
-	}
-	sleep_time = atoi(av[1]);
-	ret = atoi(av[2]);
-	sleep(sleep_time);
-	av[10000] = "str";
-	return (ret);
+// 	if (ac != 3)
+// 	{
+// 		printf("usage: ./a.out [sleep in sec] [exit value]\n");
+// 		return (-1);
+// 	}
+// 	sleep_time = atoi(av[1]);
+// 	ret = atoi(av[2]);
+// 	sleep(sleep_time);
+// 	av[10000] = "str";
+// 	return (ret);
+// }
+
+int main()
+{
+	char *s;
+
+	printf("sigfault inc.\n");
+	for (int i = 0; ; i++)
+		s[i] = 0;
+	return (0);
 }

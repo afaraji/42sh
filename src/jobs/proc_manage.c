@@ -46,7 +46,7 @@ char	give_current()
 	return ('+');
 }
 
-void	add_proc(pid_t pid, int status)
+t_proc	*add_proc(pid_t pid, int status)
 {
 	t_proc	*node;
 
@@ -66,6 +66,7 @@ void	add_proc(pid_t pid, int status)
 	// ft_putstr("] ");
 	// ft_putnbr(pid);
 	// ft_putstr("\n");
+	return (node->next);
 }
 
 void	delet_proc(pid_t pid)
