@@ -18,270 +18,314 @@
 #include "../../inc/ft_free.h"
 #include "../../inc/readline.h"
 
-FILE *ttyfd;
+#define S_OPT	0	//s
+#define L_OPT	1	//l
+#define N_OPT	2	//n
+#define R_OPT	3	//r
+#define E_OPT	4	//e
 
-void	prit_to_file(t_hist *head)
-{
-	int		fd;
-	t_hist	*node;
-
-	if ((fd = open("/tmp/tmp_file", O_RDONLY | O_CREAT, 0600)) == -1)
-	{
-		ft_print(STDERR, "couldn't create nor tmp_file.\n");
-		return (NULL);
-	}
-	node = head;
-	while (node)
-	{
-		ft_print(fd, "%s\n", node->hist_str);
-		node = node->next;
-	}
-	close(fd);
-}
-
-// void	open_with_editor()
-// we were here working on opening file for read.
-
-void	fc_l_print_1(t_hist *head)
-{
-	t_hist	*node;
-
-	node = head;
-	while (node)
-	{
-		ft_putnbr(node->index);
-		ft_putchar('\t');
-		ft_putstr(node->hist_str);
-		ft_putchar('\n');
-		node = node->next;
-	}
-}
-
-void	fc_l_print_2(t_hist *head, int idx)
-{
-	t_hist	*node;
-
-	node = head;
-	while (node->index < idx)
-		node = node->next;
-	while (node)
-	{
-		ft_putnbr(node->index);
-		ft_putchar('\t');
-		ft_putstr(node->hist_str);
-		ft_putchar('\n');
-		node = node->next;
-	}
-}
-
-int		fc_l(t_hist *head)
-{
-	t_hist	*node;
-	int		idx;
-
-	node = head;
-	while (node->next)
-		node = node->next;
-	if (node->index <= 16)
-	{
-		fc_l_print_1(head);
-		return (0);
-	}
-	else
-	{
-		idx = node->index - 16 + 1;
-		fc_l_print_2(head, idx);
-		return (0);
-	}
-	return (1);
-}
-
-int		fc_error_1(void)
-{
-	ft_print(STDERR, "42sh: fc: history specification out of range\n");
-	return (0);
-}
-
-// char		*fc_error_2(void)
-// {
-// 	ft_print(STDERR, "42sh: fc: invalid option.\n");
-// 	ft_print(STDERR, "fc: usage: fc [-e ename] [-nlr] [first] [last] or fc -s [pat=rep] [cmd]\n");
-// 	return (NULL);
-// }
-int		flag_search(char c)
-{
-	int	i;
-
-	i = 0;
-	while (FLAGS[i] != '\0')
-	{
-		if (FLAGS[i] == c)
-			return (i);
-		i++;
-	}
-	return (-1);
-}
-
-int		flag_tab(char *tabl, char **flag, int *i, char **editor)
-{
-	int		j;
-	int		z;
-	int		found_e;
-
-	z = 1;
-	found_e = 0;
-	*editor = NULL;
-	while (flag[*i][z])
-	{
-		j = flag_search(flag[*i][z]);
-		if (j == -1)
-		{
-			ft_print(STDERR, "42sh: fc: %c:invalid option\n", flag[*i][z]);
-			ft_print(STDERR, "fc: usage: fc [-e ename] [-nlr] [first] [last] or fc -s [pat=rep] [cmd]\n");
-			return (0);
-		}
-		else
-		{
-			tabl[j] = flag[*i][z];
-			if (j == 1)
-				found_e = 1;
-		}
-		z++;
-	}
-	if (found_e)
-	{
-		if (flag[*i + 1])
-		{
-			(*i)++;
-			*editor = ft_strdup(flag[*i + 1]);
-		}
-		else
-		{
-			/*
-			**	bash: fc: -e: option requires an argument
-			**	fc: usage: fc [-e ename] [-nlr] [first] [last] or fc -s [pat=rep] [cmd]
-			*/
-		}
-	}
-	return (1);
-}
-
-int		get_flag_tab(char *tabl, char **flag, int *index)
+int		get_opt_str(int opt[5], char *str)
 {
 	int		i;
-	char	*editor;
 
 	i = 0;
-	while (i < (FLGSIZE - 1))
-		tabl[i++] = '0';
-	i = 1;
-	while (flag[i])
+	while (str[i])
 	{
-		if (flag[i][0] == '-' && flag[i][1] == '\0')
-			return (fc_error_1());
-		if (flag_tab(tabl, flag, &i, &editor) == 0)
+		if (str[i] == 's')
+			opt[S_OPT] = 1;
+		else if (str[i] == 'l')
+			opt[L_OPT] = 1;
+		else if (str[i] == 'n')
+			opt[N_OPT] = 1;
+		else if (str[i] == 'r')
+			opt[R_OPT] = 1;
+		else if (str[i] == 'e')
+			opt[E_OPT] = 1;
+		else
+		{
+			ft_print(STDERR, "fc: -%c: invalid option", str[i]);
 			return (0);
+		}
 		i++;
 	}
-	*index = i;
 	return (1);
 }
 
-int		get_first_last(char **flag, int idx, char **first, char **last)
+int		get_opt_av(int opt[5], char **av, char **editor)
 {
-	if (flag[idx] && flag[idx + 1] && flag[idx + 2])
-	{
-		ft_print(STDERR, "fc: too many arguments\n");
-		return (0);
-	}
-	else if (flag[idx] && flag[idx + 1])
-	{
-		*first = ft_strdup(flag[idx]);
-		*last = ft_strdup(flag[idx] + 1);
-	}
-	else if (flag[idx])
-	{
-		*first = ft_strdup(flag[idx]);
-		*last = ft_strdup(flag[idx]);
-	}
-	else
-	{
-		*first = NULL;
-		*last = NULL;
-	}
-	return (1);
-}
+	int		i;
 
-int		ft_fc(char **flag)//return (0) on SUCCESS else return > 0
-{
-	t_hist	*head;
-	char	table[FLGSIZE];
-	char	*first;
-	char	*last;
-	int		index;
-
-	ttyfd = fopen("/dev/ttys002", "w");
-	if (get_flag_tab(table, flag, &index) == 0)
-		return (1);
-	if (get_first_last(flag, index, &first, &last) == 0)
-		return (1);
-	
-	fprintf(ttyfd, "fst[%s] --- lst[%s]\n", first, last);
-	head = g_var.history;
-	if (head)
+	i = 1;
+	while (av[i] && av[i][0] == '-')
 	{
-		if (table[4] == 's')
+		if (av[i][1] == '\0')
 		{
-			fprintf(ttyfd, "----->done\n");
-			exec_last_cmd();
+			ft_print(STDERR, "shell: fc: history specification out of range");
+			return (-1);
 		}
-		else
-		{	
-			// i should have my list from (first to last)
-			if (table[0] == 'l')
+		if (is_all_digits(&av[i][1]))
+		{
+			i++;
+			break ;
+		}
+		if (get_opt_str(opt, &av[i][1]) == 0)
+			return (-1);
+		if (opt[E_OPT] == 1)
+		{
+			if (av[i + 1])
 			{
-				if (table[3] == 'r')
-					//reverse_list();
-				if (table[2] == 'n')
-				{
-					//supress_nbrs(); //print_output_without_numbers
-				}
-				else
-				{
-					// fc_l(head); // print with numbers
-				}
+				i++;
+				*editor = ft_strdup(av[i]);
+				opt[E_OPT] = 2;
 			}
 			else
 			{
-				if (table[3] == 'r')
-				{
-					//revers_list()
-				}
-				//print_to_file(list)
-				//open_with_editor("/tmp/tmp_file", table[1],editor)
-				
+				ft_print(STDERR, "shell: fc: -e: option requires an argument\n");
+				return (-1);
 			}
-			// else if (table[1] == 'e')
-			// {
-			// 	edit_exec_cmd();
-			// }
 		}
-		// else if ((ft_strequ(flag[1], "-r")))
-		// {
-		// 	reverse_output();
-		// }
-		// else if ((ft_strequ(flag[1], "-n")))
-		// {
-		// 	supress_nbrs();
-		// }
-		// else if ((ft_strequ(flag[1], "-e")))
-		// {
-		// 	set_editor();
-		// }
-		// else if ((ft_strequ(flag[1], "-s")))
-		// {
-		// 	exec_last_cmd();
-		// }
+		i++;
 	}
-	return (1);
+	return (i);
+}
+
+int		verify_index(int index)
+{
+	t_hist	*node;
+
+	node = g_var.history;
+	while (node->next)
+	{
+		if (index == node->index)
+			return (index);
+		node = node->next;
+	}
+	return (node->index);
+}
+
+int		get_str_index(char *s)
+{
+	int		len;
+	t_hist	*node;
+
+	len = ft_strlen(s);
+	node = g_var.history;
+	while (node->next)
+		node = node->next;
+	while (node)
+	{
+		if (!ft_strncmp(s, node->hist_str, len))
+			return (node->index);
+		node = node->prec;
+	}
+	return (0);
+}
+
+int		get_last_hist(void)
+{
+	t_hist	*node;
+
+	node = g_var.history;
+	while (node->next)
+		node = node->next;
+	return (node->index);
+}
+
+int		get_index_hist_first(char *s, int l)
+{
+	int		index;
+
+	if (s)
+	{
+		if (is_all_digits(s))
+			index = verify_index(ft_atoi(s));
+		else if (s[0] == '-' && is_all_digits(&s[1]))
+		{
+			index = get_last_hist() + ft_atoi(s) + 1;
+			index = (index > 0) ? index : g_var.history->index;
+		}
+		else
+			index = get_str_index(s);
+	}
+	else if (l)
+	{
+		index = get_last_hist();
+		index = (index <= 16) ? g_var.history->index : index - 15;
+	}
+	else
+		index = get_last_hist();
+	return (index);
+}
+
+int		get_index_hist_last(char *s, int l, int first_index)
+{
+	int		index;
+
+	if (s)
+	{
+		if (is_all_digits(s))
+			index = verify_index(ft_atoi(s));
+		else if (s[0] == '-' && is_all_digits(&s[1]))
+		{
+			index = get_last_hist() + ft_atoi(s) + 1;
+			index = (index > 0) ? index : g_var.history->index;
+		}
+		else
+			index = get_str_index(s);
+	}
+	else if (l)
+		index = get_last_hist();
+	else
+		index = first_index;
+	return (index);
+}
+
+t_hist	*get_fc_list_2(t_hist *start, t_hist *end, int reverse)
+{
+	t_hist	*list;
+	t_hist	*node;
+
+	list = NULL;
+	while (start && start != end)
+	{
+		if (!list)
+		{
+			list = get_his_node(start->hist_str, NULL, start->index);
+			node = list;
+		}
+		else
+		{
+			node->next = get_his_node(start->hist_str, node, start->index);
+			node = node->next;
+		}
+		start = (reverse == 0) ? start->next : start->prec;
+	}
+	return (list);
+}
+
+t_hist	*get_hist_node(int index)
+{
+	t_hist	*node;
+
+	node = g_var.history;
+	while (node)
+	{
+		if (node->index == index)
+			return (node);
+		node = node->next;
+	}
+	return (NULL);
+}
+
+t_hist	*get_fc_list(char *first_s, char *last_s, int l)
+{
+	int		first;
+	int		last;
+	// int		reverse;
+	t_hist	*start;
+	t_hist	*end;
+
+	first = get_index_hist_first(first_s, l);
+	last = get_index_hist_last(last_s, l, first);
+	if (!first || !last)
+		return (NULL);
+	// reverse = ((first < last && r == 0) || (first > last && r == 1)) ? 0 : 1;
+	start = get_hist_node(first);
+	end = get_hist_node(last);
+	if (first < last)
+		return (get_fc_list_2(start, end, 0));
+	return (get_fc_list_2(start, end, 1));
+}
+
+/*
+**	if (first < last) ok		|	if (r == 0) ok
+**	if (first > last) reverse	|	if (r == 1) reverse
+*/
+
+int		fc_print_list(t_hist *list, int n, int r)
+{
+	t_hist	*node;
+
+	node = list;
+	while (r && node->next)
+		node = node->next;
+	if (n)
+	{
+		while (node)
+		{
+			ft_print(STDOUT, "\t%s\n", node->hist_str);
+			node = (r) ? node->prec : node->next;
+		}
+	}
+	else
+	{
+		while (node)
+		{
+			ft_print(STDOUT, "%d\t%s\n", node->index, node->hist_str);
+			node = (r) ? node->prec : node->next;
+		}
+	}
+	return (0);
+}
+
+int		fc_exec(t_hist *list, char *editor, int r)
+{
+	t_hist	*node;
+//	stoped here need to test this shit and if it prints good
+//	adress -S or continue to output to the file and exec then go back -s ?
+	node = list;
+	while (r && node->next)
+		node = node->next;
+	ft_print(STDOUT, "===== %s ====\n", editor);
+	while (node)
+	{
+		ft_print(STDOUT, "%s\n", node->hist_str);
+		node = (r) ? node->prec : node->next;
+	}
+	return (0);
+}
+
+int		ft_fc_2(char *f, char *l, int opt[5], char *e)
+{
+	t_hist	*list;
+
+	list = get_fc_list(f, l, opt[L_OPT]);
+	if (list == NULL)
+	{
+		ft_print(STDOUT, "fc: no events in that range\n");
+		return (1);
+	}
+	if (opt[L_OPT])
+		return (fc_print_list(list, opt[N_OPT], opt[R_OPT]));
+	else
+		return (fc_exec(list, e, opt[R_OPT]));
+}
+
+int		ft_fc(char **av)
+{
+	int		i;
+	int		opt[5] = {0, 0, 0, 0, 0};	// s = 0, l = 1, n = 2, r = 3, e = 4;
+	char	*editor;
+	char	*first;
+	char	*last;
+
+	if (g_var.history == NULL)
+		return (-1);
+	i = get_opt_av(opt, av, &editor);
+	if (i == -1)
+		return (i);
+	if (opt[S_OPT])
+	{
+		// return (fc_do_s());
+		return (0);
+	}
+	if (av[i] && av[i + 1] && av[i + 2])
+	{
+		ft_print(STDERR, "shell: fc: too many args\n");
+		return (-2);
+	}
+	first = (av[i]) ? av[i] : NULL;
+	last = (av[i] && av[i + 1]) ? av[i + 1] : first;
+	i = ft_fc_2(first, last, opt, editor);
+	return (i);
 }
