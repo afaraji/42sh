@@ -94,6 +94,8 @@ int		verify_index(int index)
 	t_hist	*node;
 
 	node = g_var.history;
+	if (!node)
+		return (0);
 	while (node->next)
 	{
 		if (index == node->index)
@@ -110,6 +112,8 @@ int		get_str_index(char *s)
 
 	len = ft_strlen(s);
 	node = g_var.history;
+	if (!node)
+		return (0);
 	while (node->next)
 		node = node->next;
 	while (node)
@@ -126,18 +130,22 @@ int		get_last_hist(void)
 	t_hist	*node;
 
 	node = g_var.history;
+	if (!node)
+		return (0);
 	while (node->next)
 		node = node->next;
 	return (node->index);
 }
 
-char	*fc_history_remove(void)
+char	*fc_history_remove(void)//may cause leaks
 {
 	t_hist	*node;
 	t_hist	*prec;
 	char	*str;
 
 	node = g_var.history;
+	if (!node)
+		return (NULL);
 	while (node->next)
 		node = node->next;
 	prec = node->prec;
@@ -149,6 +157,9 @@ char	*fc_history_remove(void)
 	str = ft_strdup(node->hist_str);
 	ft_strdel(&(node->hist_str));
 	free(node);
+	if (node == g_var.history)
+		g_var.history = NULL;
+	node = NULL;
 	return (str);
 }
 
@@ -158,6 +169,11 @@ void	fc_history_add(char *s, int l)
 
 	if (l == 0)
 		return ;
+	if (g_var.history == NULL)
+	{
+		g_var.history = get_his_node(s, NULL, 1);
+		return ;
+	}
 	node = g_var.history;
 	while (node->next)
 		node = node->next;
@@ -188,7 +204,8 @@ int		get_index_hist_first(char *s, int l)
 	else if (l)
 	{
 		index = get_last_hist();
-		index = (index <= 16) ? g_var.history->index : index - 15;
+		if (g_var.history)
+			index = (index <= 16) ? g_var.history->index : index - 15;
 	}
 	else
 		index = get_last_hist();
@@ -363,8 +380,6 @@ int		ft_fc(char **av)
 	char	*first;
 	char	*last;
 
-	if (g_var.history == NULL)
-		return (-1);
 	i = get_opt_av(opt, av, &editor);
 	if (i == -1)
 		return (i);
