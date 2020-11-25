@@ -131,17 +131,55 @@ int		get_last_hist(void)
 	return (node->index);
 }
 
+char	*fc_history_remove(void)
+{
+	t_hist	*node;
+	t_hist	*prec;
+	char	*str;
+
+	node = g_var.history;
+	while (node->next)
+		node = node->next;
+	prec = node->prec;
+	if (prec)
+		prec->next = NULL;
+	node->prec = NULL;
+	node->next = NULL;
+	ft_strdel(&(node->s_chr));
+	str = ft_strdup(node->hist_str);
+	ft_strdel(&(node->hist_str));
+	free(node);
+	return (str);
+}
+
+void	fc_history_add(char *s, int l)
+{
+	t_hist	*node;
+
+	if (l == 0)
+		return ;
+	node = g_var.history;
+	while (node->next)
+		node = node->next;
+	if (node)
+		node->next = get_his_node(s, node, node->index + 1);
+	else
+		node = get_his_node(s, NULL, 1);
+}
+
 int		get_index_hist_first(char *s, int l)
 {
 	int		index;
+	char	*tmp;
 
+	tmp = fc_history_remove();// save
 	if (s)
 	{
 		if (is_all_digits(s))
 			index = verify_index(ft_atoi(s));
 		else if (s[0] == '-' && is_all_digits(&s[1]))
 		{
-			index = get_last_hist() + ft_atoi(s) + 1;
+			index = get_last_hist() + ft_atoi(s) + 1;// + 1 !!! may need to remove 1
 			index = (index > 0) ? index : g_var.history->index;
 		}
 		else
@@ -154,6 +192,7 @@ int		get_index_hist_first(char *s, int l)
 	}
 	else
 		index = get_last_hist();
+	fc_history_add(tmp, l);
 	return (index);
 }
 
@@ -174,7 +213,7 @@ int		get_index_hist_last(char *s, int l, int first_index)
 			index = get_str_index(s);
 	}
 	else if (l)
-		index = get_last_hist();
+		index = get_last_hist() - 1;
 	else
 		index = first_index;
 	return (index);
@@ -199,6 +238,13 @@ t_hist	*get_fc_list_2(t_hist *start, t_hist *end, int reverse)
 			node = node->next;
 		}
 		start = (reverse == 0) ? start->next : start->prec;
+	}
+	if (start && start == end)
+	{
+		if (!list)
+			list = get_his_node(start->hist_str, NULL, start->index);
+		else
+			node->next = get_his_node(start->hist_str, node, start->index);
 	}
 	return (list);
 }
@@ -225,13 +271,17 @@ t_hist	*get_fc_list(char *first_s, char *last_s, int l)
 	t_hist	*start;
 	t_hist	*end;
 
+	first = 0;
+	last = 0;
 	first = get_index_hist_first(first_s, l);
 	last = get_index_hist_last(last_s, l, first);
 	if (!first || !last)
 		return (NULL);
 	// reverse = ((first < last && r == 0) || (first > last && r == 1)) ? 0 : 1;
+	// ft_print(STDERR, "fisrts[%d] - last[%d]\n", first, last);
 	start = get_hist_node(first);
 	end = get_hist_node(last);
+	// ft_print(STDERR, "===> [%d:%s]-[%d:%s]\n",start->index, start->hist_str,end->index, end->hist_str);
 	if (first < last)
 		return (get_fc_list_2(start, end, 0));
 	return (get_fc_list_2(start, end, 1));
