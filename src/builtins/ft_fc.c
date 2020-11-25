@@ -213,9 +213,13 @@ int		get_index_hist_last(char *s, int l, int first_index)
 			index = get_str_index(s);
 	}
 	else if (l)
+	{
 		index = get_last_hist() - 1;
+	}
 	else
+	{
 		index = first_index;
+	}
 	return (index);
 }
 
@@ -375,7 +379,7 @@ int		ft_fc(char **av)
 		return (-2);
 	}
 	first = (av[i]) ? av[i] : NULL;
-	last = (av[i] && av[i + 1]) ? av[i + 1] : first;
+	last = (av[i] && av[i + 1]) ? av[i + 1] : (opt[L_OPT]) ? NULL : first;
 	i = ft_fc_2(first, last, opt, editor);
 	return (i);
 }
