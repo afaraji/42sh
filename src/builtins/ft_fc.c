@@ -64,10 +64,7 @@ int		get_opt_av(int opt[5], char **av, char **editor)
 			return (-1);
 		}
 		if (is_all_digits(&av[i][1]))
-		{
-			i++;
-			break ;
-		}
+			return (i);
 		if (get_opt_str(opt, &av[i][1]) == 0)
 			return (-1);
 		if (opt[E_OPT] == 1)
@@ -223,7 +220,7 @@ int		get_index_hist_last(char *s, int l, int first_index)
 			index = verify_index(ft_atoi(s));
 		else if (s[0] == '-' && is_all_digits(&s[1]))
 		{
-			index = get_last_hist() + ft_atoi(s) + 1;
+			index = get_last_hist() + ft_atoi(s); //+ 1;
 			index = (index > 0) ? index : g_var.history->index;
 		}
 		else
