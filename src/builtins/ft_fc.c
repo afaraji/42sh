@@ -51,16 +51,70 @@ int		get_opt_str(int opt[5], char *str)
 	return (1);
 }
 
+// int		get_opt_av(int opt[5], char **av, char **editor)
+// {
+// 	int		i;
+
+// 	i = 1;
+// 	while (av[i] && av[i][0] == '-')
+// 	{
+// 		if (av[i][1] == '\0')
+// 		{
+// 			ft_print(STDERR, "shell: fc: history specification out of range");
+// 			return (-1);
+// 		}
+// 		if (is_all_digits(&av[i][1]))
+// 			return (i);
+// 		if (get_opt_str(opt, &av[i][1]) == 0)
+// 			return (-1);
+// 		if (opt[E_OPT] == 1)
+// 		{
+// 			if (av[i + 1])
+// 			{
+// 				i++;
+// 				*editor = ft_strdup(av[i]);
+// 				opt[E_OPT] = 2;
+// 			}
+// 			else
+// 			{
+// 				ft_print(STDERR, "shell: fc: -e: option requires an argument\n");
+// 				return (-1);
+// 			}
+// 		}
+// 		i++;
+// 	}
+// 	return (i);
+// }
+
+int		get_opt_av_1(int opt[5], char **av, char **editor, int *i)
+{
+	if (av[*i + 1])
+	{
+		(*i)++;
+		*editor = ft_strdup(av[*i]);
+		opt[E_OPT] = 2;
+		return (0);
+	}
+	else
+	{
+		ft_print(STDERR, "shell: fc: -e: option requires an argument\n");
+		return (-1);
+	}
+}
+
 int		get_opt_av(int opt[5], char **av, char **editor)
 {
 	int		i;
 
+	i = 0;
+	while (i < 5)
+		opt[i++] = 0;
 	i = 1;
 	while (av[i] && av[i][0] == '-')
 	{
 		if (av[i][1] == '\0')
 		{
-			ft_print(STDERR, "shell: fc: history specification out of range");
+			ft_print(STDERR, "shell: fc: history specification out of range\n");
 			return (-1);
 		}
 		if (is_all_digits(&av[i][1]))
@@ -69,17 +123,8 @@ int		get_opt_av(int opt[5], char **av, char **editor)
 			return (-1);
 		if (opt[E_OPT] == 1)
 		{
-			if (av[i + 1])
-			{
-				i++;
-				*editor = ft_strdup(av[i]);
-				opt[E_OPT] = 2;
-			}
-			else
-			{
-				ft_print(STDERR, "shell: fc: -e: option requires an argument\n");
+			if (get_opt_av_1(opt, av, editor, &i) == -1)
 				return (-1);
-			}
 		}
 		i++;
 	}
@@ -180,6 +225,8 @@ void	fc_history_add(char *s, int l)
 		node = get_his_node(s, NULL, 1);
 }
 
+/********* need to be normed ***********/
+
 int		get_index_hist_first(char *s, int l)
 {
 	int		index;
@@ -210,6 +257,8 @@ int		get_index_hist_first(char *s, int l)
 	return (index);
 }
 
+/********* need to be normed ***********/
+
 int		get_index_hist_last(char *s, int l, int first_index)
 {
 	int		index;
@@ -237,7 +286,18 @@ int		get_index_hist_last(char *s, int l, int first_index)
 	return (index);
 }
 
-t_hist	*get_fc_list_2(t_hist *start, t_hist *end, int reverse)
+void	get_fc_list_2(t_hist *start, t_hist *end, t_hist **list, t_hist **node)
+{
+	if (start && start == end)
+	{
+		if (!(*list))
+			*list = get_his_node(start->hist_str, NULL, start->index);
+		else
+			(*node)->next = get_his_node(start->hist_str, *node, start->index);
+	}
+}
+
+t_hist	*get_fc_list_1(t_hist *start, t_hist *end, int reverse)
 {
 	t_hist	*list;
 	t_hist	*node;
@@ -257,13 +317,14 @@ t_hist	*get_fc_list_2(t_hist *start, t_hist *end, int reverse)
 		}
 		start = (reverse == 0) ? start->next : start->prec;
 	}
-	if (start && start == end)
-	{
-		if (!list)
-			list = get_his_node(start->hist_str, NULL, start->index);
-		else
-			node->next = get_his_node(start->hist_str, node, start->index);
-	}
+	get_fc_list_2(start, end, &list, &node);
+	// if (start && start == end)
+	// {
+	// 	if (!list)
+	// 		list = get_his_node(start->hist_str, NULL, start->index);
+	// 	else
+	// 		node->next = get_his_node(start->hist_str, node, start->index);
+	// }
 	return (list);
 }
 
@@ -285,9 +346,9 @@ t_hist	*get_fc_list(char *first_s, char *last_s, int l)
 {
 	int		first;
 	int		last;
-	// int		reverse;
 	t_hist	*start;
 	t_hist	*end;
+	// int		reverse;
 
 	first = 0;
 	last = 0;
@@ -301,8 +362,8 @@ t_hist	*get_fc_list(char *first_s, char *last_s, int l)
 	end = get_hist_node(last);
 	// ft_print(STDERR, "===> [%d:%s]-[%d:%s]\n",start->index, start->hist_str,end->index, end->hist_str);
 	if (first < last)
-		return (get_fc_list_2(start, end, 0));
-	return (get_fc_list_2(start, end, 1));
+		return (get_fc_list_1(start, end, 0));
+	return (get_fc_list_1(start, end, 1));
 }
 
 /*
@@ -372,7 +433,7 @@ int		ft_fc_2(char *f, char *l, int opt[5], char *e)
 int		ft_fc(char **av)
 {
 	int		i;
-	int		opt[5] = {0, 0, 0, 0, 0};	// s = 0, l = 1, n = 2, r = 3, e = 4;
+	int		opt[5];// s = 0, l = 1, n = 2, r = 3, e = 4;
 	char	*editor;
 	char	*first;
 	char	*last;
@@ -391,7 +452,8 @@ int		ft_fc(char **av)
 		return (-2);
 	}
 	first = (av[i]) ? av[i] : NULL;
-	last = (av[i] && av[i + 1]) ? av[i + 1] : (opt[L_OPT]) ? NULL : first;
+	last = (opt[L_OPT]) ? NULL : first;
+	last = (av[i] && av[i + 1]) ? av[i + 1] : last;
 	i = ft_fc_2(first, last, opt, editor);
 	return (i);
 }
