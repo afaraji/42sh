@@ -47,7 +47,7 @@ The shell maintains a table of jobs. Before every prompt for a command, the shel
 	After recording the child as a suspended job in the shell's table of jobs and
 	resetting SIGTTOU, the shell proceeds probably prompting for the next command.
 
-*	If the shell wishes to run the child in the background, then no waitpid( ) is
+	If the shell wishes to run the child in the background, then no waitpid( ) is
 	done and the terminal's process group remains that of the shell. The entire
 	child process group will be sent a SIGTTIN or SIGTTOU and become suspended if
 	any descendent attempts I/O on the terminal. If no attempt is made the child
@@ -321,7 +321,10 @@ int		exec_ast_bg_grp(t_pipe_seq *cmd)
 	{
 		fprintf(ttc, "########## 5 #######\n");
 		if (waitpid(child, &status, WUNTRACED | WCONTINUED) < 0)
+		{
+			ft_print(STDERR, "waitpid error < 0");
 			return (-2);
+		}
 		// update_proc(child, status);
 		// exit_status(status);
 		fprintf(ttc, "########## 6 #######\n");
@@ -364,7 +367,9 @@ int		execute_bg_grp(t_and_or *cmd)
 			}
 			cmd = cmd->next;
 		}
+		exit (ret);
 	}
+	update_proc(pid, 0, 1);
 	return (ret);
 }
 

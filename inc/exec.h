@@ -46,5 +46,6 @@ int			job_control(t_and_or *cmd, int bg);
 int			ft_jobs(char **av);
 int			ft_bg(char **av);
 int			ft_fg(char **av);
+int			update_proc(pid_t pid, int status, int bg);
 
 #endif

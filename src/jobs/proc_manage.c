@@ -93,15 +93,12 @@ void	delet_proc(pid_t pid)
 void	bg_jobs(void)
 {
 	t_proc	*proc;
+	int		pid;
+	int		status;
 
-	proc = g_var.proc;
-	while (proc)
+	pid = waitpid(-1, &status, WNOHANG | WUNTRACED);
+	if (pid > 0)
 	{
-		if (proc->done == 1)
-		{
-			ft_print(STDOUT, "\n[%d]\tDone\t\t%s\n", proc->index, proc->str);
-			delet_proc(proc->ppid);
-		}
-		proc = proc->next;
+		update_proc(pid, status, 0);
 	}
 }
