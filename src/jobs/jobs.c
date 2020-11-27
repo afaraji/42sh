@@ -222,35 +222,66 @@ int		exec_ast_bg(t_pipe_seq *cmd)
 {
 	int			child;
 	int			status;
+	int			parent;
 
 	if ((status = exec_no_fork(cmd, 0)) != -42)
 		return (status << 8);
 	status = 0;
+	fprintf(ttc, "########## 1 #######\n");
+	parent = getpid();
 	child = fork();
 	if (child == 0)
 	{
+		child = getpid();
+		fprintf(ttc, "########## 2 #######\n");
+		if (parent == g_var.proc->ppid)
+		{
+			fprintf(ttc, "########## 3 #######\n");
+			setpgid(child, child);
+		}
+		signal(SIGINT, SIG_DFL);
+		signal(SIGQUIT, SIG_DFL);
+		signal(SIGTSTP, SIG_DFL);
+		signal(SIGTTIN, SIG_DFL);
+		signal(SIGTTOU, SIG_DFL);
+		signal(SIGCHLD, SIG_DFL);
+		// ft_set_attr(1);
+		fprintf(ttc, "########## 4 #######\n");
 		exec_pipe(cmd);
+		return (127);
 	}
-	else
+	else if (parent != g_var.proc->ppid)
 	{
+		fprintf(ttc, "########## 5 #######\n");
 		if (waitpid(child, &status, WUNTRACED | WCONTINUED) < 0)
 			return (-2);
 		// update_proc(child, status);
 		// exit_status(status);
+		fprintf(ttc, "########## 6 #######\n");
 		if (WIFEXITED(status))
 			return (WEXITSTATUS(status));
 		if (WIFSIGNALED(status))
 			return (killed_by(WTERMSIG(status)));
 		if (WIFSTOPPED(status))
 			return (stopped_by(WSTOPSIG(status)));
+		return (-1);
 	}
-	return (status);
+	else
+	{
+		signal (SIGTTOU, SIG_IGN);
+		signal (SIGTTIN, SIG_IGN);
+		status = setpgid(child, child);
+		status = tcsetpgrp (STDIN, parent); // dont forget return value !!!
+		ft_set_attr(0);
+		update_proc(child, 0, 1);
+		return (0);
+	}
 }
 
 int		execute_bg(t_and_or *cmd)
 {
-	int dp;
-	int ret;
+	int	dp;
+	int	ret;
 
 	ret = 0;
 	while (cmd)
@@ -265,7 +296,76 @@ int		execute_bg(t_and_or *cmd)
 		}
 		cmd = cmd->next;
 	}
-	exit(ret);
+	return (ret);
+}
+
+
+int		exec_ast_bg_grp(t_pipe_seq *cmd)
+{
+	int			child;
+	int			status;
+	int			parent;
+
+	if ((status = exec_no_fork(cmd, 0)) != -42)
+		return (status << 8);
+	status = 0;
+	fprintf(ttc, "########## 1 #######\n");
+	parent = getpid();
+	child = fork();
+	if (child == 0)
+	{
+		exec_pipe(cmd);
+		exit (127);
+	}
+	else
+	{
+		fprintf(ttc, "########## 5 #######\n");
+		if (waitpid(child, &status, WUNTRACED | WCONTINUED) < 0)
+			return (-2);
+		// update_proc(child, status);
+		// exit_status(status);
+		fprintf(ttc, "########## 6 #######\n");
+		if (WIFEXITED(status))
+			return (WEXITSTATUS(status));
+		if (WIFSIGNALED(status))
+			return (killed_by(WTERMSIG(status)));
+		if (WIFSTOPPED(status))
+			return (stopped_by(WSTOPSIG(status)));
+	}
+	return (status);
+}
+
+int		execute_bg_grp(t_and_or *cmd)
+{
+	int	dp;
+	int	ret;
+	int	pid;
+
+	ret = 0;
+	pid = fork();
+	if (pid == 0)
+	{
+		setpgid(getpid(), getpid());
+		signal(SIGINT, SIG_DFL);
+		signal(SIGQUIT, SIG_DFL);
+		signal(SIGTSTP, SIG_DFL);
+		signal(SIGTTIN, SIG_DFL);
+		signal(SIGTTOU, SIG_DFL);
+		signal(SIGCHLD, SIG_DFL);
+		while (cmd)
+		{
+			dp = cmd->dependent;
+			if (!dp || (dp == 1 && !ret) || (dp == 2 && ret))
+			{
+				fprintf(ttc, "-11--- BG - exec_ast_bg ---\n");
+				ret = exec_ast_bg_grp(cmd->ast);
+				fprintf(ttc, "-22--- BG - exec_ast_bg ---\n");
+				exit_status(ret);
+			}
+			cmd = cmd->next;
+		}
+	}
+	return (ret);
 }
 
 int		job_control(t_and_or *cmd, int bg)
@@ -290,31 +390,10 @@ int		job_control(t_and_or *cmd, int bg)
 	if (bg)
 	{
 		fprintf(ttp, "---- lunching job in BG ---\n");
-		if ((pid = fork()) < 0)
-			return (-1);//print error and exit instad ?!!
-		if (pid == 0)// shouldn t fork here, 1st fork should be the 1st cmd and set it(1st cmd) as parent of grp
-		{
-			pid = getpid();
-			int ret = setpgid(pid, pid);
-			fprintf(ttc, "--1-- execute_BG ---[%d]\n", ret);
-			// ret = tcsetpgrp (STDIN, g_var.proc->ppid);
-			fprintf(ttc, "--2-- execute_BG ---[%d]\n", ret);
-			signal(SIGINT, SIG_DFL);
-			signal(SIGQUIT, SIG_DFL);
-			signal(SIGTSTP, SIG_DFL);
-			signal(SIGTTIN, SIG_DFL);
-			signal(SIGTTOU, SIG_DFL);
-			signal(SIGCHLD, SIG_DFL);
+		if (cmd->next == NULL)
 			execute_bg(cmd);
-		}
 		else
-		{
-			setpgid(pid, pid);
-			fprintf(ttp, "---adding to job list\n");
-			tcsetpgrp (STDIN, g_var.proc->ppid); // dont forget return value !!!
-			ft_set_attr(0);
-			update_proc(pid, 0, 1);
-		}
+			execute_bg_grp(cmd);
 	}
 	else
 	{
@@ -348,17 +427,22 @@ int		putjob_forground(pid_t pid)
 	{
 		ft_print(STDOUT, "%s\n", p->str);
 	}
+	kill(pid, SIGSTOP);
+	int ret = tcsetpgrp(STDIN, pid);// dont forget return value !!!
 	ft_set_attr(1);
-	tcsetpgrp(STDIN, pid);// dont forget return value !!!
 	kill(pid, SIGCONT);	// return value !!
-	if (waitpid(pid, &status, WUNTRACED | WCONTINUED) < 0)
+	fprintf(ttp, "+++111++++>>[%d]\n", ret);
+	if ((ret = waitpid(pid, &status, WUNTRACED | WCONTINUED)) < 0)
 	{
 		perror("error at waitpid:");
 		return (-2);
 	}
-	update_proc(pid, status, 0);
 	if (WIFCONTINUED(status))
 	{
+		// ret = tcsetpgrp(STDIN, pid);// dont forget return value !!!
+		fprintf(ttp, "+++222++++>>[%d]\n", ret);
+		// ft_set_attr(1);
+		update_proc(pid, status, 0);
 		if (waitpid(pid, &status, WUNTRACED | WCONTINUED) < 0)
 		{
 			perror("error at waitpid:");
@@ -386,7 +470,7 @@ int		putjob_background(pid_t pid)
 	status = 0;
 	kill(pid, SIGCONT);
 	pid = waitpid(pid, &status, WNOHANG | WUNTRACED);
-	update_proc(pid, status, 1);// change to 1 if causes problems
+	update_proc(pid, status, 0);
 	if ((p = get_proc(pid)))
 	{
 		ft_print(STDOUT, "--->[%d]%c %s &\n", p->index, p->c, p->str);
@@ -646,67 +730,13 @@ int		ft_jobs(char **av)
 	return (0);
 }
 
-// int		job_control(t_and_or *cmd, int bg)
-// {
-// 	int		status;
-// 	pid_t	pid;
-
-// 	pid = waitpid(-1, &status, WNOHANG | WUNTRACED);
-// 	if (pid > 0)
-// 	{
-// 		printf("pid[%d] has changed state to [%x]\n", pid, status);
-// 		update_proc(pid, status);
-// 	}
-// 	if ((pid = fork()) < 0)
-// 		return (-1);//print error and exit instad ?!!
-// 	if (pid == 0)
-// 	{
-// 		pid = setsid();
-// 		if (!bg)
-// 			tcsetpgrp (STDIN, pid); // dont forget return value !!!
-// 		signal (SIGINT, SIG_DFL);
-// 		signal (SIGQUIT, SIG_DFL);
-// 		signal (SIGTSTP, SIG_DFL);
-// 		signal (SIGTTIN, SIG_DFL);
-// 		signal (SIGTTOU, SIG_DFL);
-// 		signal (SIGCHLD, SIG_DFL);
-// 		ft_set_attr(1);
-// 		// exec cmd;
-// 	}
-// 	else
-// 	{
-// 		setpgid(pid, pid);
-// 		if (!bg)
-// 		{
-// 			signal (SIGTTOU, SIG_IGN);
-// 			signal (SIGTTIN, SIG_IGN);
-// 			if (waitpid(pid, &status, WUNTRACED | WCONTINUED) < 0)
-// 				return (-2);
-// 			// The shell determines that a stop was sent to the child by looking at the status value
-// 			update_proc(pid, status);
-// 			if (WIFEXITED(status))
-// 				return (WEXITSTATUS(status));
-// 			if (WIFSIGNALED(status))
-// 				return (killed_by(WTERMSIG(status)));
-// 			if (WIFSTOPPED(status))
-// 				return (stopped_by(WSTOPSIG(status)));
-// 			tcsetpgrp (STDIN, getpid()); // dont forget return value !!!
-// 			// add child as suspended process in process list
-// 		}
-// 		else
-// 		{
-// 			add_proc(pid);
-// 			ft_set_attr(0);
-// 		}
-// 	}
-// 	return (0);
-// }
 
 /*
+** fixed? |			problem description
 **	[NO ]	runing a job X in foreground --> ^Z --> bg X ===> dosent update status in jobs list
-**	[NO ]	runing bg job eg.(cmd &) ===> weird stuff happens
+**	[YES]	runing bg job eg.(cmd &) ===> weird stuff happens
 **	[NO ]	print format on jobs changing state and job output
 **	[NO ]	put multiple process to bg then use multiple time fg and/or bg (fg and bg should update proc list)
-**	[NO ]	shouldn t fork here, 1st fork should be the 1st cmd and set it(1st cmd) as parent of grp
+**	[YES]	shouldn t fork here, 1st fork should be the 1st cmd and set it(1st cmd) as parent of grp
 **	[NO ]	'===>' doesnt show parse error
 */
