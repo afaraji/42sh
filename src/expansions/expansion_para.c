@@ -76,7 +76,7 @@ int		sep_count(char **word)
 				return (0);
 			if (dollared((*word) + i + 2))
 				dollar_expansion(word);
-			//set_local_variable(word, i + 1);
+			set_local_variable(word, i + 1);
 			return (-1);
 		}
 	}

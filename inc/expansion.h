@@ -21,7 +21,7 @@ char			*ft_iitoa(long long int n);
 int				expans_arithmetic(char **argument, int start, int end);
 int				hash_param(char **word);
 int				param_is_set(char *var);
-// void					set_local_variable(char **word, int i);
+void			set_local_variable(char **word, int i);
 int				operation(char **operate, char **word, int check);
 int				normal_case(char **word);
 int				sep_count(char **word);
