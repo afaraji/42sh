@@ -21,7 +21,7 @@ char	*get_trim_str(char *word, int *percent_pos, char c)
 	while (word[i] && word[i] != c)
 		i++;
 	*percent_pos = i;
-	i += word[i + 1] == c ? 1 : 0;
+	i = word[i + 1] == c ? i + 1 : i;
 	result = ft_strdup(word + i + 1);
 	return (result);
 }
@@ -86,6 +86,7 @@ int		percent_para(char **word)
 	percent_pos = 0;
 	trim = get_trim_str(*word, &percent_pos, '%');
 	triming_end(word, trim, percent_pos, ft_strlen(trim) - 1);
+	ft_strdel(&trim);
 	return (0);
 }
 
@@ -97,5 +98,6 @@ int		hash_separator_para(char **word)
 	hash_pos = 0;
 	trim = get_trim_str(*word, &hash_pos, '#');
 	triming_start(word, trim, hash_pos);
+	ft_strdel(&trim);
 	return (0);
 }
