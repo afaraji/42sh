@@ -92,7 +92,7 @@ void	delet_proc(pid_t pid)
 
 void	bg_jobs(void)
 {
-	t_proc	*proc;
+	// t_proc	*proc;
 	int		pid;
 	int		status;
 

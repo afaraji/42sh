@@ -73,4 +73,6 @@ void		ft_signal(void)
 	signal(SIGINT, &signal_callback_handler);
 	// signal(SIGCHLD, &child_handler);
 	signal(SIGCHLD, SIG_DFL);
+	signal(SIGTTOU, SIG_IGN);
+	signal(SIGTTIN, SIG_IGN);
 }
