@@ -72,13 +72,13 @@ int			main(int ac, char **av, char **env)
 		if (ft_set_attr(0))
 			return (1);
 		line = readline(0);
-		printf(" \n %d %s\n", expansions_dispatcher(&line), line);
-		// g_var.errno = 0;
-		// bg_jobs();
-		// if (ft_strcmp(line, "") && (ret = main_parse(trim_cmd(line))))
-		// 	exit_status(ret << 8);
-		// if (line)
-		// 	ft_strdel(&line);
+		// printf(" \n %d %s\n", expansions_dispatcher(&line), line);
+		g_var.errno = 0;
+		bg_jobs();
+		if (ft_strcmp(line, "") && (ret = main_parse(trim_cmd(line))))
+			exit_status(ret << 8);
+		if (line)
+			ft_strdel(&line);
 	}
 	(void)ac;
 	(void)av;
