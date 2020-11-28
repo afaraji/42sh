@@ -50,5 +50,6 @@ char			*ft_strjoin_free(char *s1, char *s2, int p);
 void			logical_operator(char *operator, char *str);
 int				logical_do_op(long long int first_operand,
 							long long int second_operand, char operator);
+int				dollared(char *word);
 
 #endif

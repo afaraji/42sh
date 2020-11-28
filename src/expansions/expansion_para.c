@@ -49,6 +49,11 @@ int		normal_case(char **word)
 
 	operate = ft_strsplit(*word, ':');
 	check = param_is_set(operate[0]);
+	if (dollared(operate[0]))
+		return (1);
+	if (operate[1] && dollared(operate[1]))
+		dollar_expansion(&(operate[1]));
+	ft_putstr(operate[1]);
 	ret = operate[1] ? operation(operate, word, check) : 1;
 	free_tab(operate);
 	return (ret);
@@ -67,6 +72,10 @@ int		sep_count(char **word)
 			separator_count++;
 		else if ((*word)[i] == ':' && (*word)[i + 1] == '=')
 		{
+			if (dollared(ft_strsub((*word), 0, i)))
+				return (0);
+			if (dollared((*word) + i + 2))
+				dollar_expansion(word);
 			//set_local_variable(word, i + 1);
 			return (-1);
 		}
@@ -91,6 +100,8 @@ int		expans_para(char **word)
 			(ft_strchr(*word, '#') || ft_strstr(*word, "##")))
 		return (hash_separator_para(word));
 	else if (sep > 1)
+		return (1);
+	else if (sep == 0 && dollared(*word))
 		return (1);
 	else if (sep == 0 && (*word)[0] != '#' && !ft_strchr(*word, '#'))
 	{

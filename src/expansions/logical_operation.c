@@ -12,6 +12,17 @@
 
 #include "../../inc/expansion.h"
 
+int		dollared(char *word)
+{
+	int		i;
+
+	i = -1;
+	while(word[++i])
+		if (word[i] == '$')
+			return (1);
+	return (0);
+}
+
 void	logical_operator(char *operator, char *str)
 {
 	if (str[0] == '<' && str[1] != '=')

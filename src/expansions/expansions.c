@@ -22,8 +22,6 @@ int		check_parenth_close(char **argument, int *end, int i, char c)
 	depth = 0;
 	while ((*argument)[i])
 	{
-		if ((*argument)[i] == '$')
-			return (-1);
 		if ((*argument)[i] == c)
 			depth++;
 		i++;
