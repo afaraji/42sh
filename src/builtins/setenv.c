@@ -36,7 +36,7 @@ int		ft_set_alnum(char **flag)
 	return (0);
 }
 
-int		ft_set_node(char **flag)
+int		ft_set_node(char **flag, int env)
 {
 	t_variable	*node;
 
@@ -45,7 +45,7 @@ int		ft_set_node(char **flag)
 	{
 		if (ft_strcmp(node->key, flag[1]) == 0)
 		{
-			node->env = 0;
+			node->env = env;
 			if (flag[2] == NULL)
 			{
 				free(node->value);
@@ -63,7 +63,7 @@ int		ft_set_node(char **flag)
 	return (1);
 }
 
-void	ft_set_lastnode(char **flag)
+void	ft_set_lastnode(char **flag, int env)
 {
 	t_variable	*node;
 
@@ -73,12 +73,22 @@ void	ft_set_lastnode(char **flag)
 	node->next = (t_variable *)malloc(sizeof(t_variable));
 	node = node->next;
 	node->key = ft_strdup(flag[1]);
-	node->env = 0;
+	node->env = env;
 	if (flag[2] == NULL)
 		node->value = ft_strdup("");
 	else
 		node->value = ft_strdup(flag[2]);
 	node->next = NULL;
+}
+
+int		ft_set_var_env(char **av, int env)
+{
+	if (env == 2)
+		return (0);
+	if (ft_set_node(av, env) == 0)
+		return (1);
+	ft_set_lastnode(av, env);
+	return (1);
 }
 
 int		ft_setenv(char **flag, char **env)
@@ -102,9 +112,8 @@ int		ft_setenv(char **flag, char **env)
 			}
 			else if (ft_set_alnum(flag) == 1)
 				return (1);
-			else if (ft_set_node(flag) == 0)
-				return (1);
-			ft_set_lastnode(flag);
+			else
+				ft_set_var_env(flag, 0);
 		}
 	}
 	return (0);
