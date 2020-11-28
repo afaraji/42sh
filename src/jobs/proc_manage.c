@@ -96,9 +96,9 @@ void	bg_jobs(void)
 	int		pid;
 	int		status;
 
-	pid = waitpid(-1, &status, WNOHANG | WUNTRACED);
-	if (pid > 0)
+	while ((pid = waitpid(-1, &status, WNOHANG | WUNTRACED)) > 0)
 	{
+		printf("updating proc [%d]-status[%d]\n", pid, status);
 		update_proc(pid, status, 0);
 	}
 }

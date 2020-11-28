@@ -151,12 +151,14 @@ int		exec_ast_new(t_pipe_seq *cmd, int pgid)
 			setpgid(child, pgid);
 			close(pfd[1]);
 			dup2(pfd[0], STDIN);
+			close(pfd[0]);
 			exec_ast_new(cmd->right, pgid);
 		}
 		else
 		{
 			close(pfd[0]);
 			dup2(pfd[1], STDOUT);
+			close(pfd[1]);
 			exit(exec_simple_cmd(cmd->left));
 		}
 	}
@@ -199,7 +201,8 @@ int		job_control(t_and_or *cmd, int bg)
 				setpgid(pgid, pgid);
 				tcsetpgrp(STDIN, pgid);
 				waitpid(pgid, &ret, WUNTRACED | WCONTINUED);
-				exit_status(ret);// or WEXITSTATUS(ret);
+				exit_status(ret);
+				ret = WEXITSTATUS(ret);
 				// if (WIFEXITED(ret))
 				// 	return (WEXITSTATUS(ret));
 				// if (WIFSIGNALED(ret))
