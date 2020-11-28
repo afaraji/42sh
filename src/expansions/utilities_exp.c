@@ -18,18 +18,19 @@ char	*var_get_value(char *var, int typ)
 	char    **env;
 	char    *tmp;
 
-	i = 0;
+	i = -1;
 	env = env_to_tab(g_var.var, typ);
-	while(env[i++])
+	while(env[++i])
 	{
 		if (!ft_strncmp(var, env[i], ft_strlen(var)))
 		{
 			tmp = (env[i] + ft_strlen(var) + 1);
 			free_tab(env);
 			return (tmp);
-		}	   
+		}
 	}
 	tmp = "";
+	free_tab(env);
 	return (tmp);
 }
 

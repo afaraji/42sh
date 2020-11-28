@@ -20,14 +20,16 @@ int		check_parenth_close(char **argument, int *end, int i, char c)
 	l = c == '(' ? i - 2 : i - 1;
 	i = l;
 	depth = 0;
-	while ((*argument)[i] && (*argument)[i] != '$')
+	while ((*argument)[i])
 	{
+		if ((*argument)[i] == '$')
+			return (-1);
 		if ((*argument)[i] == c)
 			depth++;
 		i++;
 	}
 	i = l;
-	while ((*argument)[i] && (*argument)[i] != '$' && depth != 0)
+	while ((*argument)[i] && depth != 0)
 	{
 		if ((*argument)[i] == ((c == '(') ? ')' : '}'))
 			depth--;
