@@ -71,12 +71,22 @@
 // 	return (ret);
 // }
 
-int main()
+int		if_system_failure(int ret, int failure_value)
 {
-	char *s;
+	extern const char *const	sys_errlist[];
+	extern int					errno;
 
-	printf("sigfault inc.\n");
-	for (int i = 0; ; i++)
-		s[i] = 0;
+	if (ret != failure_value)
+		return (0);
+	printf("System call failure: %s\n", sys_errlist[errno]);
+	exit(42);
+}
+
+int		main(void)
+{
+	char	*s;
+	int		i;
+
+	if_system_failure(wait(&i), -1);
 	return (0);
 }
