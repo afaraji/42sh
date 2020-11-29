@@ -430,6 +430,35 @@ int		ft_fc_2(char *f, char *l, int opt[5], char *e)
 		return (fc_exec(list, e, opt[R_OPT]));
 }
 
+char	*find_and_replace(char *s, char *old, char *new)
+{
+	
+}
+
+int		fc_do_s(char **av, int i)
+{
+	char	*new;
+	char	*old;
+	int		first;
+	int		index;
+
+	if (av[i] && (index = is_assword(av[i])))
+	{
+		old = ft_strsub(av[i], 0, index - 1);
+		new = ft_strdup(&av[i][index]);
+		i++;
+	}
+	first = get_index_hist_first(av[i], 0);
+	// execute command with index=first, and replacing string old by new if it exist in command
+	char *tmp;
+	if (!first)
+		return (-1);
+	tmp = get_hist_node(first)->hist_str;
+	tmp = find_and_replace(tmp, old, new);
+	ft_print(STDOUT, "exec:[%s]\n", tmp);
+	return (0);
+}
+
 int		ft_fc(char **av)
 {
 	int		i;
@@ -443,8 +472,7 @@ int		ft_fc(char **av)
 		return (i);
 	if (opt[S_OPT])
 	{
-		// return (fc_do_s());
-		return (0);
+		return (fc_do_s(av, i));
 	}
 	if (av[i] && av[i + 1] && av[i + 2])
 	{
