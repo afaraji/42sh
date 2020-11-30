@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_replaceword.c                                            :+:      :+:    :+:   */
+/*   ft_replaceword.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sazouaka <sazouaka@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -18,30 +18,41 @@
 #include "../inc/ft_free.h"
 #include "../inc/readline.h"
 
+int		system_calls(char *func, int ret, int failure_value)
+{
+	extern const char *const	sys_errlist[];
+	extern int					errno;
+
+	if (ret != failure_value)
+		return (ret);
+	ft_print(STDERR, "System call failure: %s: %s\n", func, sys_errlist[errno]);
+	exit(42);
+}
+
 int		word_count(char *s, char *old)
 {
 	int	cnt;
 	int	i;
 	int	oldlen;
-  
+
 	cnt = 0;
 	i = 0;
 	oldlen = ft_strlen(old);
 	while (s[i] != '\0')
 	{
 		if (strstr(&(s[i]), old) == &s[i])
-		{ 
-			cnt++; 
-			i += oldlen - 1; 
-		} 
+		{
+			cnt++;
+			i += oldlen - 1;
+		}
 		i++;
 	}
 	return (cnt);
 }
 
 char	*ft_replaceword(char *s, char *old, char *new)
-{ 
-	char	*result; 
+{
+	char	*result;
 	int		i;
 	int		oldlen;
 	int		newlen;
