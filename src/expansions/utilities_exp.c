@@ -12,15 +12,15 @@
 
 #include "../../inc/expansion.h"
 
-char	*var_get_value(char *var, int typ)
+char			*var_get_value(char *var, int typ)
 {
-	int     i;
-	char    **env;
-	char    *tmp;
+	int		i;
+	char	**env;
+	char	*tmp;
 
 	i = -1;
 	env = env_to_tab(g_var.var, typ);
-	while(env[++i])
+	while (env[++i])
 	{
 		if (!ft_strncmp(var, env[i], ft_strlen(var)))
 		{
@@ -75,7 +75,7 @@ char			*ft_strjoin_free(char *s1, char *s2, int p)
 	return (joint);
 }
 
-char	*ft_strndup(const char *src, size_t n)
+char			*ft_strndup(const char *src, size_t n)
 {
 	char	*dup;
 	size_t	srclen;
@@ -93,7 +93,7 @@ char	*ft_strndup(const char *src, size_t n)
 		*dup = *src;
 		src++;
 		dup++;
-        n--;
+		n--;
 	}
 	*dup = '\0';
 	return (dupdup);

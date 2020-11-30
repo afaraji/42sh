@@ -20,7 +20,7 @@ int		check_parenth_close(char **argument, int *end, int i, char c)
 	l = c == '(' ? i - 2 : i - 1;
 	i = l;
 	depth = 0;
-	while ((*argument)[i])
+	while ((*argument)[i] && (*argument)[i] != '$')
 	{
 		if ((*argument)[i] == c)
 			depth++;
@@ -33,7 +33,12 @@ int		check_parenth_close(char **argument, int *end, int i, char c)
 			depth--;
 		i++;
 	}
-	return ((*end = i - 1) && !depth ? (c == '(' ? 1 : 2): -1);
+	if ((*end = i - 1) && !depth && c == '(')
+		return (1);
+	else if ((*end = i - 1) && !depth && c != '(')
+		return (2);
+	else
+		return (-1);
 }
 
 int		check_type(char **argument, int *end, int i)

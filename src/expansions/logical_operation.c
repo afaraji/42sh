@@ -17,7 +17,7 @@ int		dollared(char *word)
 	int		i;
 
 	i = -1;
-	while(word[++i])
+	while (word[++i])
 		if (word[i] == '$')
 			return (1);
 	return (0);
@@ -40,7 +40,7 @@ void	logical_operator(char *operator, char *str)
 	else if (str[0] == '|' && str[1] == '|')
 		*operator = -7;
 	else
-		*operator = 1;	
+		*operator = 1;
 }
 
 int		logical_do_op(long long int first_operand,
