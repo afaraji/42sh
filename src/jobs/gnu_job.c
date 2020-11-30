@@ -89,7 +89,7 @@ int shell_is_interactive;
 	 before proceeding. */
 
 void
-init_shell ()
+initShell ()
 {
 
 	/* See if we are running interactively.  */

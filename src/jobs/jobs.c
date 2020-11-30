@@ -68,17 +68,6 @@ FILE	*ttp;
 FILE	*ttc;
 extern int errno;
 
-int		system_calls(char *func, int ret, int failure_value)
-{
-	extern const char *const	sys_errlist[];
-	// extern int					errno;
-
-	if (ret != failure_value)
-		return (ret);
-	ft_print(STDERR, "System call failure: %s: %s\n", func, sys_errlist[errno]);
-	exit(42);
-}
-
 int		update_proc(pid_t pid, int status, int bg);
 
 char	*ft_getsigstr1_12(int sig)
