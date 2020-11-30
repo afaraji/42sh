@@ -12,7 +12,8 @@
 
 NAME = 42sh
 
-SRC_SHL = ./src/main.c ./src/list_to_tab.c ./src/my_printf.c ./src/verify_type.c
+SRC_SHL = ./src/main.c ./src/list_to_tab.c ./src/my_printf.c \
+	./src/verify_type.c ./src/ft_replaceword.c
 
 FILE_AST = add_redirect.c add_tokens.c alias.c alias_ast.c ast.c dollar_sub.c\
 	get_pipe_sec.c get_splited_and_or.c get_suffix.c here_doc.c lexer.c		\

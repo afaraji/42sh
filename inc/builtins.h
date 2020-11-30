@@ -37,5 +37,6 @@ int		get_key_value(char **key, char **value, char *flag);
 int		ft_pdenied(char *flag);
 char	*ft_get_ld(char *cwd, char *flag);
 int		ft_fc(char **flag);
+char	*ft_replaceword(char *s, char *old, char *new);
 
 #endif

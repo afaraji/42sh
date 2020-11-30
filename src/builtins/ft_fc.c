@@ -430,11 +430,6 @@ int		ft_fc_2(char *f, char *l, int opt[5], char *e)
 		return (fc_exec(list, e, opt[R_OPT]));
 }
 
-char	*find_and_replace(char *s, char *old, char *new)
-{
-	
-}
-
 int		fc_do_s(char **av, int i)
 {
 	char	*new;
@@ -454,7 +449,7 @@ int		fc_do_s(char **av, int i)
 	if (!first)
 		return (-1);
 	tmp = get_hist_node(first)->hist_str;
-	tmp = find_and_replace(tmp, old, new);
+	tmp = ft_replaceword(tmp, old, new);
 	ft_print(STDOUT, "exec:[%s]\n", tmp);
 	return (0);
 }
