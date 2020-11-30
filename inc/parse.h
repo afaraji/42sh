@@ -80,5 +80,6 @@ void			get_ppid_list(void);
 int				init_shell(char **env);
 t_hist			*create_history(void);
 char			*delete_escape(char *str);
+int				system_calls(char *func, int ret, int failure_value);
 
 #endif
