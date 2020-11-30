@@ -397,20 +397,42 @@ int		fc_print_list(t_hist *list, int n, int r)
 	return (0);
 }
 
-int		fc_exec(t_hist *list, char *editor, int r)
+int		ft_editor(char *editor, char *file)
+{
+	char	*line;
+	int		ret;
+
+	if (!editor)
+		editor = ft_strdup("/usr/bin/vim ");
+	line = ft_strjoin(editor, file);
+	//debug here
+	ret = main_parse(line);
+	ft_strdel(&line);
+	return (ret);
+}
+
+int		fc_add_to_file(t_hist *list, char *editor, int r)
 {
 	t_hist	*node;
+	int		fd;
 //	stoped here need to test this shit and if it prints good
 //	adress -S or continue to output to the file and exec then go back -s ?
 	node = list;
 	while (r && node->next)
 		node = node->next;
+	if ((fd = open("/tmp/fc_tmp_file", O_WRONLY | O_CREAT, 0744)) == -1)
+	{
+		ft_print(STDERR, "couldn't create nor tmp_file.\n");
+		return (-1);
+	}
 	ft_print(STDOUT, "===== %s ====\n", editor);
 	while (node)
 	{
-		ft_print(STDOUT, "%s\n", node->hist_str);
+		ft_print(fd, "%s\n", node->hist_str);
 		node = (r) ? node->prec : node->next;
 	}
+	close(fd);
+	return (ft_editor(editor, "/tmp/fc_tmp_file"));
 	return (0);
 }
 
@@ -427,7 +449,7 @@ int		ft_fc_2(char *f, char *l, int opt[5], char *e)
 	if (opt[L_OPT])
 		return (fc_print_list(list, opt[N_OPT], opt[R_OPT]));
 	else
-		return (fc_exec(list, e, opt[R_OPT]));
+		return (fc_add_to_file(list, e, opt[R_OPT]));
 }
 
 int		fc_do_s(char **av, int i)
@@ -437,6 +459,8 @@ int		fc_do_s(char **av, int i)
 	int		first;
 	int		index;
 
+	old = NULL;
+	new = NULL;
 	if (av[i] && (index = is_assword(av[i])))
 	{
 		old = ft_strsub(av[i], 0, index - 1);
@@ -462,6 +486,7 @@ int		ft_fc(char **av)
 	char	*first;
 	char	*last;
 
+	editor = NULL;
 	i = get_opt_av(opt, av, &editor);
 	if (i == -1)
 		return (i);
