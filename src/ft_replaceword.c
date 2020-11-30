@@ -43,14 +43,15 @@ char	*ft_replaceword(char *s, char *old, char *new)
 { 
 	char	*result; 
 	int		i;
-	int		cnt;
 	int		oldlen;
 	int		newlen;
 
-	cnt = word_count(s, old);
+	if (!old || !new)
+		return (ft_strdup(s));
+	i = word_count(s, old);
 	newlen = ft_strlen(new);
 	oldlen = ft_strlen(old);
-	result = (char *)malloc(ft_strlen(s) + cnt * (newlen - oldlen) + 1);
+	result = (char *)malloc(ft_strlen(s) + i * (newlen - oldlen) + 1);
 	i = 0;
 	while (*s)
 	{
