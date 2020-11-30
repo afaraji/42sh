@@ -93,7 +93,7 @@ char	*ft_getsigstr1_12(int sig)
 		return (str[sig]);
 	return (NULL);
 }
-char	*ft_getsigstr13_31(int sig)
+char	*ft_getsigstr13_31(int sig)//16,19,20,23,28,29
 {
 	static char *str[20];
 	if (!str[0])
@@ -502,10 +502,10 @@ int		update_proc(pid_t pid, int status, int bg)
 	{
 		// print new state ?
 		if (WIFEXITED(status))
-			ft_print(STDOUT, "[%d]%c  Done\t\t%s\n", p->index, p->c, p->str);
+			ft_print(STDOUT, "{UP}[%d]%c  Done\t\t%s\n", p->index, p->c, p->str);
 		else if (WTERMSIG(status) != 2)
-			ft_print(STDOUT, "[%d]%c  Killed: %d\t\t%s\n", p->index, p->c, WTERMSIG(status), p->str);
-			ft_print(STDOUT, "%s: %d\n", ft_strsignal(WTERMSIG(status)), WTERMSIG(status));
+			ft_print(STDOUT, "{UP}[%d]%c  Killed: %d\t\t%s\n", p->index, p->c, WTERMSIG(status), p->str);
+			ft_print(STDOUT, "{UP}%s: %d\n", ft_strsignal(WTERMSIG(status)), WTERMSIG(status));
 		delet_proc(pid);
 	}
 	else if (WIFSTOPPED(status))
@@ -519,20 +519,51 @@ int		update_proc(pid_t pid, int status, int bg)
 		{
 			p = add_proc(pid, 2);
 		}
-		ft_print(STDOUT, "\n[%d]%c  Stopped\t\t%s\n", p->index, p->c, p->str);
+		ft_print(STDOUT, "\n{UP}[%d]%c  Stopped\t\t%s\n", p->index, p->c, p->str);
 		return (1);
 	}
 	else if (WIFSIGNALED(status) && WTERMSIG(status) != 2)
 	{
-		ft_print(STDOUT, "%s: %d\n", ft_strsignal(WTERMSIG(status)), WTERMSIG(status));
+		ft_print(STDOUT, "{UP}%s: %d\n", ft_strsignal(WTERMSIG(status)), WTERMSIG(status));
 	}
 	else if (status == 0 && bg)//new job
 	{
 		p = add_proc(pid, 0);
-		ft_print(STDOUT, "\n[%d] %d\n", p->index, p->ppid);
+		ft_print(STDOUT, "\n{UP}[%d] %d\n", p->index, p->ppid);
 	}
 	return (0);
 }
+
+// int		update_proc(pid_t pid, int status, int bg)
+// {
+// 	t_proc	*p;
+// 	int		sig;
+
+// 	sig = WIFEXITED(status) ? WEXITSTATUS(status) : 0;
+// 	sig = WIFSIGNALED(status) ? WTERMSIG(status) : sig;
+// 	sig = WIFSTOPPED(status) ? WSTOPSIG(status) : sig;
+// 	p = g_var.proc->next;
+// 	while (p)
+// 	{
+// 		if (p->ppid == pid)
+// 			break ;
+// 		p = p->next;
+// 	}
+// 	if (p && bg)
+// 	{
+// 		if (sig != 2)
+// 			ft_print(STDOUT, "{PP}[%d]%c   %s\t\t%s\n", p->index, p->c, ft_strsignal(sig), p->str);
+// 		if (WIFEXITED(status) || WIFSIGNALED(status))
+// 			delet_proc(pid);//should take + - in consideration
+// 		//edit p
+// 	}
+// 	else if (pppppp)
+// 	{
+// 		p = add_proc(pid, 2);
+// 		ft_print(STDOUT, "{PP}[%d]%c   %s\t\t%s\n", p->index, p->c, ft_strsignal(sig), p->str);
+// 	}
+// 	return (0);
+// }
 
 int		get_opt(char **av, int *index)
 {

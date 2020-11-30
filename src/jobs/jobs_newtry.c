@@ -68,17 +68,6 @@ FILE	*tty;
 
 int		update_proc(pid_t pid, int status, int bg);
 
-int		system_calls(char *func, int ret, int failure_value)
-{
-	extern const char *const	sys_errlist[];
-	extern int					errno;
-
-	if (ret != failure_value)
-		return (ret);
-	ft_print(STDERR, "System call failure: %s: %s\n", func, sys_errlist[errno]);
-	exit(42);
-}
-
 char	*ft_getsigstr1_12(int sig)
 {
 	static char *str[13];
