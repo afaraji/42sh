@@ -118,6 +118,8 @@ char	*ft_getsigstr13_31(int sig)//16,19,20,23,28,29
 }
 char	*ft_strsignal(int sig)
 {
+	if (sig < 0 || sig > 31 || ft_or(sig, 16, 19, 20) || ft_or(sig, 23, 28, 29))
+		return(NULL);
 	if (sig <= 12)
 		return (ft_getsigstr1_12(sig));
 	return (ft_getsigstr13_31(sig));
@@ -255,7 +257,7 @@ int		exec_ast_bg(t_pipe_seq *cmd)
 		fprintf(ttc, "########## 5 #######\n");
 		if (waitpid(child, &status, WUNTRACED | WCONTINUED) < 0)
 			return (-2);
-		// update_proc(child, status);
+		update_proc(child, status, 1);
 		// exit_status(status);
 		fprintf(ttc, "########## 6 #######\n");
 		if (WIFEXITED(status))
@@ -485,85 +487,94 @@ int		putjob_background(pid_t pid)
 
 void	delet_proc(pid_t pid);
 
-int		update_proc(pid_t pid, int status, int bg)
-{
-	t_proc	*p;
-
-	p = g_var.proc;
-	fprintf(ttp, "-1--update proc---\n");
-	while (p)
-	{
-		if (p->ppid == pid)
-			break ;
-		p = p->next;
-	}
-	fprintf(ttp, "-2--update proc---\n");
-	if ((WIFEXITED(status) || WIFSIGNALED(status)) && p)
-	{
-		// print new state ?
-		if (WIFEXITED(status))
-			ft_print(STDOUT, "{UP}[%d]%c  Done\t\t%s\n", p->index, p->c, p->str);
-		else if (WTERMSIG(status) != 2)
-			ft_print(STDOUT, "{UP}[%d]%c  Killed: %d\t\t%s\n", p->index, p->c, WTERMSIG(status), p->str);
-			ft_print(STDOUT, "{UP}%s: %d\n", ft_strsignal(WTERMSIG(status)), WTERMSIG(status));
-		delet_proc(pid);
-	}
-	else if (WIFSTOPPED(status))
-	{
-		if (p)
-		{
-			p->done = 0; // add running/done/stoped ?
-			p->status = 2; // #define STOPPED x ?
-		}
-		else
-		{
-			p = add_proc(pid, 2);
-		}
-		ft_print(STDOUT, "\n{UP}[%d]%c  Stopped\t\t%s\n", p->index, p->c, p->str);
-		return (1);
-	}
-	else if (WIFSIGNALED(status) && WTERMSIG(status) != 2)
-	{
-		ft_print(STDOUT, "{UP}%s: %d\n", ft_strsignal(WTERMSIG(status)), WTERMSIG(status));
-	}
-	else if (status == 0 && bg)//new job
-	{
-		p = add_proc(pid, 0);
-		ft_print(STDOUT, "\n{UP}[%d] %d\n", p->index, p->ppid);
-	}
-	return (0);
-}
-
 // int		update_proc(pid_t pid, int status, int bg)
 // {
 // 	t_proc	*p;
-// 	int		sig;
 
-// 	sig = WIFEXITED(status) ? WEXITSTATUS(status) : 0;
-// 	sig = WIFSIGNALED(status) ? WTERMSIG(status) : sig;
-// 	sig = WIFSTOPPED(status) ? WSTOPSIG(status) : sig;
-// 	p = g_var.proc->next;
+// 	p = g_var.proc;
+// 	fprintf(ttp, "-1--update proc---\n");
 // 	while (p)
 // 	{
 // 		if (p->ppid == pid)
 // 			break ;
 // 		p = p->next;
 // 	}
-// 	if (p && bg)
+// 	fprintf(ttp, "-2--update proc---\n");
+// 	if ((WIFEXITED(status) || WIFSIGNALED(status)) && p)
 // 	{
-// 		if (sig != 2)
-// 			ft_print(STDOUT, "{PP}[%d]%c   %s\t\t%s\n", p->index, p->c, ft_strsignal(sig), p->str);
-// 		if (WIFEXITED(status) || WIFSIGNALED(status))
-// 			delet_proc(pid);//should take + - in consideration
-// 		//edit p
+// 		// print new state ?
+// 		if (WIFEXITED(status))
+// 			ft_print(STDOUT, "{UP}[%d]%c  Done\t\t%s\n", p->index, p->c, p->str);
+// 		else if (WTERMSIG(status) != 2)
+// 			ft_print(STDOUT, "{UP}[%d]%c  Killed: %d\t\t%s\n", p->index, p->c, WTERMSIG(status), p->str);
+// 			ft_print(STDOUT, "{UP}%s: %d\n", ft_strsignal(WTERMSIG(status)), WTERMSIG(status));
+// 		delet_proc(pid);
 // 	}
-// 	else if (pppppp)
+// 	else if (WIFSTOPPED(status))
 // 	{
-// 		p = add_proc(pid, 2);
-// 		ft_print(STDOUT, "{PP}[%d]%c   %s\t\t%s\n", p->index, p->c, ft_strsignal(sig), p->str);
+// 		if (p)
+// 		{
+// 			p->done = 0; // add running/done/stoped ?
+// 			p->status = 2; // #define STOPPED x ?
+// 		}
+// 		else
+// 		{
+// 			p = add_proc(pid, 2);
+// 		}
+// 		ft_print(STDOUT, "\n{UP}[%d]%c  Stopped\t\t%s\n", p->index, p->c, p->str);
+// 		return (1);
+// 	}
+// 	else if (WIFSIGNALED(status) && WTERMSIG(status) != 2)
+// 	{
+// 		ft_print(STDOUT, "{UP}%s: %d\n", ft_strsignal(WTERMSIG(status)), WTERMSIG(status));
+// 	}
+// 	else if (status == 0 && bg)//new job
+// 	{
+// 		p = add_proc(pid, 0);
+// 		ft_print(STDOUT, "\n{UP}[%d] %d\n", p->index, p->ppid);
 // 	}
 // 	return (0);
 // }
+
+int		update_proc(pid_t pid, int status, int bg)
+{
+	t_proc	*p;
+	int		sig;
+
+	sig = WIFEXITED(status) ? WEXITSTATUS(status) : 0;
+	sig = WIFSIGNALED(status) ? WTERMSIG(status) : sig;
+	sig = WIFSTOPPED(status) ? WSTOPSIG(status) : sig;
+	p = g_var.proc->next;
+	while (p)
+	{
+		if (p->ppid == pid)
+			break ;
+		p = p->next;
+	}
+	if (p)
+	{
+		if (sig != 2)
+			ft_print(STDOUT, "{P1}|[%d]%c   %s\t\t%s\n", p->index, p->c, ft_strsignal(sig), p->str);
+		if (WIFEXITED(status) || WIFSIGNALED(status))
+			delet_proc(pid);//should take + - in consideration
+		else
+		{
+			p->status = status;
+			p->done = 0;
+		}
+	}
+	else if (bg && ft_strsignal(sig))
+	{
+		if (sig != 2 && sig && (WIFEXITED(status) || WIFSIGNALED(status)))
+			ft_print(STDERR, "{P2}|%s: %d\n", ft_strsignal(sig), sig);
+		else if (WIFSTOPPED(status))
+		{
+			p = add_proc(pid, status);
+			ft_print(STDOUT, "{P3}|[%d] %d\n", p->index, p->ppid);
+		}
+	}
+	return (0);
+}
 
 int		get_opt(char **av, int *index)
 {
@@ -727,11 +738,13 @@ int		ft_jobs_(char **av)
 	while (p)
 	{
 		ft_print(STDOUT,"[%d]%c\t", p->index, p->c);
-		if (p->status == 0)
+		if (WIFCONTINUED(p->status))
 			ft_print(STDOUT,"running\t\t%s\n", p->str);
-		else if (p->status == 1)
+		else if (WIFEXITED(p->status))
 			ft_print(STDOUT,"done\t\t%s\n", p->str);
-		else if (p->status == 2)
+		else if (WIFSIGNALED(p->status))
+			ft_print(STDOUT,"%s\t\t%s\n", ft_strsignal(WTERMSIG(p->status)), p->str);
+		else if (WIFSTOPPED(p->status))
 			ft_print(STDOUT,"stopped\t\t%s\n", p->str);
 		p = p->next;
 	}

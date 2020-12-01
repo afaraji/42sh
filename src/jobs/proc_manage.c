@@ -69,6 +69,65 @@ t_proc	*add_proc(pid_t pid, int status)
 	return (node->next);
 }
 
+t_proc	*get_proc_by_index(int index)
+{
+	t_proc	*p;
+
+	p = g_var.proc->next;
+	while (p)
+	{
+		if (p->index == index)
+			return (p);
+		p = p->next;
+	}
+	return (NULL);
+}
+
+void	find_new_previous(int big_i)
+{
+	t_proc	*p;
+
+	while (big_i)
+	{
+		p = get_proc_by_index(big_i);
+		if (p->c != '+')
+		{
+			p->c = '-';
+			return ;
+		}
+		big_i--;
+	}
+}
+
+void	find_new_current(char c)
+{
+	t_proc	*p;
+	int		big_i;
+
+	p = g_var.proc;
+	big_i = 0;
+	while (p->next)
+		p = p->next;
+	if ((big_i = p->index) == 0 || (c != '+' && c != '-'))
+		return ;
+	p = g_var.proc->next;
+	if (c == '+')
+	{
+		while (p)
+		{
+			if (p->c == '-')
+			{
+				p->c = '+';
+				break ;
+			}
+			p = p->next;
+		}
+		find_new_previous(big_i);
+	}
+	else// c == '-'
+		find_new_previous(big_i);
+}
+
 void	delet_proc(pid_t pid)
 {
 	t_proc	*node;
@@ -82,6 +141,7 @@ void	delet_proc(pid_t pid)
 		{
 			ft_strdel(&(node->str));
 			old_node->next = node->next;
+			find_new_current(node->c);
 			free(node);
 			break ;
 		}
@@ -98,7 +158,7 @@ void	bg_jobs(void)
 
 	while ((pid = waitpid(-1, &status, WNOHANG | WUNTRACED)) > 0)
 	{
-		printf("updating proc [%d]-status[%d]\n", pid, status);
+		printf("debug_msg:updating proc [%d]-status[%d]\n", pid, status);
 		update_proc(pid, status, 0);
 	}
 }
