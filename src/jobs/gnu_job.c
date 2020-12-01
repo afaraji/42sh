@@ -50,21 +50,29 @@ job	*find_job (pid_t pgid)
 {
 	job *j;
 
-	for (j = first_job; j; j = j->next)
+	j = first_job;
+	while (j)
+	{
 		if (j->pgid == pgid)
 			return j;
-	return NULL;
+		j = j->next;
+	}
+	return (NULL);
 }
 
 /* Return true if all processes in the job have stopped or completed.  */
-int job_is_stopped (job *j)
+int job_is_stopped_completed(job *j)
 {
 	process *p;
 
-	for (p = j->first_process; p; p = p->next)
+	p = j->first_process;
+	while (p)
+	{
 		if (!p->completed && !p->stopped)
-			return 0;
-	return 1;
+			return (0);
+		p = p->next;
+	}
+	return (1);
 }
 
 /* Return true if all processes in the job have completed.  */
@@ -72,10 +80,14 @@ int	job_is_completed (job *j)
 {
 	process *p;
 
-	for (p = j->first_process; p; p = p->next)
+	p = j->first_process;
+	while (p)
+	{
 		if (!p->completed)
-			return 0;
-	return 1;
+			return (0);
+		p = p->next;
+	}
+	return (1);
 }
 //------------
 
@@ -88,14 +100,12 @@ int shell_is_interactive;
 /* Make sure the shell is running interactively as the foreground job
 	 before proceeding. */
 
-void
-initShell ()
+void	initShell ()
 {
 
 	/* See if we are running interactively.  */
-	shell_terminal = STDIN_FILENO;
+	shell_terminal = STDIN;
 	shell_is_interactive = isatty (shell_terminal);
-
 	if (shell_is_interactive)
 		{
 			/* Loop until we are in the foreground.  */
@@ -236,8 +246,7 @@ void	launch_job (job *j, int foreground)
 			pid = fork ();
 			if (pid == 0)
 				/* This is the child process.  */
-				launch_process (p, j->pgid, infile,
-												outfile, j->stderr, foreground);
+				launch_process (p, j->pgid, infile, outfile, j->stderr, foreground);
 			else if (pid < 0)
 				{
 					/* The fork failed.  */

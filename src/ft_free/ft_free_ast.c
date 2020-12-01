@@ -76,6 +76,9 @@ void	free_simple_cmd(t_simple_cmd *cmd)
 	}
 	cmd->name = NULL;
 	cmd->word = NULL;
+	if (cmd->command)
+		ft_strdel(&(cmd->command));
+	cmd->command = NULL;
 	free(cmd);
 	cmd = NULL;
 }

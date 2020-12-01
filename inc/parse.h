@@ -71,7 +71,7 @@ char			*str_dollar_sub(char *str);
 int				dollar_sub(t_list_token **cmd_token);
 char			*get_pwd(char **env);
 int				lexer(t_list_token **cmd_token);
-t_proc			*add_proc(pid_t pid, int status);
+t_proc			*add_proc(pid_t pid, int done,int status);
 void			bg_jobs(void);
 int				ft_alias(char **av);
 int				ft_unalias(char **av);

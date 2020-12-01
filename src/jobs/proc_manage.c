@@ -46,26 +46,29 @@ char	give_current()
 	return ('+');
 }
 
-t_proc	*add_proc(pid_t pid, int status)
+t_proc	*add_proc(pid_t pid, int done, int status)
 {
 	t_proc	*node;
 
 	node = g_var.proc;
-	while (node->next)
+	while (node->next && node->next->ppid != pid)
 		node = node->next;
-	node->next = (t_proc *)malloc(sizeof(t_proc));
-	node->next->ppid = pid;
-	node->next->index = node->index + 1;
-	node->next->done = 0;
+	if (node->next == NULL)
+	{
+		node->next = (t_proc *)malloc(sizeof(t_proc));
+		node->next->ppid = pid;
+		node->next->index = node->index + 1;
+		node->next->str = last_in_hist();
+		node->next->next = NULL;
+	}
+	node->next->done = done;
 	node->next->status = status;
-	node->next->str = last_in_hist();
-	node->next->next = NULL;
 	node->next->c = give_current();
-	// ft_putstr("--> add proc func[");
-	// ft_putnbr(node->next->index);
-	// ft_putstr("] ");
-	// ft_putnbr(pid);
-	// ft_putstr("\n");
+	ft_putstr("--> add proc func[");
+	ft_putnbr(node->next->index);
+	ft_putstr("] ");
+	ft_putnbr(pid);
+	ft_putstr("\n");
 	return (node->next);
 }
 

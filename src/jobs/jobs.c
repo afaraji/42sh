@@ -275,7 +275,7 @@ int		exec_ast_bg(t_pipe_seq *cmd)
 		status = setpgid(child, child);
 		status = tcsetpgrp (STDIN, parent); // dont forget return value !!!
 		ft_set_attr(0);
-		update_proc(child, 0, 1);
+		add_proc(child, 0, 0);
 		return (0);
 	}
 }
@@ -544,6 +544,7 @@ int		update_proc(pid_t pid, int status, int bg)
 	sig = WIFEXITED(status) ? WEXITSTATUS(status) : 0;
 	sig = WIFSIGNALED(status) ? WTERMSIG(status) : sig;
 	sig = WIFSTOPPED(status) ? WSTOPSIG(status) : sig;
+	// sig = WIFCONTINUED(status) ? ?? : sig;
 	p = g_var.proc->next;
 	while (p)
 	{
@@ -553,23 +554,23 @@ int		update_proc(pid_t pid, int status, int bg)
 	}
 	if (p)
 	{
-		if (sig != 2)
+		if (sig != 2 && (WIFSIGNALED(status) || WIFSTOPPED(status)))
 			ft_print(STDOUT, "{P1}|[%d]%c   %s\t\t%s\n", p->index, p->c, ft_strsignal(sig), p->str);
 		if (WIFEXITED(status) || WIFSIGNALED(status))
-			delet_proc(pid);//should take + - in consideration
+			delet_proc(pid);
 		else
 		{
 			p->status = status;
 			p->done = 0;
 		}
 	}
-	else if (bg && ft_strsignal(sig))
+	else// if (bg || ft_strsignal(sig))
 	{
 		if (sig != 2 && sig && (WIFEXITED(status) || WIFSIGNALED(status)))
 			ft_print(STDERR, "{P2}|%s: %d\n", ft_strsignal(sig), sig);
-		else if (WIFSTOPPED(status))
+		else if (WIFSTOPPED(status) && !bg)
 		{
-			p = add_proc(pid, status);
+			p = add_proc(pid, 2,status);
 			ft_print(STDOUT, "{P3}|[%d] %d\n", p->index, p->ppid);
 		}
 	}
@@ -738,7 +739,7 @@ int		ft_jobs_(char **av)
 	while (p)
 	{
 		ft_print(STDOUT,"[%d]%c\t", p->index, p->c);
-		if (WIFCONTINUED(p->status))
+		if (WIFCONTINUED(p->status) || p->status == 1)
 			ft_print(STDOUT,"running\t\t%s\n", p->str);
 		else if (WIFEXITED(p->status))
 			ft_print(STDOUT,"done\t\t%s\n", p->str);

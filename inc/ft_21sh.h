@@ -109,7 +109,7 @@ typedef struct			s_variable
 }						t_variable;
 
 /*
-** status: 0 --> done, 1 --> running, 2 --> stopped
+** done: 0 --> done, 1 --> running, 2 --> stopped
 ** (c == +) --> current job; (c == -) --> previous job;
 */
 
@@ -118,8 +118,8 @@ typedef struct			s_proc
 	pid_t				ppid;
 	char				c;		// (c == '+') --> current job; (c == '-') --> previous job; (c == ' ') --> neither
 	int					index;
-	int					status;	// status: 0 --> running, 1 --> done, 2 --> stopped
-	int					done;
+	int					status;
+	int					done;	// done: 0 --> running, 1 --> done, 2 --> stopped
 	char				*str;
 	struct s_proc		*next;
 }						t_proc;
@@ -161,6 +161,7 @@ typedef struct			s_simple_cmd
 {
 	char				*word;
 	char				*name;
+	char				*command;	/* stores command for jobs prints */
 	t_cmd_prefix		*prefix;
 	t_cmd_suffix		*suffix;
 }						t_simple_cmd;

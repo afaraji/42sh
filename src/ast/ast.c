@@ -57,8 +57,8 @@ int	manage_cmd_list(t_cmdlist *cmdlist)
 	ret = 0;
 	while (node)
 	{
-		// ret = execute(node->and_or, node->bg);
-		ret = job_control(node->and_or, node->bg);
+		ret = execute(node->and_or, node->bg);
+		// ret = job_control(node->and_or, node->bg);
 		node = node->next;
 	}
 	free_cmd_list(cmdlist);

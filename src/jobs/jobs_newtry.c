@@ -64,7 +64,6 @@ The shell maintains a table of jobs. Before every prompt for a command, the shel
 	waitpid( ).
 */
 
-FILE	*tty;
 
 int		update_proc(pid_t pid, int status, int bg);
 
@@ -133,138 +132,130 @@ int		stopped_by(int sig)
 	return (sig);
 }
 
-// int		exec_ast_new(t_pipe_seq *cmd, int pgid)
-// {
-// 	int	child;
-// 	int	pfd[2];
-
-// 	pgid = (pgid == 0) ? getpid() : pgid;
-// 	if (cmd->right)
-// 	{
-// 		pipe(pfd);
-// 		if ((child = fork()) < 0)
-// 		{
-// 			perror("failed fork: ");
-// 			exit(1);
-// 		}
-// 		if (child == 0)
-// 		{
-// 			setpgid(child, pgid);
-// 			close(pfd[1]);
-// 			dup2(pfd[0], STDIN);
-// 			exec_ast_new(cmd->right, pgid);
-// 		}
-// 		else
-// 		{
-// 			close(pfd[0]);
-// 			dup2(pfd[1], STDOUT);
-// 			exit(exec_simple_cmd(cmd->left));
-// 		}
-// 	}
-// 	exit(exec_simple_cmd(cmd->left));
-
-// }
-
-int	wait_cmd(t_pipe_seq *cmd)
+void	initShell(void)
 {
-	int	ret;
+	int shell_terminal;
+	int	shell_is_interactive;
 
+	shell_terminal = STDIN;
+	shell_is_interactive = isatty (shell_terminal);
+	if (shell_is_interactive)
+	{
+		signal(SIGINT, SIG_IGN);
+		signal(SIGQUIT, SIG_IGN);
+		signal(SIGTSTP, SIG_IGN);
+		signal(SIGTTIN, SIG_IGN);
+		signal(SIGTTOU, SIG_IGN);
+		signal(SIGCHLD, SIG_IGN);
+		if (setpgid (g_var.proc->ppid, g_var.proc->ppid) < 0)
+		{
+			perror ("Couldn't put the shell in its own process group: ");
+			exit (1);
+		}
+		tcsetpgrp (shell_terminal, g_var.proc->ppid);
+		if (ft_set_attr(0))
+		{
+			perror ("Couldn't set attributes: ");
+			exit (1);
+		}
+	}
+}
+
+char	*suffix_to_str(t_cmd_suffix *suff)
+{
+	char	*str;
+	char	*tmp;
+
+	str = ft_strdup("");
+	while (suff)
+	{
+		if (suff->word)
+		{
+			tmp = ft_strjoin(str, suff->word);
+			ft_strdel(&str);
+			str = tmp;
+		}
+		suff = suff->suffix;
+	}
+	return (str);
+}
+
+char	*ast_to_str(t_pipe_seq *cmd)
+{
+	char	*tmp;
+	char	*suffix;
+	char	*name;
+	char	*str;
+	char	*pipe;
+
+	str = ft_strdup("");
 	while (cmd)
 	{
-		if (waitpid(-1, &ret, WUNTRACED | WCONTINUED) == -1)
-		{
-			perror("wait pid error: ");
-		}
+		name = (cmd->left->name) ? cmd->left->name : cmd->left->word;
+		suffix = suffix_to_str(cmd->left->suffix);
+		pipe = (cmd->right) ? "|" : "";
+		tmp = ft_4strjoin(str, name, suffix, pipe);
+		ft_strdel(&str);
+		ft_strdel(&suffix);
+		str = tmp;
 		cmd = cmd->right;
 	}
-	return (WEXITSTATUS(ret));
+	return (str);
 }
 
-int		exec_ast_new(t_pipe_seq *cmd)
+char	*and_or_to_str(t_and_or *cmd)
 {
-	t_pipe_seq	*tmp;
-	int			pfd[2];
-	int			infd;
-	int			outfd;
-	pid_t		child;
+	char	*ast;
+	char	*token;
+	char	*str;
+	char	*tmp;
 
-	infd = STDIN;
-	tmp = cmd;
-	while (tmp)
+	str = ft_strdup("");
+	while (cmd)
 	{
-		if (tmp->right)
-		{
-			system_calls("pipe", pipe(pfd), -1);
-			outfd = pfd[1];
-		}
-		else
-			outfd = STDOUT;
-		child = system_calls("fork", fork(), -1);
-		if (child == 0)
-		{
-			exec_simple_cmd(cmd->left);
-		}
-		if (infd != STDIN)
-			close(infd);
-		if (outfd != STDOUT)
-			close(outfd);
-		infd = pfd[0];
-		tmp = tmp->right;
+		ast = ast_to_str(cmd->ast);
+		if (cmd->dependent)
+			token = (cmd->dependent == 1) ? "&&" : "||";
+		tmp = ft_4strjoin(str, token, ast, "");
+		ft_strdel(&str);
+		ft_strdel(&ast);
+		str = tmp;
+		cmd = cmd->next;
 	}
-	return (wait_cmd(cmd));
+	return (str);
 }
+
+/******************************* jobs begin ***********************************/
+
+typedef struct			s_process
+{
+	char				**argv;				/* for exec (cmd arguments) */
+	char				**env;				/* for exec (cmd env)*/
+	pid_t				pid;				/* process ID */
+	char				completed;			/* true if process has completed */
+	char				stopped;			/* true if process has stopped */
+	int					status;				/* reported status value */
+	struct s_process	*next;				/* next process in pipeline */
+}						t_process;
+
+typedef struct			s_job
+{
+	char				*command;			/* command line, used for messages */
+	t_process			*first_process;		/* list of processes in this job */
+	pid_t				pgid;				/* process group ID */
+	char				notified;			/* true if user told about stopped job */
+	int					fd_in;				/* standard input */
+	int					fd_out;				/* standard output */
+	int					fd_err;				/* standard error */
+	t_and_or			*cmd;				/* cmd origin */
+	struct s_job		*next;				/* next active job */
+}						t_job;
 
 int		job_control(t_and_or *cmd, int bg)
 {
-	int	dp;
 	int	ret;
-	int	pgid;
-tty = fopen("/dev/tty002", "w");
-	while (cmd)
-	{
-		ret = 0;
-		dp = cmd->dependent;
-		if (!dp || (dp == 1 && !ret) || (dp == 2 && ret))
-		{
-			pgid = fork(); //dont fork if (cmd->ast->right == NULL && cmd->ast-left == builtin)
-			if (pgid == 0)
-			{
-				setpgid(getpid(), getpid());
-				signal(SIGINT, SIG_DFL);
-				signal(SIGQUIT, SIG_DFL);
-				signal(SIGTSTP, SIG_DFL);
-				signal(SIGTTIN, SIG_DFL);
-				signal(SIGTTOU, SIG_DFL);
-				signal(SIGCHLD, SIG_DFL);
-				ft_set_attr(1);
-				ret = exec_ast_new(cmd->ast);//exit !!!
-			}
-			else if (pgid < 0)
-			{
-				perror("fork failed: ");
-				exit(1);
-			}
-			else
-			{
-				setpgid(pgid, pgid);
-				tcsetpgrp(STDIN, pgid);
-				int tmp;
-				tmp = waitpid(pgid, &ret, WUNTRACED | WCONTINUED);
-				fprintf(tty, "---------[%d]-[%d]--------\n", tmp, ret);
-				exit_status(ret);// or ret = WEXITSTATUS(ret);
-				// if (WIFEXITED(ret))
-				// 	return (WEXITSTATUS(ret));
-				// if (WIFSIGNALED(ret))
-				// 	return (killed_by(WTERMSIG(ret)));
-				// if (WIFSTOPPED(ret))
-				// 	return (stopped_by(WSTOPSIG(ret)));
-			}
-		}
-		cmd = cmd->next;
-	}
-	tcsetpgrp(STDIN, g_var.proc->ppid);
-	ft_set_attr(0);
-	(void)bg;
+
+	ret = execute(cmd, bg);
 	return (ret);//or return (WEXITSTATUS(ret));
 }
 
@@ -313,7 +304,7 @@ int		putjob_forground(pid_t pid)
 	}
 	tcsetpgrp (STDIN, getpid());
 	ft_set_attr(0);
-	update_proc(pid, status, 0);
+	update_proc(pid,(WIFEXITED(status) || WIFSIGNALED(status) ? 0 : 2), status);
 	if (WIFEXITED(status))
 		return (WEXITSTATUS(status));
 	if (WIFSIGNALED(status))
@@ -331,7 +322,7 @@ int		putjob_background(pid_t pid)
 	status = 0;
 	kill(pid, SIGCONT);
 	pid = waitpid(pid, &status, WNOHANG | WUNTRACED);
-	update_proc(pid, status, 0);
+	update_proc(pid, status, 1);
 	if ((p = get_proc(pid)))
 	{
 		ft_print(STDOUT, "--->[%d]%c %s &\n", p->index, p->c, p->str);
@@ -344,7 +335,12 @@ void	delet_proc(pid_t pid);
 int		update_proc(pid_t pid, int status, int bg)
 {
 	t_proc	*p;
+	int		sig;
 
+	(void)bg;
+	sig = WIFEXITED(status) ? WEXITSTATUS(status) : 0;
+	sig = WIFSIGNALED(status) ? WTERMSIG(status) : sig;
+	sig = WIFSTOPPED(status) ? WSTOPSIG(status) : sig;
 	p = g_var.proc;
 	while (p)
 	{
@@ -352,39 +348,12 @@ int		update_proc(pid_t pid, int status, int bg)
 			break ;
 		p = p->next;
 	}
-	if ((WIFEXITED(status) || WIFSIGNALED(status)) && p)
-	{
-		// print new state ?
-		if (WIFEXITED(status))
-			ft_print(STDOUT, "[%d]%c  Done\t\t%s\n", p->index, p->c, p->str);
-		else if (WTERMSIG(status) != 2)
-			ft_print(STDOUT, "[%d]%c  Killed: %d\t\t%s\n", p->index, p->c, WTERMSIG(status), p->str);
-			ft_print(STDOUT, "%s: %d\n", ft_strsignal(WTERMSIG(status)), WTERMSIG(status));
-		delet_proc(pid);
-	}
-	else if (WIFSTOPPED(status))
-	{
-		if (p)
-		{
-			p->done = 0; // add running/done/stoped ?
-			p->status = 2; // #define STOPPED x ?
-		}
-		else
-		{
-			p = add_proc(pid, 2);
-		}
-		ft_print(STDOUT, "\n[%d]%c  Stopped\t\t%s\n", p->index, p->c, p->str);
-		return (1);
-	}
-	else if (WIFSIGNALED(status) && WTERMSIG(status) != 2)
-	{
-		ft_print(STDOUT, "%s: %d\n", ft_strsignal(WTERMSIG(status)), WTERMSIG(status));
-	}
-	else if (status == 0 && bg)//new job
-	{
-		p = add_proc(pid, 0);
-		ft_print(STDOUT, "\n[%d] %d\n", p->index, p->ppid);
-	}
+	if (p)
+		ft_print(STDOUT, "", p->index, p->c, ft_strsignal(sig), p->str);
+	else if (WIFSIGNALED(status) && sig != 2)
+		ft_print(STDOUT, "%s: %d", ft_strsignal(sig), sig);
+	else
+		ft_print(STDOUT, "error updating %d: p not found", pid);
 	return (0);
 }
 
@@ -550,11 +519,11 @@ int		ft_jobs_(char **av)
 	while (p)
 	{
 		ft_print(STDOUT,"[%d]%c\t", p->index, p->c);
-		if (p->status == 0)
+		if (p->done == 0)
 			ft_print(STDOUT,"running\t\t%s\n", p->str);
-		else if (p->status == 1)
+		else if (p->done == 1)
 			ft_print(STDOUT,"done\t\t%s\n", p->str);
-		else if (p->status == 2)
+		else if (p->done == 2)
 			ft_print(STDOUT,"stopped\t\t%s\n", p->str);
 		p = p->next;
 	}

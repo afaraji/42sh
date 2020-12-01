@@ -31,7 +31,7 @@ int		exec_simple_cmd(t_simple_cmd *cmd)
 	args = get_arg_var_sub(cmd);
 	if (!args || !args[0])
 		exit(0);
-	env = env_to_tab(g_var.var, 0);
+	env = env_to_tab(g_var.var, 0);//ft_print(STDOUT, "executingcmd:[%s]\n", cmd->command);
 	if (is_builtin(args[0]))
 	{
 		return (builtins(args[0], args, env));
@@ -112,7 +112,7 @@ int		exec_ast(t_pipe_seq *cmd, int bg)
 	}
 	else
 	{
-		add_proc(child, 0);
+		add_proc(child, 1, status);
 		ft_set_attr(0);
 	}
 	return (status);

@@ -36,7 +36,30 @@ char			*cmd_name(t_list_token **cmd, t_list_token **end)
 	return (NULL);
 }
 
-t_simple_cmd	*malloc_simple_cmd(void)
+char			*get_cmd_from_tokens(t_list_token *start, t_list_token *end)// need testing
+{
+	t_list_token	*node;
+	char			*str;
+	char			*tmp;
+	char			*token;
+
+	node = start;
+	str = ft_strdup("");
+	while (node && node != end)
+	{
+		if (node->type == WORD)
+			token = node->data;
+		else
+			token = tokentoa(node->type);
+		tmp = ft_strjoin(str, token);
+		ft_strdel(&str);
+		str = tmp;
+		node = node->next;
+	}
+	return (str);
+}
+
+t_simple_cmd	*malloc_simple_cmd(t_list_token *start, t_list_token *end)
 {
 	t_simple_cmd	*ret;
 
@@ -47,6 +70,7 @@ t_simple_cmd	*malloc_simple_cmd(void)
 	ret->word = NULL;
 	ret->suffix = NULL;
 	ret->prefix = NULL;
+	ret->command = get_cmd_from_tokens(start, end);
 	return (ret);
 }
 
@@ -56,7 +80,7 @@ t_simple_cmd	*get_simple_cmd(t_list_token *start, t_list_token *end)
 
 	if (g_var.errno)
 		return (NULL);
-	ret = malloc_simple_cmd();
+	ret = malloc_simple_cmd(start, end);
 	ret->prefix = cmd_prefix(&start, &end);
 	if (!g_var.errno && ret->prefix)
 	{
