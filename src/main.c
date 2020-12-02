@@ -61,7 +61,16 @@ int			main(int ac, char **av, char **env)
 	int		ret;
 
 	if (!ttyname(0) || !ttyname(1) || !ttyname(2))
-		return (-1);
+	{
+		if (init_shell(env))
+			return (1);
+		while (get_next_line(STDIN, &line))
+		{
+			ret = main_parse(trim_cmd(line));
+			ft_strdel(&line);
+		}
+		return (ret);
+	}
 	line = NULL;
 	ret = 0;
 	ft_signal();
