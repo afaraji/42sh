@@ -161,29 +161,84 @@ void	initShell(void)
 	}
 }
 
-char	*suffix_to_str(t_cmd_suffix *suff)
+char	*io_redirect_to_str(t_io_redirect *io)
+{
+	char	*typ;
+	char	*num;
+	char	*str;
+
+	typ = tokentoa(io->redirect_type);
+	num = ft_itoa(io->io_num);
+	str = ft_4strjoin(num, typ, io->filename, "");
+	return (str);
+}
+
+char	*args_to_str2(t_cmd_suffix *suff, char *s)
 {
 	char	*str;
 	char	*tmp;
+	char	*tmp2;
 
-	str = ft_strdup("");
+	str = s;
 	while (suff)
 	{
 		if (suff->word)
-		{
 			tmp = ft_strjoin(str, suff->word);
-			ft_strdel(&str);
-			str = tmp;
+		if (suff->io_redirect)
+		{
+			tmp2 = io_redirect_to_str(suff->io_redirect);
+			tmp = ft_strjoin(str, tmp2);
+			ft_strdel(&tmp2);
 		}
+		ft_strdel(&str);
+		str = tmp;
 		suff = suff->suffix;
 	}
+	return (str);
+}
+
+char	*args_to_str(t_cmd_suffix *suff, t_cmd_prefix *pref)
+{
+	char	*str;
+	char	*tmp;
+	char	*tmp2;
+
+	str = ft_strdup("");
+	while (pref)
+	{
+		if (pref->io_redirect)
+		{
+			tmp2 = io_redirect_to_str(pref->io_redirect);
+			tmp = ft_strjoin(str, tmp2);
+			ft_strdel(&str);
+			ft_strdel(&tmp2);
+			str = tmp;
+		}
+		pref = pref->prefix;
+	}
+	return (args_to_str2(suff, str));
+}
+
+char	*simple_cmd_to_str(t_simple_cmd *cmd)
+{
+	char	*name;
+	char	*str;
+	char	*args;
+
+	if (cmd->name || cmd->word)
+		name = (cmd->name) ? cmd->name : cmd->word;
+	else
+		name = "";
+	args = args_to_str(cmd->suffix, cmd->prefix);
+	str = ft_strjoin(name, args);
+	ft_strdel(&args);
 	return (str);
 }
 
 char	*ast_to_str(t_pipe_seq *cmd)
 {
 	char	*tmp;
-	char	*suffix;
+	char	*args;
 	char	*name;
 	char	*str;
 	char	*pipe;
@@ -192,11 +247,11 @@ char	*ast_to_str(t_pipe_seq *cmd)
 	while (cmd)
 	{
 		name = (cmd->left->name) ? cmd->left->name : cmd->left->word;
-		suffix = suffix_to_str(cmd->left->suffix);
+		args = args_to_str(cmd->left->suffix, cmd->left->prefix);
 		pipe = (cmd->right) ? "|" : "";
-		tmp = ft_4strjoin(str, name, suffix, pipe);
+		tmp = ft_4strjoin(str, name, args, pipe);
 		ft_strdel(&str);
-		ft_strdel(&suffix);
+		ft_strdel(&args);
 		str = tmp;
 		cmd = cmd->right;
 	}
@@ -227,14 +282,18 @@ char	*and_or_to_str(t_and_or *cmd)
 
 /******************************* jobs begin ***********************************/
 
+int	shell_is_interactive = 1;
+
 typedef struct			s_process
 {
+	char				*command;			/* command line, used for messages */
 	char				**argv;				/* for exec (cmd arguments) */
 	char				**env;				/* for exec (cmd env)*/
 	pid_t				pid;				/* process ID */
 	char				completed;			/* true if process has completed */
 	char				stopped;			/* true if process has stopped */
 	int					status;				/* reported status value */
+	t_simple_cmd		*cmd;				/* cmd origin */
 	struct s_process	*next;				/* next process in pipeline */
 }						t_process;
 
@@ -251,13 +310,299 @@ typedef struct			s_job
 	struct s_job		*next;				/* next active job */
 }						t_job;
 
-int		job_control(t_and_or *cmd, int bg)
+/*
+int		print_job(t_job *j, int foreground)
+{
+	char	**av;
+	t_process *p;
+	int k;
+
+	for (p = j->first_process, k = 0; p; k++, p = p->next)
+	{
+		printf("***[%d]***** P N:%d [%d|%d|%d|%d] ********\n", foreground, k, p->pid, p->completed, p->status, p->stopped);
+		av = p->argv;
+		printf("-------argv-------\n");
+		for (int i = 0; av && av[i]; i++)
+			printf("%d[%s]\n", i, av[i]);
+		av = p->env;
+		printf("-------env-------\n");
+		for (int i = 0; av && av[i]; i++)
+			printf("%d[%s]\n", i, av[i]);
+	}
+	return (0);
+}
+*/
+
+t_process	*get_process(t_simple_cmd *cmd)
+{
+	t_process	*p;
+
+	p = (t_process *)malloc(sizeof(t_process));
+	p->argv = get_arg_var_sub(cmd);
+	p->env = env_to_tab(g_var.var, 0);
+	p->pid = 0;
+	p->completed = 0;
+	p->stopped = 0;
+	p->status = 0;
+	p->cmd = cmd;
+	p->command = simple_cmd_to_str(cmd);
+	p->next = NULL;
+	return (p);
+}
+
+t_process	*get_first_proc(t_pipe_seq *cmd)
+{
+	t_process	*head;
+	t_process	*node;
+
+	head = NULL;
+	while (cmd)
+	{
+		if (!head)
+		{
+			head = get_process(cmd->left);
+			node = head;
+		}
+		else
+		{
+			node->next = get_process(cmd->left);
+			node = node->next;
+		}
+		cmd = cmd->right;
+	}
+	return (head);
+}
+
+t_job	*get_job(t_and_or *cmd)
+{
+	t_job	*job;
+
+	job = (t_job *)malloc(sizeof(t_job));
+	job->cmd = cmd;
+	job->command = and_or_to_str(cmd);
+	job->first_process = get_first_proc(cmd->ast);
+	job->pgid = 0;
+	job->notified = 0;
+	job->fd_in = STDIN;
+	job->fd_out = STDOUT;
+	job->fd_err = STDERR;
+	job->next = NULL;
+	return (job);
+}
+
+/* Return true if all processes in the job have stopped or completed.  */
+int job_is_stopped_completed(t_job *j)
+{
+	t_process *p;
+
+	p = j->first_process;
+	while (p)
+	{
+		if (!p->completed && !p->stopped)
+			return (0);
+		p = p->next;
+	}
+	return (1);
+}
+
+/* Return true if all processes in the job have completed.  */
+int	job_is_completed (t_job *j)
+{
+	t_process *p;
+
+	p = j->first_process;
+	while (p)
+	{
+		if (!p->completed)
+			return (0);
+		p = p->next;
+	}
+	return (1);
+}
+
+int		wait_for_job(t_job *j)
+{
+	t_process	*p;
+	pid_t		pid;
+	int			status;
+
+	p = j->first_process;
+	pid = waitpid(-1, &status, WUNTRACED);
+	return (status);
+}
+
+int		put_job_in_background (t_job *j, int cont)
+{
+	if (cont)
+		if (kill (-j->pgid, SIGCONT) < 0)
+			perror ("kill (SIGCONT)");
+	return (0);
+}
+
+int		put_job_in_foreground (t_job *j, int cont)
 {
 	int	ret;
 
-	ret = execute(cmd, bg);
-	return (ret);//or return (WEXITSTATUS(ret));
+	tcsetpgrp (STDIN, j->pgid);
+	if (cont)
+	{
+		ft_set_attr(1);
+		if (kill (- j->pgid, SIGCONT) < 0)
+		{
+			perror ("kill (SIGCONT)");
+			return (1);
+		}
+	}
+	ret = wait_for_job (j);
+	tcsetpgrp (STDIN, g_var.proc->ppid);
+	ft_set_attr(0);
+	return (ret);
 }
+
+void	launch_process (t_process *p, pid_t pgid, int infile, int outfile, int errfile, int foreground)
+{
+	pid_t pid;
+
+	if (shell_is_interactive)
+	{
+		pid = getpid ();
+		if (pgid == 0)
+			pgid = pid;
+		setpgid (pid, pgid);
+		if (foreground)
+		{
+			tcsetpgrp (STDIN, pgid);
+			ft_set_attr(1);
+		}
+		/* Set the handling for job control signals back to the default.  */
+		signal (SIGINT, SIG_DFL);
+		signal (SIGQUIT, SIG_DFL);
+		signal (SIGTSTP, SIG_DFL);
+		signal (SIGTTIN, SIG_DFL);
+		signal (SIGTTOU, SIG_DFL);
+		signal (SIGCHLD, SIG_DFL);
+	}
+
+	/* Set the standard input/output channels of the new process.  */
+	if (infile != STDIN_FILENO)
+	{
+		dup2 (infile, STDIN_FILENO);
+		close (infile);
+	}
+	if (outfile != STDOUT_FILENO)
+	{
+		dup2 (outfile, STDOUT_FILENO);
+		close (outfile);
+	}
+	if (errfile != STDERR_FILENO)
+	{
+		dup2 (errfile, STDERR_FILENO);
+		close (errfile);
+	}
+	if (do_simple_cmd(p->cmd))
+		exit(1);
+	/* Exec the new process.  Make sure we exit.  */
+	char	*cmd_path;
+	if (!(cmd_path = get_cmdpath(p->argv[0])))
+		exit (127);
+	execve (cmd_path, p->argv, p->env);
+	ft_print(STDERR, "shell: permission denied: %s\n", p->argv[0]);
+	exit (126);
+}
+
+int		launch_job(t_job *j, int foreground)
+{
+	t_process	*p;
+	pid_t		pid;
+	int			mypipe[2];
+	int			infile;
+	int			outfile;
+
+	if ((infile = exec_no_fork(j->cmd->ast, !foreground)) != -42)
+		return (infile << 8);
+	infile = j->fd_in;
+	p = j->first_process;
+	while (p)
+	{
+		/* Set up pipes, if necessary.  */
+		if (p->next)
+		{
+			if (pipe (mypipe) < 0)
+			{
+				perror ("pipe");
+				exit (1);
+			}
+			outfile = mypipe[1];
+		}
+		else
+			outfile = j->fd_out;
+
+		/* Fork the child processes.  */
+		pid = fork ();
+		if (pid == 0)
+			/* This is the child process.  */
+			launch_process (p, j->pgid, infile, outfile, j->fd_err, foreground);
+		else if (pid < 0)
+		{
+			/* The fork failed.  */
+			perror ("fork");
+			exit (1);
+		}
+		else
+		{
+			/* This is the parent process.  */
+			p->pid = pid;
+			if (shell_is_interactive)
+			{
+				if (!j->pgid)
+					j->pgid = pid;
+				setpgid (pid, j->pgid);
+			}
+		}
+
+		/* Clean up after pipes.  */
+		if (infile != j->fd_in)
+			close (infile);
+		if (outfile != j->fd_out)
+			close (outfile);
+		infile = mypipe[0];
+		p = p->next;
+	}
+
+	// format_job_info (j, "launched");
+
+	if (!shell_is_interactive)
+		return (wait_for_job (j));
+	else if (foreground)
+		return (put_job_in_foreground (j, 0));
+	else
+		return (put_job_in_background (j, 0));
+	return (0);
+}
+
+int		job_control(t_and_or *cmd, int bg)
+{
+	t_job		*job;
+	int 		dp;
+	int 		ret;
+
+	ret = 0;
+	while (cmd)
+	{
+		dp = cmd->dependent;
+		if (!dp || (dp == 1 && !ret) || (dp == 2 && ret))
+		{
+			job = get_job(cmd);
+			ret = launch_job(job, !bg);
+			exit_status(ret);
+			// free_job ??
+		}
+		cmd = cmd->next;
+	}
+	return (ret);
+}
+
+/******************************************************************************/
 
 t_proc	*get_proc(pid_t pid)
 {

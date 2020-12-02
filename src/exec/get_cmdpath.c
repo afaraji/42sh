@@ -91,6 +91,8 @@ char	*get_cmdpath(char *str)
 	int		i;
 	char	*tmp;
 
+	if (!str)
+		return (NULL);
 	if (!access(str, F_OK) && verify_type(str) == 2)
 		return (ft_strdup(str));
 	if (is_path(str))
@@ -100,14 +102,13 @@ char	*get_cmdpath(char *str)
 	i = 0;
 	while (paths[i])
 	{
-		tmp = ft_strjoin(paths[i], str);
+		tmp = ft_strjoin(paths[i++], str);
 		if (!access(tmp, F_OK))
 		{
 			free_tab(paths);
 			return (tmp);
 		}
 		ft_strdel(&tmp);
-		i++;
 	}
 	free_tab(paths);
 	return (get_cmdpath_error(2, str));

@@ -76,7 +76,7 @@ int			main(int ac, char **av, char **env)
 		g_var.errno = 0;
 		bg_jobs();
 		if (ft_strcmp(line, "") && (ret = main_parse(trim_cmd(line))))
-			exit_status(ret << 8);
+			exit_status(ret);
 		if (line)
 			ft_strdel(&line);
 	}

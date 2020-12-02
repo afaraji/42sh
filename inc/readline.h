@@ -42,7 +42,7 @@
 
 int					termtype(void);
 int					check_termcap(void);
-int					ft_set_attr(int index);
+int					ft_set_attr(int index); /* 1 to set def attr, 0 to load your attr */
 void				cpy_set_atr_ican(struct termios *src, struct termios *dst);
 char				*manage_line(char *prompt, t_hist **his_head, int m_line);
 t_terminal			*initiate_unprint_var(void);
