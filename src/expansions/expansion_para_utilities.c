@@ -15,14 +15,14 @@
 int		hash_param(char **word)
 {
 	char	*tmp_a;
-	char	**tmp;
+	char	*tmp;
 
-	tmp = ft_strsplit(*word, '#');
-	tmp_a = ft_strdup(var_get_value(tmp[0], 2));
+	tmp = ft_strdup((*word) + 1);
+	tmp_a = ft_strdup(var_get_value(tmp, 2));
 	ft_strdel(word);
 	*word = ft_itoa(ft_strlen(tmp_a));
 	free(tmp_a);
-	free_tab(tmp);
+	free(tmp);
 	return (0);
 }
 

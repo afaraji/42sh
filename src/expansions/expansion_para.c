@@ -19,19 +19,20 @@ int		operation(char **operate, char **word, int check)
 	{
 		ft_strdel(word);
 		if (check == 1)
-			*word = ft_strdup(operate[1] + 1);
+			*word = ft_strdup(ft_strtrim(operate[1] + 1));
 		else
 			*word = ft_strdup("");
 	}
 	else if (operate[1][0] == '-' && check != 1)
 	{
 		ft_strdel(word);
-		*word = ft_strdup(operate[1] + 1);
+		*word = ft_strdup(ft_strtrim(operate[1] + 1));
 	}
 	else if (operate[1][0] == '?' && check != 1)
-		printf("eror\n");
+		return (1);
 	else if (!(operate[1][0] == '+' || operate[1][0] == '-' ||
-				operate[1][0] == '?'))
+			operate[1][0] == '?' || ft_isalnum(operate[1][0]) ||
+			ft_isspace(operate[1][0])))
 		return (1);
 	else if (check == 1)
 	{
@@ -53,7 +54,6 @@ int		normal_case(char **word)
 		return (1);
 	if (operate[1] && dollared(operate[1]))
 		dollar_expansion(&(operate[1]));
-	ft_putstr(operate[1]);
 	ret = operate[1] ? operation(operate, word, check) : 1;
 	free_tab(operate);
 	return (ret);
@@ -118,6 +118,11 @@ int		expans_parameter(char **argument, int start, int end)
 	int		r;
 
 	word = ft_strndup(*argument + start + 2, end - 2);
+	if (ft_strlen(ft_strtrim(word)) != ft_strlen(word))
+	{
+		ft_strdel(&word);
+		return (-1);
+	}
 	if (!expans_para(&word))
 	{
 		if (!ft_strlen(word))
@@ -127,6 +132,9 @@ int		expans_parameter(char **argument, int start, int end)
 		ft_expans_replace(argument, word, start, end + 1 + start);
 	}
 	else
+	{
+		ft_strdel(&word);
 		return (-1);
+	}
 	return (r);
 }
