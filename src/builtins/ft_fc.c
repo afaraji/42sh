@@ -401,13 +401,24 @@ int		ft_editor(char *editor, char *file)
 {
 	char	*line;
 	int		ret;
+	int		fd;
 
 	if (!editor)
 		editor = ft_strdup("/usr/bin/vim ");
+	else
+		editor = ft_strjoin(editor, " ");
 	line = ft_strjoin(editor, file);
 	//debug here
 	ret = main_parse(line);
-	ft_strdel(&line);
+	if (ret == 0)
+	{
+		system_calls("open", (fd = open("/tmp/fc_tmp_file", O_RDONLY)), -1);
+		while (get_next_line(fd, &line))
+		{
+			ret = main_parse(line);
+		}
+		close(fd);
+	}
 	return (ret);
 }
 
@@ -425,7 +436,8 @@ int		fc_add_to_file(t_hist *list, char *editor, int r)
 		ft_print(STDERR, "couldn't create nor tmp_file.\n");
 		return (-1);
 	}
-	ft_print(STDOUT, "===== %s ====\n", editor);
+	if (editor)
+		printf("===== %s ====\n", editor);
 	while (node)
 	{
 		ft_print(fd, "%s\n", node->hist_str);
@@ -433,7 +445,6 @@ int		fc_add_to_file(t_hist *list, char *editor, int r)
 	}
 	close(fd);
 	return (ft_editor(editor, "/tmp/fc_tmp_file"));
-	return (0);
 }
 
 int		ft_fc_2(char *f, char *l, int opt[5], char *e)
@@ -452,12 +463,18 @@ int		ft_fc_2(char *f, char *l, int opt[5], char *e)
 		return (fc_add_to_file(list, e, opt[R_OPT]));
 }
 
+// int		fc_do_s_2(char *str)
+// {
+	
+// }
+
 int		fc_do_s(char **av, int i)
 {
 	char	*new;
 	char	*old;
 	int		first;
 	int		index;
+	char	*tmp;
 
 	old = NULL;
 	new = NULL;
@@ -469,13 +486,11 @@ int		fc_do_s(char **av, int i)
 	}
 	first = get_index_hist_first(av[i], 0);
 	// execute command with index=first, and replacing string old by new if it exist in command
-	char *tmp;
 	if (!first)
 		return (-1);
 	tmp = get_hist_node(first)->hist_str;
 	tmp = ft_replaceword(tmp, old, new);
-	ft_print(STDOUT, "exec:[%s]\n", tmp);
-	return (0);
+	return (main_parse(tmp));
 }
 
 int		ft_fc(char **av)
