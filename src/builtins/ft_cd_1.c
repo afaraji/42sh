@@ -29,9 +29,7 @@ int		ft_cd_home(char **env)
 	oldpwd = get_pwd(env);
 	if (chdir(path))
 	{
-		ft_putstr("cd: ");
-		ft_putstr(path);
-		ft_putstr(": no such file or DIR.\n");
+		ft_print(STDERR, "cd: %s: no such file or diroctory", path);
 		free(path);
 		return (1);
 	}
@@ -71,8 +69,8 @@ int		ft_cd_1(char *flag, char **env)
 
 int		ft_cd_2(char *flag)
 {
-	ft_putstr("cd: no such file or directory: ");
-	ft_putstr(flag);
+	ft_putstr_fd("cd: no such file or directory: ", 2);
+	ft_putstr_fd(flag, 2);
 	ft_putchar('\n');
 	return (1);
 }
