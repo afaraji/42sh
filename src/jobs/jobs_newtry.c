@@ -282,8 +282,6 @@ char	*and_or_to_str(t_and_or *cmd)
 
 /******************************* jobs begin ***********************************/
 
-int	shell_is_interactive = 1;
-
 typedef struct			s_process
 {
 	char				*command;			/* command line, used for messages */
@@ -309,6 +307,11 @@ typedef struct			s_job
 	t_and_or			*cmd;				/* cmd origin */
 	struct s_job		*next;				/* next active job */
 }						t_job;
+
+int		shell_is_interactive = 1;
+t_job	*job_list = NULL;
+
+
 
 /*
 int		print_job(t_job *j, int foreground)
@@ -420,6 +423,40 @@ int	job_is_completed (t_job *j)
 	return (1);
 }
 
+void	update_job(t_job *j, pid_t pid, int status)
+{
+	t_process *p;
+
+	p = j->first_process;
+	while (p)
+	{
+		if (p->pid == pid)
+		{
+			p->status = status;
+			if (WIFSTOPPED(status))
+				p->stopped = 1;
+			else if (WIFEXITED(status) || WIFSIGNALED(status))
+				p->completed = 1;
+			break ;
+		}
+		p = p->next;
+	}
+}
+
+void	add_job(t_job *j)
+{
+	t_job	*tmp;
+	if (job_list == NULL)
+		job_list = j;
+	else
+	{
+		tmp = job_list;
+		while (tmp->next)
+			tmp = tmp->next;
+		tmp->next = j;
+	}
+}
+
 int		wait_for_job(t_job *j)
 {
 	t_process	*p;
@@ -429,7 +466,17 @@ int		wait_for_job(t_job *j)
 	should update all process status;
 */
 	p = j->first_process;
-	pid = waitpid(-1, &status, WUNTRACED);
+
+	while (job_is_stopped_completed(j) == 0)
+	{
+		pid = waitpid(-1, &status, WUNTRACED);
+		if (pid == -1)
+		{
+			perror("waitpid:");
+			exit(1);
+		}
+		update_job(j, pid, status);
+	}
 	return (status);
 }
 
@@ -572,6 +619,7 @@ int		launch_job(t_job *j, int foreground)
 	}
 
 	// format_job_info (j, "launched");
+	add_job(j);
 
 	if (!shell_is_interactive)
 		return (wait_for_job (j));
