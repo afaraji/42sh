@@ -85,6 +85,26 @@ char	*get_cmdpath_error(int err_no, char *str)
 	return (NULL);
 }
 
+char	*get_cmdpath_from_paths(char **paths, char *str)
+{
+	int		i;
+	char	*tmp;
+
+	i = 0;
+	while (paths[i])
+	{
+		tmp = ft_strjoin(paths[i], str);
+		if (!access(tmp, F_OK))
+		{
+			break ;
+		}
+		ft_strdel(&tmp);
+		i++;
+	}
+	free_tab(paths);
+	return (tmp);
+}
+
 char	*get_cmdpath(char *str)
 {
 	char	**paths;
@@ -97,19 +117,14 @@ char	*get_cmdpath(char *str)
 		return (ft_strdup(str));
 	if (is_path(str))
 		return (get_cmdpath_error(1, str));
+	// if ((tmp = hash_func()) && !access(str, X_OK))
+	// 	return (tmp);
+	if (tmp)
+		ft_Strdel(&tmp);
 	if (!(paths = paths_from_env()))
 		return (get_cmdpath_error(2, str));
-	i = 0;
-	while (paths[i])
-	{
-		tmp = ft_strjoin(paths[i++], str);
-		if (!access(tmp, F_OK))
-		{
-			free_tab(paths);
-			return (tmp);
-		}
-		ft_strdel(&tmp);
-	}
-	free_tab(paths);
+	tmp = get_cmdpath_from_paths(paths, str);
+	if (tmp)
+		return (tmp);
 	return (get_cmdpath_error(2, str));
 }

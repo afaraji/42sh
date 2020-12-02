@@ -425,7 +425,9 @@ int		wait_for_job(t_job *j)
 	t_process	*p;
 	pid_t		pid;
 	int			status;
-
+/*
+	should update all process status;
+*/
 	p = j->first_process;
 	pid = waitpid(-1, &status, WUNTRACED);
 	return (status);
@@ -698,7 +700,7 @@ int		update_proc(pid_t pid, int status, int bg)
 	else if (WIFSIGNALED(status) && sig != 2)
 		ft_print(STDOUT, "%s: %d", ft_strsignal(sig), sig);
 	else
-		ft_print(STDOUT, "error updating %d: p not found", pid);
+		ft_print(STDOUT, "error updating %d: p not found\n", pid);
 	return (0);
 }
 
