@@ -91,6 +91,18 @@ int		ft_set_var_env(char **av, int env)
 	return (1);
 }
 
+void	print_g_var(void)
+{
+	t_variable	*node;
+
+	node = g_var.var;
+	while (node)
+	{
+		ft_print(STDOUT, "%s=%s\n", node->key, node->value);
+		node = node->next;
+	}
+}
+
 int		ft_setenv(char **flag, char **env)
 {
 	if (flag[1] != NULL && flag[2] != NULL && flag[3] != NULL)
@@ -101,7 +113,11 @@ int		ft_setenv(char **flag, char **env)
 	else
 	{
 		if (flag[1] == NULL)
-			print_env(env);
+		{
+			print_g_var();//need to change it to set and unset
+			(void)env;
+			// print_env(env);
+		}
 		else
 		{
 			if (!(ft_isalpha(flag[1][0])) && flag[1][0] != '_')

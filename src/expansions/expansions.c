@@ -83,7 +83,7 @@ void	ft_expans_replace(char **argument, char *to_change, int start, int end)
 				ft_strdup(*argument + end), 3), 3);
 }
 
-// return 1 : error 
+// return 1 : error
 // return 0 : succes
 int		expansions_dispatcher(char **argument)
 {

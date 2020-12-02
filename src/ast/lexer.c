@@ -78,6 +78,7 @@ int		lexer(t_list_token **cmd_token)
 		return (42);
 	}
 	tilde_sub(cmd_token);
-	dollar_sub(cmd_token);
+	if (dollar_sub(cmd_token))
+		return (1);
 	return (0);
 }
