@@ -108,7 +108,6 @@ char	*get_cmdpath_from_paths(char **paths, char *str)
 char	*get_cmdpath(char *str)
 {
 	char	**paths;
-	int		i;
 	char	*tmp;
 
 	if (!str)
@@ -119,8 +118,9 @@ char	*get_cmdpath(char *str)
 		return (get_cmdpath_error(1, str));
 	// if ((tmp = hash_func()) && !access(str, X_OK))
 	// 	return (tmp);
+	tmp = NULL; // delet this line after adding hash_func
 	if (tmp)
-		ft_Strdel(&tmp);
+		ft_strdel(&tmp);
 	if (!(paths = paths_from_env()))
 		return (get_cmdpath_error(2, str));
 	tmp = get_cmdpath_from_paths(paths, str);
