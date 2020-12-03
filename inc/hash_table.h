@@ -6,7 +6,7 @@
 /*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/01 17:11:01 by awali-al          #+#    #+#             */
-/*   Updated: 2020/12/03 00:26:41 by awali-al         ###   ########.fr       */
+/*   Updated: 2020/12/03 15:13:59 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@
 # include <fcntl.h>
 # include <sys/stat.h>
 # include <sys/types.h>
-# include <stdio.h>
 
 # define HASH_BUFF 1000
 # define HASH_FILE "/tmp/.hash"
@@ -33,5 +32,7 @@ char	*hash_chck(char *cmd);
 int		hash_add(char *cmd, char *path);
 int		get_fd(int o);
 int		ft_hash(char *cmd, char **av);
+int		built_in(char *cmd);
+int		ft_type(char *cmd, char **arr);
 
 #endif
