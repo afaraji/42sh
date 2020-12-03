@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: afaraji <afaraji@student.42.fr>            +#+  +:+       +#+        */
+/*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/14 23:23:11 by afaraji           #+#    #+#             */
-/*   Updated: 2020/10/31 20:38:55 by afaraji          ###   ########.fr       */
+/*   Updated: 2020/12/03 17:19:16 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@
 # define GRTAND	-25
 # define WORD	-42
 # define BUILTINS	"echo|export|cd|setenv|unsetenv|env|exit|alias|unalias|\
-jobs|fg|bg|test|hash|fc"
+jobs|fg|bg|test|hash|fc|type"
 # define RSRVDWORD	"case|do|done|elif|else|esac|fi|for|if|in|then|until|while"
 
 int				main_parse(char *line);

@@ -6,7 +6,7 @@
 /*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/01 18:27:35 by awali-al          #+#    #+#             */
-/*   Updated: 2020/12/03 01:43:15 by awali-al         ###   ########.fr       */
+/*   Updated: 2020/12/03 14:43:17 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ static int	hash_clear(void)
 	return (0);
 }
 
-static int	built_in(char *cmd)
+int			built_in(char *cmd)
 {
 	if (!ft_strcmp(cmd, "alias") || !ft_strcmp(cmd, "cd") ||
 			!ft_strcmp(cmd, "echo") || !ft_strcmp(cmd, "env") ||

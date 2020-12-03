@@ -6,7 +6,7 @@
 /*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/03/09 17:15:16 by sazouaka          #+#    #+#             */
-/*   Updated: 2020/12/03 00:20:16 by awali-al         ###   ########.fr       */
+/*   Updated: 2020/12/03 17:23:08 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,6 +100,8 @@ int		builtins_2(char *cmd, char **av)
 		return (ft_test(cmd, av));
 	else if (ft_strcmp(cmd, "hash") == 0)
 		return (ft_hash(cmd, av));
+	else if (ft_strcmp(cmd, "type") == 0)
+		return (ft_type(cmd, av));
 	return (42);
 }
 
