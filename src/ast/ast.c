@@ -96,6 +96,7 @@ int	main_parse(char *line)
 	}
 	join_escape(tokens);
 	join_words(tokens);
+	join_words(tokens);
 	here_doc(tokens);
 	cmdlist = token_split_sep_op(tokens);
 	free_tokens(tokens);
