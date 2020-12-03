@@ -86,6 +86,36 @@ int	join_escape(t_list_token *token)
 	return (0);
 }
 
+int	history_sub(t_list_token *tokens)
+{
+	t_list_token	*node;
+	char			*new;
+	char			*old;
+	char			*tmp;
+FILE *ttyfd;ttyfd = fopen("/dev/ttys006", "w");fprintf(ttyfd, "\033[H\033[2J");
+	node = tokens;
+	while (node)
+	{
+		if ((node->type == WORD || node->type == DQUOTE) && node->data[0] == '!')
+		{
+			fprintf(ttyfd, "-->[%s]\n", node->data);
+			old = node->data + 1;
+			new = history_search(old, &g_var.history);
+			if (new == NULL)
+			{
+				ft_print(STDERR, "bash: !%s: event not found.\n", old);
+				return (1);
+			}
+			tmp = ft_replaceword(node->data, old, new);
+			ft_strdel(&new);
+			ft_strdel(&(node->data));
+			node->data = tmp;
+		}
+		node = node->next;
+	}
+	return (0);
+}
+
 int	main_parse(char *line)
 {
 	t_list_token	*tokens;
@@ -93,12 +123,11 @@ int	main_parse(char *line)
 
 	tokens = ft_tokenize(line);
 	ft_strdel(&line);
-	if (lexer(&tokens) || verify_tokens(tokens) || need_append(tokens))
+	if (lexer(&tokens) || verify_tokens(tokens) || need_append(tokens) || history_sub(tokens))
 	{
 		free_tokens(tokens);
 		return (100);
 	}
-	// history_sub();
 	join_escape(tokens);
 	join_words(tokens);
 	join_words(tokens);
