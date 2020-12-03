@@ -63,7 +63,7 @@ t_list_token	*add_dquote(int *index, char *str)
 	node->data = (ft_strsub(str, *index + 1, i - *index - 1));
 	if (is_dollar(node->data) >= 0)
 		node->data = str_dollar_sub(node->data);//expansion_dispatcher
-	node->data = delete_escape(node->data);//here to fix [echo "lol \n pop"]
+	node->data = delete_escape(node->data);
 	node->next = NULL;
 	node->prec = NULL;
 	if (i + 1 < (int)ft_strlen(str))
