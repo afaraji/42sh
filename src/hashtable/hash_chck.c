@@ -6,11 +6,12 @@
 /*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/02 02:39:55 by awali-al          #+#    #+#             */
-/*   Updated: 2020/12/03 02:33:49 by awali-al         ###   ########.fr       */
+/*   Updated: 2020/12/03 17:42:11 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../inc/hash_table.h"
+#include "../../inc/expansion.h"
 
 static char	*table_check(char *cmd, char **table)
 {
@@ -43,7 +44,7 @@ static char	*path_check(char *cmd)
 
 	ret = NULL;
 	table = NULL;
-	table = ft_strsplit(getenv("PATH"), ':');
+	table = ft_strsplit(var_get_value("PATH", 1), ':');
 	i = 0;
 	if (table)
 		while (table[i] && !ret)
