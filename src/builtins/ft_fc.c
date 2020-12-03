@@ -112,6 +112,8 @@ int		get_opt_av(int opt[5], char **av, char **editor)
 	i = 1;
 	while (av[i] && av[i][0] == '-')
 	{
+		if (av[i][1] == '-')
+			return (i + 1);
 		if (av[i][1] == '\0')
 		{
 			ft_print(STDERR, "shell: fc: history specification out of range\n");
@@ -122,10 +124,8 @@ int		get_opt_av(int opt[5], char **av, char **editor)
 		if (get_opt_str(opt, &av[i][1]) == 0)
 			return (-1);
 		if (opt[E_OPT] == 1)
-		{
 			if (get_opt_av_1(opt, av, editor, &i) == -1)
 				return (-1);
-		}
 		i++;
 	}
 	return (i);
@@ -465,7 +465,7 @@ int		ft_fc_2(char *f, char *l, int opt[5], char *e)
 
 // int		fc_do_s_2(char *str)
 // {
-	
+
 // }
 
 int		fc_do_s(char **av, int i)
