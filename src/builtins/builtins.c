@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtins.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sazouaka <sazouaka@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/03/09 17:15:16 by sazouaka          #+#    #+#             */
-/*   Updated: 2020/03/09 17:15:17 by sazouaka         ###   ########.fr       */
+/*   Updated: 2020/12/03 00:20:16 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@
 #include "../../inc/exec.h"
 #include "../../inc/ft_free.h"
 #include "../../inc/readline.h"
+#include "../../inc/hash_table.h"
+#include "../../inc/test.h"
 
 int		ft_export(char **flag, char **env)
 {
@@ -95,15 +97,9 @@ int		builtins_2(char *cmd, char **av)
 	else if (ft_strcmp(cmd, "fc") == 0)
 		return (ft_fc(av));
 	if (ft_strcmp(cmd, "test") == 0)
-	{
-		ft_print(1,"buitin [test] not implimented yet.\n");
-		return (0);
-	}
+		return (ft_test(cmd, av));
 	else if (ft_strcmp(cmd, "hash") == 0)
-	{
-		ft_print(1,"buitin [hash] not implimented yet.\n");
-		return (0);
-	}
+		return (ft_hash(cmd, av));
 	return (42);
 }
 

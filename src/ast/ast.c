@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ast.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: afaraji <afaraji@student.42.fr>            +#+  +:+       +#+        */
+/*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/14 22:35:31 by afaraji           #+#    #+#             */
-/*   Updated: 2020/10/31 20:52:37 by afaraji          ###   ########.fr       */
+/*   Updated: 2020/12/03 00:22:28 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,8 +57,8 @@ int	manage_cmd_list(t_cmdlist *cmdlist)
 	ret = 0;
 	while (node)
 	{
-		// ret = execute(node->and_or, node->bg);
-		ret = job_control(node->and_or, node->bg);
+		ret = execute(node->and_or, node->bg);
+		// ret = job_control(node->and_or, node->bg);
 		node = node->next;
 	}
 	free_cmd_list(cmdlist);

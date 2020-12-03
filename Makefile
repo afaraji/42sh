@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: afaraji <afaraji@student.1337.ma>          +#+  +:+       +#+         #
+#    By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/11/11 23:19:46 by afaraji           #+#    #+#              #
-#    Updated: 2020/11/11 23:28:15 by afaraji          ###   ########.fr        #
+#    Updated: 2020/12/03 00:14:58 by awali-al         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,7 +25,11 @@ FILE_AUTOCMPLT = auto_complete.c auto_complete_2.c cmd_completion_1.c		\
 	print_completion.c
 
 FILE_BUILTINS = builtins.c change_pwd.c export.c ft_cd_1.c ft_cd_2.c		\
-	ft_cd_old.c  ft_echo.c  setenv.c  unalias.c unsetenv.c ft_fc.c
+	ft_cd_old.c  ft_echo.c  setenv.c  unalias.c unsetenv.c ft_fc.c hash.c	\
+	test.c test_functions.c
+
+FILE_HASHTABLE = ft_str2del.c ft_strappend.c ft_strstich.c hash_add.c		\
+	hash_chck.c hash_table.c
 
 FILE_EXEC = do_assignement.c do_sufix_prefix.c exec.c exec_nofork.c			\
 	exit_status.c get_cmdargs.c get_cmdpath.c io_redirect.c io_redirect_aggr.c\
@@ -59,6 +63,8 @@ SRC_AUTOCMPLT = $(foreach file,$(FILE_AUTOCMPLT), ./src/autocomplete/$(file))
 
 SRC_BUILTINS = $(foreach file,$(FILE_BUILTINS), ./src/builtins/$(file))
 
+SRC_HASHTABLE = $(foreach file,$(FILE_HASHTABLE), ./src/hashtable/$(file))
+
 SRC_EXEC = $(foreach file,$(FILE_EXEC), ./src/exec/$(file))
 
 SRC_FREE = $(foreach file,$(FILE_FREE), ./src/ft_free/$(file))
@@ -89,6 +95,8 @@ OBJ_AUTOCMPLT = $(SRC_AUTOCMPLT:.c=.o)
 
 OBJ_BUILTINS = $(SRC_BUILTINS:.c=.o)
 
+OBJ_HASHTABLE = $(SRC_HASHTABLE:.c=.o)
+
 OBJ_EXEC = $(SRC_EXEC:.c=.o)
 
 OBJ_FREE = $(SRC_FREE:.c=.o)
@@ -107,21 +115,22 @@ OBJ_EXPANSIONS = $(SRC_EXPANSION:.c=.o)
 
 all : msg $(NAME)
 
-$(NAME) : $(OBJ_SHL) $(OBJ_AST) $(OBJ_AUTOCMPLT) $(OBJ_BUILTINS) $(OBJ_JOBS)\
-		$(OBJ_EXEC) $(OBJ_FREE) $(OBJ_HIST) $(OBJ_PARSE) $(OBJ_READLINE) \
-		$(OBJ_SEARCH) $(OBJ_EXPANSIONS)
+$(NAME) : $(OBJ_SHL) $(OBJ_AST) $(OBJ_AUTOCMPLT) $(OBJ_BUILTINS)			\
+		$(OBJ_HASHTABLE) $(OBJ_JOBS) $(OBJ_EXEC) $(OBJ_FREE) $(OBJ_HIST)	\
+		$(OBJ_PARSE) $(OBJ_READLINE) $(OBJ_SEARCH) $(OBJ_EXPANSIONS)
 		$(MAKE) -C ./libft
 	printf "linking OBJ files... "
 	gcc $(FLAGS) $(OBJ_SHL) $(LIBFTA) $(OBJ_AST) $(OBJ_AUTOCMPLT) $(OBJ_JOBS)\
-		$(OBJ_BUILTINS) $(OBJ_EXEC) $(OBJ_FREE) $(OBJ_HIST) $(OBJ_PARSE) \
-		$(OBJ_SEARCH) $(OBJ_READLINE) $(OBJ_EXPANSIONS) -ltermcap -o $(NAME)
+		$(OBJ_BUILTINS) $(OBJ_HASHTABLE) $(OBJ_EXEC) $(OBJ_FREE) $(OBJ_HIST)\
+		$(OBJ_PARSE) $(OBJ_SEARCH) $(OBJ_READLINE) $(OBJ_EXPANSIONS) -ltermcap\
+		-o $(NAME)
 	echo "done"
 
 clean :
 	printf "removing OBJ files ./src/\n"
 	/bin/rm -f $(OBJ_SHL) $(OBJ_AST) $(OBJ_AUTOCMPLT) $(OBJ_BUILTINS)		\
-		$(OBJ_EXEC) $(OBJ_FREE) $(OBJ_HIST) $(OBJ_PARSE) $(OBJ_READLINE)	\
-		$(OBJ_JOBS) $(OBJ_SEARCH) $(OBJ_EXPANSIONS)
+		$(OBJ_HASHTABLE) $(OBJ_EXEC) $(OBJ_FREE) $(OBJ_HIST) $(OBJ_PARSE)	\
+		$(OBJ_READLINE)	$(OBJ_JOBS) $(OBJ_SEARCH) $(OBJ_EXPANSIONS)
 	$(MAKE) -C ./libft/ clean
 
 fclean : clean
