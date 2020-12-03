@@ -121,9 +121,7 @@ int		dollar_sub(t_list_token **cmd_token)
 	{
 		if (node->type == WORD && is_dollar(node->data) >= 0)
 		{
-			// node->data = str_dollar_sub(node->data);
-			if (expansions_dispatcher(&(node->data)))
-				return (1);
+			node->data = str_dollar_sub(node->data);
 		}
 		node = node->next;
 	}

@@ -17,6 +17,7 @@
 #include "../../inc/exec.h"
 #include "../../inc/ft_free.h"
 #include "../../inc/readline.h"
+#include "../../trash/debug_prints.c"
 
 int	is_valid_word(char *s)
 {
@@ -86,30 +87,94 @@ int	join_escape(t_list_token *token)
 	return (0);
 }
 
+char	*get_event_disignator(char *s)
+{
+	int	i;
+	int	j;
+	int	num;
+
+	i = 0;
+	j = 1;
+	while (s[i])
+	{
+		if (s[i] == '!' && (i == 0 || (i > 1 && s[i - 1] != '\\')))
+		{
+			if (s[i + 1] == '!')
+			{
+				printf("-------1------\n");
+				return (ft_strsub(s, i, 2));
+			}
+			if (s[i + j] == '-')
+				j++;
+			num = (ft_isdigit(s[i + j])) ? 1 : 0;
+			while (s[i + j] && ((!num && ft_isalpha(s[i + j])) || (num && ft_isdigit(s[i + j]))))
+			{
+				printf("-------2------[%d]\n", j);
+				j++;
+			}
+			printf("-------3------[%s][%d][%d]\n", s, i, j);
+			return (ft_strsub(s, i, j));
+		}
+		i++;
+	}
+	return (NULL);
+}
+
+char	*tokens_to_str(t_list_token *node)
+{
+	char	*s;
+	char	*tmp;
+
+	s = ft_strdup("");
+	while (node)
+	{
+		if (node->type == WORD)
+			tmp = ft_strjoin(s, node->data);
+		else if (node->type == QUOTE || node->type == DQUOTE)
+			tmp = ft_4strjoin(s, tokentoa(node->type), node->data, tokentoa(node->type));
+		else
+			tmp = ft_strjoin(s, tokentoa(node->type));
+		ft_strdel(&s);
+		s = tmp;
+		node = node->next;
+	}
+	return (s);
+}
+
 int	history_sub(t_list_token *tokens)
 {
 	t_list_token	*node;
 	char			*new;
 	char			*old;
 	char			*tmp;
-FILE *ttyfd;ttyfd = fopen("/dev/ttys006", "w");fprintf(ttyfd, "\033[H\033[2J");
+	t_list_token	*www;
+	t_list_token	*zzz;
+FILE *toto;toto = fopen("/dev/ttys006", "w");fprintf(toto, "\033[H\033[2J");
 	node = tokens;
 	while (node)
 	{
-		if ((node->type == WORD || node->type == DQUOTE) && node->data[0] == '!')
+		if ((node->type == WORD || node->type == DQUOTE) && (old = get_event_disignator(node->data)))
 		{
-			fprintf(ttyfd, "-->[%s]\n", node->data);
-			old = node->data + 1;
-			new = history_search(old, &g_var.history);
+			fprintf(toto, "-1->[%s][%s]\n", node->data, old);
+			fc_history_remove();
+			new = history_search(old + 1, &g_var.history);
 			if (new == NULL)
 			{
-				ft_print(STDERR, "bash: !%s: event not found.\n", old);
+				ft_print(STDERR, "shell: %s: event not found.\n", old);
 				return (1);
 			}
 			tmp = ft_replaceword(node->data, old, new);
+			fprintf(toto, "-2->[%s][%s]\n", new, tmp);
+			www = ft_tokenize(tmp);
+			zzz = node->next;
+			replace_node(&node, &www);
+			// fprintf(toto,"-22->[%s]\n", tokens_to_str(tokens));
+			fc_history_add(tokens_to_str(tokens), 1);
+			// fc_history_add(tmp, 1);
+			fprintf(toto, "-3->[%p][%p]\n", node, www);
+			// fprintf(toto, "-4->[%s][%s]\n", node->data, www->data); segfault ?
 			ft_strdel(&new);
-			ft_strdel(&(node->data));
-			node->data = tmp;
+			// ft_strdel(&tmp);
 		}
 		node = node->next;
 	}
@@ -120,18 +185,18 @@ int	main_parse(char *line)
 {
 	t_list_token	*tokens;
 	t_cmdlist		*cmdlist;
-
+debug();
 	tokens = ft_tokenize(line);
 	ft_strdel(&line);
 	if (lexer(&tokens) || verify_tokens(tokens) || need_append(tokens) || history_sub(tokens))
 	{
 		free_tokens(tokens);
 		return (100);
-	}
+	}										token_print(tokens);token_print_inverse(tokens);
 	join_escape(tokens);
 	join_words(tokens);
 	join_words(tokens);
-	here_doc(tokens);
+	here_doc(tokens);						token_print(tokens);
 	cmdlist = token_split_sep_op(tokens);
 	free_tokens(tokens);
 	if (!cmdlist || g_var.errno)

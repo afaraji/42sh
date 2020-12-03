@@ -81,5 +81,8 @@ int				init_shell(char **env);
 t_hist			*create_history(void);
 char			*delete_escape(char *str);
 int				system_calls(char *func, int ret, int failure_value);
+void			replace_node(t_list_token **dst, t_list_token **src);
+char			*fc_history_remove(void);
+void			fc_history_add(char *s, int l);
 
 #endif

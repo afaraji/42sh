@@ -18,8 +18,6 @@
 #include "../../inc/ft_free.h"
 #include "../../inc/readline.h"
 
-#include "../../trash/debug_prints.c"
-
 t_list_token	*add_quote(int *index, char *str)
 {
 	t_list_token	*node;
