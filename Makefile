@@ -6,7 +6,7 @@
 #    By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/11/11 23:19:46 by afaraji           #+#    #+#              #
-#    Updated: 2020/12/03 15:07:40 by awali-al         ###   ########.fr        #
+#    Updated: 2020/12/03 20:47:40 by awali-al         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,7 +29,7 @@ FILE_BUILTINS = builtins.c change_pwd.c export.c ft_cd_1.c ft_cd_2.c		\
 	test.c test_functions.c ft_type.c
 
 FILE_HASHTABLE = ft_str2del.c ft_strappend.c ft_strstich.c hash_add.c		\
-	hash_chck.c hash_table.c
+	hash_chck.c hash_table.c alias_check.c
 
 FILE_EXEC = do_assignement.c do_sufix_prefix.c exec.c exec_nofork.c			\
 	exit_status.c get_cmdargs.c get_cmdpath.c io_redirect.c io_redirect_aggr.c\

@@ -6,11 +6,13 @@
 /*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/01 18:27:35 by awali-al          #+#    #+#             */
-/*   Updated: 2020/12/03 14:43:17 by awali-al         ###   ########.fr       */
+/*   Updated: 2020/12/03 20:46:32 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../inc/hash_table.h"
+#include "../../inc/builtins.h"
+#include "../../inc/parse.h"
 
 static int	hash_print(void)
 {
@@ -39,15 +41,21 @@ static int	hash_clear(void)
 
 int			built_in(char *cmd)
 {
-	if (!ft_strcmp(cmd, "alias") || !ft_strcmp(cmd, "cd") ||
-			!ft_strcmp(cmd, "echo") || !ft_strcmp(cmd, "env") ||
-			!ft_strcmp(cmd, "exit") || !ft_strcmp(cmd, "hash") ||
-			!ft_strcmp(cmd, "setenv") || !ft_strcmp(cmd, "test") ||
-			!ft_strcmp(cmd, "type") || !ft_strcmp(cmd, "unalias") ||
-			!ft_strcmp(cmd, "unsetenv"))
-		return (1);
-	else
-		return (0);
+	char	**builtins;
+	int		ret;
+	int		i;
+
+	i = 0;
+	ret = 0;
+	builtins = ft_strsplit(BUILTINS, '|');
+	while (builtins[i] && !ret)
+	{
+		if (!ft_strcmp(cmd, builtins[i]))
+			ret = 1;
+		i++;
+	}
+	free_tab(builtins);
+	return (ret);
 }
 
 static int	hash_entries(char **av)
@@ -61,7 +69,7 @@ static int	hash_entries(char **av)
 	tmp = NULL;
 	while (av[i])
 	{
-		if (!ft_strchr(av[i], '/') && !built_in(av[i])) // I need to check the alias too
+		if (!ft_strchr(av[i], '/') && !built_in(av[i]) && !is_alias(av[i]))
 		{
 			tmp = hash_chck(av[i]);
 			if (!tmp)

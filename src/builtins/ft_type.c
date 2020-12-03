@@ -6,12 +6,11 @@
 /*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/03 14:35:54 by awali-al          #+#    #+#             */
-/*   Updated: 2020/12/03 17:24:35 by awali-al         ###   ########.fr       */
+/*   Updated: 2020/12/03 20:47:06 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../inc/hash_table.h"
-#include <stdio.h>
 
 static int	output_message(char *arri, char *str, int type)
 {
@@ -36,7 +35,7 @@ static int	output_message(char *arri, char *str, int type)
 	return (0);
 }
 
-int		ft_type(char *cmd, char **arr)
+int			ft_type(char *cmd, char **arr)
 {
 	char	*tmp;
 	int		ret;
@@ -50,9 +49,9 @@ int		ft_type(char *cmd, char **arr)
 	tmp = NULL;
 	while (arr[i])
 	{
-		/*if ((tmp = alias(arr[i])))
+		if ((tmp = get_alias(arr[i])))
 			output_message(arr[i], tmp, 1);
-		else */if (built_in(arr[i]))
+		else if (built_in(arr[i]))
 			output_message(arr[i], NULL, 2);
 		else if ((tmp = hash_chck(arr[i])))
 			output_message(arr[i], tmp, 3);
