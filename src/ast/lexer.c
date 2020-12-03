@@ -26,10 +26,16 @@ char	*delete_escape(char *str)
 	i = 0;
 	while (str[i])
 	{
-		if (str[i] == '\\' && (str[i + 1] == '$' || str[i + 1] == '"'))
+		if (str[i] == '\\' && (str[i + 1] == '$' || str[i + 1] == '"' ||
+									str[i + 1] == '\\' || str[i + 1] == '\n'))
 		{
 			str[i] = '\0';
-			tmp = ft_strjoin(str, &str[i + 1]);
+			if (str[i + 1] == '\n' && str[i + 2])
+			{
+				tmp = ft_strjoin(str, &str[i + 2]);
+			}
+			else
+				tmp = ft_strjoin(str, &str[i + 1]);
 			ft_strdel(&str);
 			str = tmp;
 		}

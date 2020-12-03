@@ -67,6 +67,22 @@ void	replace_node(t_list_token **dst, t_list_token **src)
 	free((*src));
 }
 
+int		is_quote_closed(char *s, int type)
+{
+	int		i;
+	char	c;
+
+	c = (type == DQUOTE) ? '"' : '\'';
+	i = 1;
+	while (s[i])
+	{
+		if (s[i] == c && s[i - 1] != '\\')
+			return (1);
+		i++;
+	}
+	return (0);
+}
+
 int		need_append(t_list_token *tokens)
 {
 	t_list_token	*node;
@@ -77,17 +93,28 @@ int		need_append(t_list_token *tokens)
 	node = get_last_node_toappend(tokens);
 	if (is_need_append(node))
 	{
-		if (!(tmp = read_to_append(node)))
-			return (1);
 		if (node->type == QUOTE || node->type == DQUOTE)
-		{
-			toappend = ft_4strjoin(tokentoa(node->type), node->data, "\n", tmp);
+		{//-------------------------- append_quotes ----------------------------
+			char	*tmp2;
+			toappend = ft_strjoin(tokentoa(node->type), node->data);
+			while (is_quote_closed(toappend, node->type) == 0)
+			{
+				if (!(tmp = read_to_append(node)))
+					return (1);
+				tmp2 = ft_4strjoin(toappend, "\n", tmp,"");
+				ft_strdel(&toappend);
+				toappend = tmp2;
+			}
 			ttt = ft_tokenize(toappend);
 			replace_node(&node, &ttt);
 			ft_strdel(&toappend);
-		}
+		}//---------------------------------------------------------------------
 		else
+		{
+			if (!(tmp = read_to_append(node)))
+				return (1);
 			node->next = ft_tokenize(tmp);
+		}
 		ft_strdel(&tmp);
 		if (lexer(&tokens) || verify_tokens(tokens))
 			return (100);

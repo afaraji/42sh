@@ -77,6 +77,10 @@ int	join_escape(t_list_token *token)
 			node->type = WORD;
 			node->data[0] = '\0';
 		}
+		if (node->type == DQUOTE && node->is_ok)//recently added [need to be verified in other situations]
+		{
+			node->data = delete_escape(node->data);
+		}
 		node = node->next;
 	}
 	return (0);
@@ -94,6 +98,7 @@ int	main_parse(char *line)
 		free_tokens(tokens);
 		return (100);
 	}
+	// history_sub();
 	join_escape(tokens);
 	join_words(tokens);
 	join_words(tokens);
