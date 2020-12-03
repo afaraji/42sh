@@ -40,19 +40,19 @@ int		get_cmd_1(char **str1, char **str2)
 
 int		get_cmd(t_terminal *term, t_hist **his_head, int mult_line)
 {
-	char	*tmp;
+	// char	*tmp;
 
 	term->line->str = join_line(term->line->str, term->buff, term->line->curs);
 	display_line(term->line);
 	go_right(term->line);
 	if (term->buff == ENTER)
 	{
-		if (term->line->str[0] == '!' && term->line->str[1])
-		{
-			tmp = history_search(term->line->str + 1, his_head);
-			if (get_cmd_1(&tmp, &(term->line->str)) == 1)
-				return (1);
-		}
+		// if (term->line->str[0] == '!' && term->line->str[1])
+		// {
+		// 	tmp = history_search(term->line->str + 1, his_head);
+		// 	if (get_cmd_1(&tmp, &(term->line->str)) == 1)
+		// 		return (1);
+		// }
 		if (ft_strcmp(term->line->str, "") != 0
 		|| (mult_line != 0 && mult_line != -1))
 			add_cmd_to_his_list(term->line->str, his_head, mult_line);
