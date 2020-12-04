@@ -38,6 +38,7 @@ int		ft_editor(char *editor, char *file)
 			ret = main_parse(line);
 		}
 		close(fd);
+		unlink("/tmp/fc_tmp_file");
 	}
 	return (ret);
 }
