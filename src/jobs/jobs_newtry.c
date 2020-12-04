@@ -305,7 +305,7 @@ typedef struct			s_job
 	int					fd_out;				/* standard output */
 	int					fd_err;				/* standard error */
 	t_and_or			*cmd;				/* cmd origin */
-	int					index;
+	int					index;				/* if in bg index > 0, if in fg index == 0 */
 	struct s_job		*next;				/* next active job */
 }						t_job;
 
@@ -440,7 +440,7 @@ int	job_is_completed (t_job *j)
 	return (1);
 }
 
-void	update_job(t_job *j, pid_t pid, int status)
+int		update_job(t_job *j, pid_t pid, int status)
 {
 	t_process *p;
 
@@ -454,10 +454,11 @@ void	update_job(t_job *j, pid_t pid, int status)
 				p->stopped = 1;
 			else if (WIFEXITED(status) || WIFSIGNALED(status))
 				p->completed = 1;
-			break ;
+			return (1);
 		}
 		p = p->next;
 	}
+	return (0);
 }
 
 void	add_job(t_job *j)
@@ -474,16 +475,107 @@ void	add_job(t_job *j)
 	}
 }
 
-int		wait_for_job(t_job *j)
+void	free_job(t_job *j)
 {
 	t_process	*p;
+	t_process	*p2;
+
+	if (!j)
+		return ;
+	ft_strdel(&(j->command));
+	p = j->first_process;
+	while (p)
+	{
+		p2 = p;
+		p = p->next;
+		free_tab(p2->argv);
+		free_tab(p2->env);
+		ft_strdel(&(p2->command));
+		free(p2);
+		p2 = NULL;
+	}
+}
+
+int		remove_job(t_job *job)
+{
+	t_job	*current;
+	t_job	*prec;
+
+	current = job_list;
+	prec = NULL;
+	while (current)
+	{
+		if (current->pgid == job->pgid)
+		{
+			if (prec)
+				prec->next = current->next;
+			else
+				job_list = current->next;
+			free_job(job);
+			return (1);
+		}
+		prec = current;
+		current = current->next;
+	}
+	return (0);
+}
+
+int		report_to_user(t_job *j)
+{
+	t_process	*p;
+	int			ret = 0;
+
+	if (j->notified)
+		return (0);
+	p = j->first_process;
+	while (p->next)
+		p = p->next;
+	if (job_is_completed(j))
+	{
+		if (WIFEXITED(p->status))
+			ret = WEXITSTATUS(p->status);
+		else
+		{
+			ret = WTERMSIG(p->status);
+			if (ret != SIGINT)
+				printf("*1*> %s: %d\n", ft_strsignal(ret), ret);
+		}
+		return (remove_job(j));
+	}
+	if (job_is_stopped_completed(j))
+	{
+		j->index = (j->index == 0) ? get_new_index() : j->index;
+		p = j->first_process;
+		while (p)
+		{
+			if (p->stopped == 1)
+			{
+				ret = WSTOPSIG(p->status);
+				break ;
+			}
+			p = p->next;
+		}
+		printf("*2*> [%d] %s\n", j->index, ft_strsignal(ret));
+		j->notified = 1;
+		return (ret);
+	}
+	return (1);
+}
+
+int		find_job_and_update(pid, status)
+{
+	printf("pid:%d is in an other job, status[%d]\n", pid, status);
+	return 0;
+}
+// was here working on fg jobs
+int		wait_for_job(t_job *j)
+{
+	// t_process	*p;
 	pid_t		pid;
 	int			status;
 /*
 	should update all process status;
 */
-	p = j->first_process;
-
 	while (job_is_stopped_completed(j) == 0)
 	{
 		pid = waitpid(-1, &status, WUNTRACED);
@@ -492,8 +584,12 @@ int		wait_for_job(t_job *j)
 			perror("waitpid:");
 			exit(1);
 		}
-		update_job(j, pid, status);
+		if (update_job(j, pid, status) == 0)
+		{
+			find_job_and_update(pid, status);
+		}
 	}
+	status = report_to_user(j);
 	return (status);
 }
 
