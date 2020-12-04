@@ -6,7 +6,7 @@
 /*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/02 02:39:55 by awali-al          #+#    #+#             */
-/*   Updated: 2020/12/03 17:42:11 by awali-al         ###   ########.fr       */
+/*   Updated: 2020/12/03 23:20:41 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,6 @@ char		*hash_chck(char *cmd)
 		if (ret)
 			hash_add(cmd, ret);
 	}
-	table ? ft_str2del(table) : 0;
+	table ? free_tab(table) : 0;
 	return (ret);
 }
