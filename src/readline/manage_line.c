@@ -74,7 +74,7 @@ void		unprint_manage(t_terminal *term, t_hist **his_head, char **to_past)
 }
 
 char		*manage_line(char *prompt, t_hist **his_head, int mult_line)
-{// i was here looking for where ! got changed for it s value
+{
 	t_terminal	*term;
 	char		*tmp;
 

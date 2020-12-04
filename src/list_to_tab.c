@@ -27,8 +27,7 @@ int		list_count(t_l *list)
 	i = 0;
 	while (node)
 	{
-		// if (ft_strcmp(node->data, ""))
-			i++;
+		i++;
 		node = node->next;
 	}
 	return (i + 1);
@@ -48,11 +47,8 @@ char	**list_to_tab(t_l *list)
 	i = 0;
 	while (node)
 	{
-		// if (ft_strcmp(node->data, ""))//removed this so [ls a "" b] = 4 args
-		// {
-			args[i] = ft_strdup(node->data);
-			i++;
-		// }
+		args[i] = ft_strdup(node->data);
+		i++;
 		node = node->next;
 	}
 	args[i] = NULL;
