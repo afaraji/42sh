@@ -88,6 +88,8 @@ void	display_result(t_terminal *term, char *s, t_hist **head)
 		go_right(term->line);
 		i--;
 	}
+	if ((*head)->s_chr)
+		ft_strdel(&((*head)->s_chr));
 	(*head)->s_chr = ft_strdup(term->line->str);
 	ft_strdel(&(term->line->str));
 	term->line->str = ft_strdup(s);

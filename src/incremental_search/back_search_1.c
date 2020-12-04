@@ -33,6 +33,8 @@ char	*bck_search_2(t_terminal *term, t_hist **head, char *line, int mlt_line)
 	if (term->buff == CTRL_C || (term->buff == CTRL_D &&
 										!ft_strcmp(term->line->str, "")))
 	{
+		if (line)
+			ft_strdel(&line);
 		return (ctrl_c_d(term, mlt_line));
 	}
 	else if (term->buff == ENTER)
@@ -46,6 +48,8 @@ char	*bck_search_2(t_terminal *term, t_hist **head, char *line, int mlt_line)
 	}
 	else
 	{
+		if (line)
+			ft_strdel(&line);
 		(*head)->s_chr = NULL;
 		ft_putchar('\n');
 		return (ft_strdup(""));
@@ -55,6 +59,8 @@ char	*bck_search_2(t_terminal *term, t_hist **head, char *line, int mlt_line)
 void	back_search_1(t_terminal *term, t_hist **head, char **line, int *indice)
 {
 	(*indice)--;
+	if (*line)
+		ft_strdel(line);
 	*line = incremental_search(term, head, indice);
 	ft_put_line(*line, term, head);
 }
@@ -71,7 +77,11 @@ char	*bck_search(t_terminal *term, t_hist **head, int mult_line)
 		term->buff = 0;
 		read(0, &term->buff, 4);
 		if (ft_isprint(term->buff))
+		{
+			if (line)
+				ft_strdel(&line);
 			line = print_search(term, head, &indice);
+		}
 		else if (term->buff == DEL)
 		{
 			indice = 0;
@@ -88,9 +98,18 @@ char	*bck_search(t_terminal *term, t_hist **head, int mult_line)
 
 char	*ctrl_r(t_terminal *term, t_hist **head, int mult_line)
 {
+	char	*tmp;
+
 	if (!head || !term)
 		return (NULL);
 	tputs(tgetstr("do", NULL), 1, ft_intputchar);
 	ft_putstr("bck-i-search: ");
-	return (bck_search(term, head, mult_line));
+	tmp = bck_search(term, head, mult_line);
+	if (term)
+	{
+		printf("^^&111** \n");
+		free_term(&term);
+		printf("^^&222** \n");
+	}
+	return (tmp);
 }
