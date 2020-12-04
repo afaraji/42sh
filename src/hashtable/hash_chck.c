@@ -6,7 +6,7 @@
 /*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/02 02:39:55 by awali-al          #+#    #+#             */
-/*   Updated: 2020/12/04 16:00:24 by awali-al         ###   ########.fr       */
+/*   Updated: 2020/12/04 16:21:29 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ static char	*path_check(char *cmd)
 	table = ft_strsplit(var_get_value("PATH", 1), ':');
 	i = 0;
 	if (table)
+	{
 		while (table[i] && !ret)
 		{
 			fd = opendir(table[i]);
@@ -58,6 +59,7 @@ static char	*path_check(char *cmd)
 			closedir(fd);
 			i++;
 		}
+	}
 	table ? ft_str2del(table) : 0;
 	return (ret);
 }
