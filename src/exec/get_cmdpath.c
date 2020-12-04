@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_cmdpath.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: afaraji <afaraji@student.1337.ma>          +#+  +:+       +#+        */
+/*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/03 18:24:44 by afaraji           #+#    #+#             */
-/*   Updated: 2020/11/03 18:24:49 by afaraji          ###   ########.fr       */
+/*   Updated: 2020/12/04 16:04:28 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #include "../../inc/exec.h"
 #include "../../inc/ft_free.h"
 #include "../../inc/readline.h"
+#include "../../inc/hash_table.h"
 
 int		do_prefix(t_cmd_prefix *prefix, t_variable *var, int env)
 {
@@ -107,7 +108,7 @@ char	*get_cmdpath_from_paths(char **paths, char *str)
 
 char	*get_cmdpath(char *str)
 {
-	char	**paths;
+	// char	**paths;
 	char	*tmp;
 
 	if (!str)
@@ -116,15 +117,14 @@ char	*get_cmdpath(char *str)
 		return (ft_strdup(str));
 	if (is_path(str))
 		return (get_cmdpath_error(1, str));
-	// if ((tmp = hash_func()) && !access(str, X_OK))
-	// 	return (tmp);
-	tmp = NULL; // delet this line after adding hash_func
-	if (tmp)
-		ft_strdel(&tmp);
-	if (!(paths = paths_from_env()))
-		return (get_cmdpath_error(2, str));
-	tmp = get_cmdpath_from_paths(paths, str);
-	if (tmp)
+	if ((tmp = hash_chck(str)))
 		return (tmp);
+// 	if (tmp)
+// 		ft_strdel(&tmp);
+// 	if (!(paths = paths_from_env()))
+// 		return (get_cmdpath_error(2, str));
+// 	tmp = get_cmdpath_from_paths(paths, str);
+// 	if (tmp)
+// 		return (tmp);
 	return (get_cmdpath_error(2, str));
 }

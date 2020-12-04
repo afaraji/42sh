@@ -6,7 +6,7 @@
 /*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/02 02:39:55 by awali-al          #+#    #+#             */
-/*   Updated: 2020/12/03 23:20:41 by awali-al         ###   ########.fr       */
+/*   Updated: 2020/12/04 16:00:24 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ char		*hash_chck(char *cmd)
 	table = hash_table();
 	ret = NULL;
 	ret = table_check(cmd, table);
-	if (!ret)
+	if (!ret || access(ret, X_OK) == -1)
 	{
 		ret = path_check(cmd);
 		if (ret)
