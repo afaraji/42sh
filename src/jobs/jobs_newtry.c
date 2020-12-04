@@ -305,6 +305,7 @@ typedef struct			s_job
 	int					fd_out;				/* standard output */
 	int					fd_err;				/* standard error */
 	t_and_or			*cmd;				/* cmd origin */
+	int					index;
 	struct s_job		*next;				/* next active job */
 }						t_job;
 
@@ -335,6 +336,21 @@ int		print_job(t_job *j, int foreground)
 	return (0);
 }
 */
+
+int			get_new_index(void)
+{
+	t_job	*node;
+	int		index;
+
+	node = job_list;
+	index = 1;
+	while (node)
+	{
+		index = (node->index >= index) ? node->index + 1 : index;
+		node = node->next;
+	}
+	return (index);
+}
 
 t_process	*get_process(t_simple_cmd *cmd)
 {
@@ -386,6 +402,7 @@ t_job	*get_job(t_and_or *cmd)
 	job->first_process = get_first_proc(cmd->ast);
 	job->pgid = 0;
 	job->notified = 0;
+	job->index = 0;
 	job->fd_in = STDIN;
 	job->fd_out = STDOUT;
 	job->fd_err = STDERR;
@@ -746,7 +763,7 @@ int		update_proc(pid_t pid, int status, int bg)
 	if (p)
 		ft_print(STDOUT, "", p->index, p->c, ft_strsignal(sig), p->str);
 	else if (WIFSIGNALED(status) && sig != 2)
-		ft_print(STDOUT, "%s: %d", ft_strsignal(sig), sig);
+		ft_print(STDOUT, "-ad54sw->%s: %d\n", ft_strsignal(sig), sig);
 	else
 		ft_print(STDOUT, "error updating %d: p not found\n", pid);
 	return (0);
