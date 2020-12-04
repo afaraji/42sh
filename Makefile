@@ -25,8 +25,9 @@ FILE_AUTOCMPLT = auto_complete.c auto_complete_2.c cmd_completion_1.c		\
 	print_completion.c
 
 FILE_BUILTINS = builtins.c change_pwd.c export.c ft_cd_1.c ft_cd_2.c		\
-	ft_cd_old.c  ft_echo.c  setenv.c  unalias.c unsetenv.c ft_fc.c hash.c	\
-	test.c test_functions.c ft_type.c
+	ft_cd_old.c  ft_echo.c  setenv.c  unalias.c unsetenv.c hash.c test.c 	\
+	test_functions.c ft_type.c ft_fc.c ft_fc_1.c ft_fc_2.c ft_fc_3.c		\
+	ft_fc_4.c
 
 FILE_HASHTABLE = ft_str2del.c ft_strappend.c ft_strstich.c hash_add.c		\
 	hash_chck.c hash_table.c alias_check.c
