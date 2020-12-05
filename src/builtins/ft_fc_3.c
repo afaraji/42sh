@@ -97,7 +97,7 @@ int		get_index_hist_last(char *s, int l, int first_index)
 			index = verify_index(ft_atoi(s));
 		else if (s[0] == '-' && is_all_digits(&s[1]))
 		{
-			index = get_last_hist() + ft_atoi(s);
+			index = get_last_hist() + ft_atoi(s) + 1;
 			index = (index > 0) ? index : g_var.history->index;
 		}
 		else
