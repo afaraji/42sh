@@ -75,7 +75,7 @@ int		ft_cd_2(char *flag)
 	return (1);
 }
 
-int		ft_cd_3(char *flag, char **env)
+int		ft_cd_3(char *flag, char **env)//fix cd here
 {
 	char	*cwd;
 	char	*oldcwd;

@@ -54,3 +54,10 @@ int		verify_type(char *str)
 	ft_strdel(&file);
 	return (ret);
 }
+
+/*
+**	-1 : no such file or dir
+**	 1 : Dir
+**	 3 : link to a Dir
+**	 2 : file or link to a file
+*/

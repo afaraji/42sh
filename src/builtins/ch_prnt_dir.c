@@ -18,7 +18,7 @@ static char	*up_a_parent(char **ret, char *tmp)
 {
 	char	*buf;
 	int		n;
-	
+
 	if (ft_strcmp(*ret, "/"))
 	{
 		buf = *ret;
@@ -104,8 +104,6 @@ char		*get_real_path(char *path, char *pwd)
 
 	if (*path == '/')
 		return (ft_strdup(path));
-	if (!same_char(path, '.'))
-		return (parent_dots(path, pwd));
 	// ret = ft_strdup(var_get_value("PATH", 1)); same here
 	ret = ft_strdup(pwd);
 	tmp = path;
