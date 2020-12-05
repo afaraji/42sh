@@ -101,23 +101,23 @@ int		ft_set_attr(int index)
 
 void	free_term(t_terminal **term)
 {
-	if (term == NULL || *term == NULL)
+	if (*term == NULL || term == NULL)
 		return ;
-	printf("-------1------ \n");
 	if ((*term)->line->str)
 	{
-		printf("-------11------ \n");
 		ft_strdel(&((*term)->line->str));
 		(*term)->line->str = NULL;
 	}
-	printf("-------2------ \n");
 	if ((*term)->line)
+	{
 		free((*term)->line);
-	printf("-------3------ \n");
+		(*term)->line = NULL;
+	}
 	if ((*term)->select)
+	{
 		free((*term)->select);
-	printf("-------4------ \n");
+		(*term)->select = NULL;
+	}
 	free(*term);
 	*term = NULL;
-	term = NULL;
 }

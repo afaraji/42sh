@@ -31,11 +31,11 @@ t_terminal	*init_term(char *prmt)
 	return (term);
 }
 
-char		*ctrl_c_d(t_terminal *term, int mult_line)
+char		*ctrl_c_d(t_terminal **term, int mult_line)
 {
-	if (term->buff == CTRL_C)
+	if ((*term)->buff == CTRL_C)
 	{
-		free_term(&term);
+		free_term(term);
 		ft_putstr_fd("^C\n", 1);
 		tputs(tgetstr("cd", NULL), 1, ft_intputchar);
 		if (mult_line != 0)
@@ -46,7 +46,8 @@ char		*ctrl_c_d(t_terminal *term, int mult_line)
 	}
 	else
 	{
-		free_term(&term);
+		if (*term)
+			free_term(term);
 		ft_putchar('\n');
 		if (mult_line == 0)
 			return (ft_strdup("exit"));
@@ -86,7 +87,7 @@ char		*manage_line(char *prompt, t_hist **his_head, int mult_line)
 		read(0, &term->buff, 4);
 		if (term->buff == CTRL_C || (term->buff == CTRL_D &&
 											!ft_strcmp(term->line->str, "")))
-			return (ctrl_c_d(term, mult_line));
+			return (ctrl_c_d(&term, mult_line));
 		if (term->buff == CTRL_L && mult_line == 0)
 			ctrl_l(term->line->str);
 		if (term->buff == CTRL_R)
