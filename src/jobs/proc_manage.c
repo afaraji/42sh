@@ -153,6 +153,12 @@ void	delet_proc(pid_t pid)
 	}
 }
 
+
+int		find_job_and_update(pid_t pid, int status);
+void	notify_user(void);
+
+
+
 void	bg_jobs(void)
 {
 	// t_proc	*proc;
@@ -162,6 +168,8 @@ void	bg_jobs(void)
 	while ((pid = waitpid(-1, &status, WNOHANG | WUNTRACED)) > 0)
 	{
 		printf("debug_msg:updating proc [%d]-status[%d]\n", pid, status);
-		update_proc(pid, status, 0);
+		find_job_and_update(pid, status);
 	}
+	notify_user();
 }
+// was working on updating jobs (still ned to give current and previous valuse...)

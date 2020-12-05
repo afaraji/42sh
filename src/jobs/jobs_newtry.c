@@ -203,13 +203,13 @@ char	*args_to_str(t_cmd_suffix *suff, t_cmd_prefix *pref)
 	char	*tmp;
 	char	*tmp2;
 
-	str = ft_strdup("");
+	str = ft_strdup(" ");
 	while (pref)
 	{
 		if (pref->io_redirect)
 		{
 			tmp2 = io_redirect_to_str(pref->io_redirect);
-			tmp = ft_strjoin(str, tmp2);
+			tmp = ft_4strjoin(str, " ",tmp2, " ");
 			ft_strdel(&str);
 			ft_strdel(&tmp2);
 			str = tmp;
@@ -270,7 +270,9 @@ char	*and_or_to_str(t_and_or *cmd)
 	{
 		ast = ast_to_str(cmd->ast);
 		if (cmd->dependent)
-			token = (cmd->dependent == 1) ? "&&" : "||";
+			token = (cmd->dependent == 1) ? " && " : " || ";
+		else
+			token = "";
 		tmp = ft_4strjoin(str, token, ast, "");
 		ft_strdel(&str);
 		ft_strdel(&ast);
@@ -579,6 +581,8 @@ int		report_to_user(t_job *j)
 			ret = WTERMSIG(p->status);
 			if (ret != SIGINT)
 				printf("*1*> %s: %d\n", ft_strsignal(ret), ret);
+			if (ret == SIGINT)
+				printf("\n");
 		}
 		if (remove_job(j) == 0)
 			printf("JOBS: job not found.\n");
@@ -598,18 +602,85 @@ int		report_to_user(t_job *j)
 			}
 			p = p->next;
 		}
-		printf("*2*> [%d] %s\n", j->index, ft_strsignal(ret));
+		printf("*2*> [%d]+  %s\t\t%s\n", j->index, ft_strsignal(ret), j->command);
 		j->notified = 1;
 		return (ret);
 	}
 	return (1);
 }
 
-int		find_job_and_update(pid, status)
+void	notify_user(void)
 {
-	printf("pid:%d is in an other job, status[%d]\n", pid, status);
+	t_job	*j;
 
-	return 0;
+	j = job_list;
+	while (j)
+	{
+		report_to_user(j);
+		j = j->next;
+	}
+}
+
+t_job	*find_job_ppid(pid_t pid)
+{
+	t_job		*j;
+	t_process	*p;
+
+	j = job_list;
+	while (j)
+	{
+		p = j->first_process;
+		while (p)
+		{
+			if (p->pid == pid)
+				return (j);
+			p = p->next;
+		}
+		j = j->next;
+	}
+	return (NULL);
+}
+
+t_job	*find_job(pid_t pgid)
+{
+	t_job	*j;
+
+	j = job_list;
+	while (j)
+	{
+		if (j->pgid == pgid)
+			return (j);
+		j = j->next;
+	}
+	return (find_job_ppid(pgid));
+}
+
+int		find_job_and_update(pid_t pid, int status)
+{
+	printf("pid:%d is in an other job, status[%X]\n", pid, status);
+	t_job		*j;
+	t_process	*p;
+
+	if ((j = find_job(pid)) == NULL)
+	{
+		printf("ERROR pid [%d] not in any job.\n", pid);
+		return (1);
+	}
+	j->notified = 0;
+	p = j->first_process;
+	while (p)
+	{
+		if (p->pid == pid)
+		{
+			p->status = status;
+			if (WIFSTOPPED(status))
+				p->stopped = 1;
+			else if (WIFEXITED(status) || WIFSIGNALED(status))
+				p->completed = 1;
+		}
+		p = p->next;
+	}
+	return (0);
 }
 
 int		wait_for_job(t_job *j)
@@ -639,6 +710,12 @@ int		wait_for_job(t_job *j)
 
 int		put_job_in_background (t_job *j, int cont)
 {
+	if (current_job == 0)
+		current_job = j->pgid;
+	else if (previous_job == 0)
+		previous_job = j->pgid;
+	j->notified = 0;
+	j->index = (j->index == 0) ? get_new_index() : j->index;
 	if (cont)
 		if (kill (-j->pgid, SIGCONT) < 0)
 			perror ("kill (SIGCONT)");
@@ -887,10 +964,7 @@ int		update_proc(pid_t pid, int status, int bg)
 {
 	t_proc	*p;
 	int		sig;
-//**********************************
 
-	return (find_job_and_update(pid, status));
-//**********************************
 	(void)bg;
 	sig = WIFEXITED(status) ? WEXITSTATUS(status) : 0;
 	sig = WIFSIGNALED(status) ? WTERMSIG(status) : sig;
@@ -1074,7 +1148,7 @@ int		ft_jobs_(char **av)
 	while (j)
 	{
 		c = (j->pgid == current_job) ? '+' : ' ';
-		c = (j->pgid == previous_job) ? '-' : ' ';
+		c = (j->pgid == previous_job) ? '-' : c;
 		ft_print(STDOUT,"[%d]%c\t", j->index, c);
 		if (job_is_stopped_completed(j) == 0)
 			ft_print(STDOUT,"running\t\t%s\n", j->command);
