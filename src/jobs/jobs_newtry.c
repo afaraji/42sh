@@ -311,6 +311,8 @@ typedef struct			s_job
 
 int		shell_is_interactive = 1;
 t_job	*job_list = NULL;
+pid_t	current_job = 0;
+pid_t	previous_job = 0;
 
 
 
@@ -496,6 +498,43 @@ void	free_job(t_job *j)
 	}
 }
 
+pid_t	find_last_bg_job(void)
+{
+	t_job	*j;
+	pid_t	tmp;
+
+	j = job_list;
+	tmp = 0;
+	while (j)
+	{
+		if (j->index != 0 && j->pgid != current_job && j->pgid != previous_job)
+			tmp = j->pgid;
+		j = j->next;
+	}
+	return (tmp);
+}
+
+void	give_current_job(pid_t pgid)
+{
+	if (current_job == pgid)
+		return ;
+	previous_job = current_job;
+	current_job = pgid;
+}
+
+void	remove_current_job(pid_t pgid)
+{
+	if (current_job == pgid)
+	{
+		current_job = previous_job;
+		previous_job = find_last_bg_job();
+	}
+	else if (previous_job == pgid)
+	{
+		previous_job = find_last_bg_job();
+	}
+}
+
 int		remove_job(t_job *job)
 {
 	t_job	*current;
@@ -507,6 +546,7 @@ int		remove_job(t_job *job)
 	{
 		if (current->pgid == job->pgid)
 		{
+
 			if (prec)
 				prec->next = current->next;
 			else
@@ -540,11 +580,14 @@ int		report_to_user(t_job *j)
 			if (ret != SIGINT)
 				printf("*1*> %s: %d\n", ft_strsignal(ret), ret);
 		}
-		return (remove_job(j));
+		if (remove_job(j) == 0)
+			printf("JOBS: job not found.\n");
+		return (ret);
 	}
 	if (job_is_stopped_completed(j))
 	{
 		j->index = (j->index == 0) ? get_new_index() : j->index;
+		give_current_job(j->pgid);
 		p = j->first_process;
 		while (p)
 		{
@@ -565,9 +608,10 @@ int		report_to_user(t_job *j)
 int		find_job_and_update(pid, status)
 {
 	printf("pid:%d is in an other job, status[%d]\n", pid, status);
+
 	return 0;
 }
-// was here working on fg jobs
+
 int		wait_for_job(t_job *j)
 {
 	// t_process	*p;
@@ -740,7 +784,6 @@ int		launch_job(t_job *j, int foreground)
 		return (put_job_in_foreground (j, 0));
 	else
 		return (put_job_in_background (j, 0));
-	return (0);
 }
 
 int		job_control(t_and_or *cmd, int bg)
@@ -844,7 +887,10 @@ int		update_proc(pid_t pid, int status, int bg)
 {
 	t_proc	*p;
 	int		sig;
+//**********************************
 
+	return (find_job_and_update(pid, status));
+//**********************************
 	(void)bg;
 	sig = WIFEXITED(status) ? WEXITSTATUS(status) : 0;
 	sig = WIFSIGNALED(status) ? WTERMSIG(status) : sig;
@@ -1014,7 +1060,8 @@ int		ft_fg(char **av)
 int		ft_jobs_(char **av)
 {
 	int		i;
-	t_proc	*p;
+	t_job	*j;
+	char	c;
 
 	i = 0;
 	while (av && av[i])
@@ -1022,18 +1069,20 @@ int		ft_jobs_(char **av)
 		// impliment here jobs argvs
 		i++;
 	}
-	p = (g_var.proc->next);
+	j = job_list;
 	// printf("jobs list:[%d][%d]\n", g_var.proc->index, p->index);
-	while (p)
+	while (j)
 	{
-		ft_print(STDOUT,"[%d]%c\t", p->index, p->c);
-		if (p->done == 0)
-			ft_print(STDOUT,"running\t\t%s\n", p->str);
-		else if (p->done == 1)
-			ft_print(STDOUT,"done\t\t%s\n", p->str);
-		else if (p->done == 2)
-			ft_print(STDOUT,"stopped\t\t%s\n", p->str);
-		p = p->next;
+		c = (j->pgid == current_job) ? '+' : ' ';
+		c = (j->pgid == previous_job) ? '-' : ' ';
+		ft_print(STDOUT,"[%d]%c\t", j->index, c);
+		if (job_is_stopped_completed(j) == 0)
+			ft_print(STDOUT,"running\t\t%s\n", j->command);
+		else if (job_is_completed(j))
+			ft_print(STDOUT,"done\t\t%s\n", j->command);
+		else if (job_is_stopped_completed(j))
+			ft_print(STDOUT,"stopped\t\t%s\n", j->command);
+		j = j->next;
 	}
 	return (0);
 }
