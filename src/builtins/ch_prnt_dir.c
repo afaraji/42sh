@@ -6,13 +6,12 @@
 /*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/05 02:09:44 by awali-al          #+#    #+#             */
-/*   Updated: 2020/12/05 12:52:32 by awali-al         ###   ########.fr       */
+/*   Updated: 2020/12/05 17:53:59 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../libft/libft.h"
+#include "../../inc/builtins.h"
 #include "../../inc/expansion.h"
-#include <stdio.h>
 
 static char	*up_a_parent(char **ret, char *tmp)
 {
@@ -68,50 +67,18 @@ static char	*new_path(char **ret, char *path)
 	return (path + n);
 }
 
-// this function needs to be put in a separate file
-
-static int	same_char(char *str, char c)
-{
-	int		i;
-
-	i = 0;
-	while (str[i])
-		if (str[i++] != c)
-			return (1);
-	return (0);
-}
-
-static char	*parent_dots(char *path, char *pwd)
-{
-	char	*ret;
-	int		i;
-
-	// ret = ft_strdup(var_get_value("PATH", 1)); replaces the following line and you need to remove the pwd from the prototype of the function
-	ret = ft_strdup(pwd);
-	i = 1;
-	while (path[i])
-	{
-		up_a_parent(&ret, "helloo");
-		i++;
-	}
-	return (ret);
-}
-
-char		*get_real_path(char *path, char *pwd)
+char		*get_real_path(char *path)
 {
 	char	*ret;
 	char	*tmp;
 
-	if (*path == '/')
-		return (ft_strdup(path));
-	// ret = ft_strdup(var_get_value("PATH", 1)); same here
-	ret = ft_strdup(pwd);
+	ret = ft_strdup(var_get_value("PATH", 1));
 	tmp = path;
 	printf("%s             %s\n", ret, tmp);
 	while (*tmp)
 	{
 		if (tmp[0] == '.' && tmp[1] == '.' && tmp[2] == '.')
-			return (NULL);
+			return (ft_strdup(path));
 		if (ft_strstr(tmp, "../") == tmp)
 			tmp = up_a_parent(&ret, tmp);
 		if (tmp[0] != '.' && tmp[0] != '/')
@@ -120,10 +87,4 @@ char		*get_real_path(char *path, char *pwd)
 		printf("%s             %s\n", ret, tmp);
 	}
 	return (ret);
-}
-
-int			main(void)
-{
-	printf("%s\n", get_real_path("......", "/Users/aminewalialami/42sh/trash/42sh_correction/42sh.txts"));
-	return (0);
 }

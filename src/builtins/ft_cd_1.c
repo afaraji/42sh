@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_cd_1.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sazouaka <sazouaka@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/03/01 17:43:17 by sazouaka          #+#    #+#             */
-/*   Updated: 2020/03/01 17:43:19 by sazouaka         ###   ########.fr       */
+/*   Updated: 2020/12/05 18:16:10 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,10 +91,11 @@ int		ft_cd_3(char *flag, char **env)//fix cd here
 	}
 	if (oldcwd)
 		change_pwd("OLDPWD", oldcwd);
-	if (flag[0] == '/')
-		cwd = ft_strdup(flag);
-	else
-		cwd = ft_get_ld(oldcwd, flag);
+	// if (flag[0] == '/')
+	// 	cwd = ft_strdup(flag);
+	// else
+	// 	cwd = ft_get_ld(oldcwd, flag);
+	cwd = get_real_path(flag);
 	change_pwd("PWD", cwd);
 	ft_putstr(cwd);
 	ft_putchar('\n');
