@@ -78,7 +78,6 @@ void		dollar_expansion(char **words)
 			*words = p;
 		}
 	}
-
 }
 
 int			dollar_replace(char **argument, int i, int end)

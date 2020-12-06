@@ -19,7 +19,6 @@
 #include "../../inc/readline.h"
 #include "../../inc/expansion.h"
 
-
 int		check_parenth_close(char **argument, int *end, int i, char c)
 {
 	int		depth;
@@ -84,28 +83,13 @@ int		juje_dolarate(char **argument, int index)
 	return (i);
 }
 
-void	ft_expans_replace(char **argument, char *to_change, int start, int end)
-{
-	*argument = ft_strjoin_free(ft_strndup(*argument, start),
-				ft_strjoin_free(to_change,
-				ft_strdup(*argument + end), 3), 3);
-}
-
-// return 1 : error
-// return 0 : succes
 int		expansions_dispatcher(char **argument)
 {
 	int		i;
 	int		end;
 	int		c;
-	char	*tmp;
 
-	if (!ft_strcmp("${?}", *argument))
-	{
-		tmp = str_dollar_sub(*argument);
-		ft_strdel(argument);
-		*argument = ft_strdup(tmp);
-	}
+	ques_dollar(argument);
 	i = -1;
 	while ((*argument)[++i])
 	{
@@ -142,6 +126,6 @@ int		expansions(t_list_token *tokens)
 		if (ret)
 			return (ret);
 		node = node->next;
-	}	
+	}
 	return (0);
 }

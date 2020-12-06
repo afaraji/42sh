@@ -12,9 +12,6 @@
 
 #include "../../inc/expansion.h"
 
-#define	PP	':'
-#define PPR	'^'
-
 void	clean_shities(char **word)
 {
 	int		i;

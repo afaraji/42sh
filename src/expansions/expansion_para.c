@@ -92,7 +92,6 @@ int		sep_count(char **word)
 int		expans_para(char **word)
 {
 	int		sep;
-	char	*temp;
 
 	sep = sep_count(word);
 	if (sep == 1 && (*word)[0] != '#' && ft_strlen(*word) > 1)
@@ -110,12 +109,7 @@ int		expans_para(char **word)
 	else if (sep == 0 && dollared(*word))
 		return (1);
 	else if (sep == 0 && (*word)[0] != '#' && !ft_strchr(*word, '#'))
-	{
-		temp = ft_strjoin("$", *word);
-		ft_strdel(word);
-		dollar_expansion(&temp);
-		*word = ft_strdup(temp);
-	}
+		simple_dollar(word);
 	return (0);
 }
 
