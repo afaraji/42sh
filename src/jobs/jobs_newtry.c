@@ -315,7 +315,7 @@ int		shell_is_interactive = 1;
 t_job	*job_list = NULL;
 pid_t	current_job = 0;
 pid_t	previous_job = 0;
-// FILE	*tty;
+FILE	*tty = NULL;
 
 
 
@@ -899,7 +899,9 @@ int		job_control(t_and_or *cmd, int bg)
 	t_job		*job;
 	int 		dp;
 	int 		ret;
-// tty = fopen("/dev/ttys006", "w");
+
+	if (tty == NULL)
+		tty = fopen("/dev/ttys006", "w");
 	ret = 0;
 	while (cmd)
 	{
@@ -909,6 +911,10 @@ int		job_control(t_and_or *cmd, int bg)
 			job = get_job(cmd);
 			ret = launch_job(job, !bg);
 			exit_status(ret<<8);
+			// fprintf(tty, "########## job_list ########\n");
+			// fprintf(tty, "  index | pgid  | command\n");
+			// for (job = job_list; job ; job = job->next)
+			// 	fprintf(tty, " %d\t| %d\t| %s\n", job->index, job->pgid, job->command);
 			// free_job ??
 		}
 		cmd = cmd->next;
