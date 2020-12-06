@@ -167,7 +167,7 @@ void	bg_jobs(void)
 
 	while ((pid = waitpid(-1, &status, WNOHANG | WUNTRACED)) > 0)
 	{
-		printf("debug_msg:updating proc [%d]-status[%d]\n", pid, status);
+		// printf("debug_msg:updating proc [%d]-status[%d]\n", pid, status);
 		find_job_and_update(pid, status);
 	}
 	notify_user();

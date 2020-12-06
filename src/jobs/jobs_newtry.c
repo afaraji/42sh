@@ -458,6 +458,11 @@ int		update_job(t_job *j, pid_t pid, int status)
 				p->stopped = 1;
 			else if (WIFEXITED(status) || WIFSIGNALED(status))
 				p->completed = 1;
+			else if (WIFCONTINUED(status))
+			{
+				p->stopped = 0;
+				p->completed = 0;
+			}
 			return (1);
 		}
 		p = p->next;
@@ -574,15 +579,33 @@ int		report_to_user(t_job *j)
 		p = p->next;
 	if (job_is_completed(j))
 	{
-		if (WIFEXITED(p->status))
-			ret = WEXITSTATUS(p->status);
+		if (j->index == 0)
+		{
+			if (WIFEXITED(p->status))
+				ret = WEXITSTATUS(p->status);
+			else
+			{
+				ret = WTERMSIG(p->status);
+				if (ret != SIGINT)
+					printf("*1*> %s: %d\n", ft_strsignal(ret), ret);
+				if (ret == SIGINT)
+					printf("\n");
+			}
+		}
 		else
 		{
-			ret = WTERMSIG(p->status);
-			if (ret != SIGINT)
-				printf("*1*> %s: %d\n", ft_strsignal(ret), ret);
-			if (ret == SIGINT)
-				printf("\n");
+			char	c;
+			c = (j->pgid == current_job) ? '+' : ' ';
+			c = (j->pgid == previous_job) ? '-' : c;
+			if (WIFEXITED(p->status) && WEXITSTATUS(p->status) == 0)
+				printf("*2*> [%d]%c  Done\t\t%s\n", j->index, c, j->command);
+			else if (WIFEXITED(p->status) && WEXITSTATUS(p->status) != 0)
+				printf("*3*> [%d]%c  Exit %d\t\t%s\n", j->index, c, WEXITSTATUS(p->status), j->command);
+			else if (WIFSIGNALED(p->status))
+			{
+				ret = WTERMSIG(p->status);
+				printf("*4*> [%d]%c  %s %d\t\t%s\n", j->index, c, ft_strsignal(ret), ret, j->command);
+			}
 		}
 		if (remove_job(j) == 0)
 			printf("JOBS: job not found.\n");
@@ -602,7 +625,7 @@ int		report_to_user(t_job *j)
 			}
 			p = p->next;
 		}
-		printf("*2*> [%d]+  %s\t\t%s\n", j->index, ft_strsignal(ret), j->command);
+		printf("*5*> [%d]+  %s\t\t%s\n", j->index, ft_strsignal(ret), j->command);
 		j->notified = 1;
 		return (ret);
 	}
@@ -612,7 +635,7 @@ int		report_to_user(t_job *j)
 void	notify_user(void)
 {
 	t_job	*j;
-
+	// printf("notify user\n");
 	j = job_list;
 	while (j)
 	{
@@ -657,7 +680,7 @@ t_job	*find_job(pid_t pgid)
 
 int		find_job_and_update(pid_t pid, int status)
 {
-	printf("pid:%d is in an other job, status[%X]\n", pid, status);
+	// printf("pid:%d is in an other job, status[%X]\n", pid, status);
 	t_job		*j;
 	t_process	*p;
 
@@ -693,7 +716,7 @@ int		wait_for_job(t_job *j)
 */
 	while (job_is_stopped_completed(j) == 0)
 	{
-		pid = waitpid(-1, &status, WUNTRACED);
+		pid = waitpid(-1, &status, WUNTRACED | WCONTINUED);
 		if (pid == -1)
 		{
 			perror("waitpid:");
@@ -725,6 +748,7 @@ int		put_job_in_background (t_job *j, int cont)
 int		put_job_in_foreground (t_job *j, int cont)
 {
 	int	ret;
+	pid_t pid;
 
 	tcsetpgrp (STDIN, j->pgid);
 	if (cont)
@@ -734,6 +758,11 @@ int		put_job_in_foreground (t_job *j, int cont)
 		{
 			perror ("kill (SIGCONT)");
 			return (1);
+		}
+		pid = waitpid(- j->pgid, &ret, WUNTRACED | WCONTINUED);
+		if (WIFCONTINUED(ret))// ?????
+		{
+			update_job(j, pid, ret);
 		}
 	}
 	ret = wait_for_job (j);
@@ -886,7 +915,7 @@ int		job_control(t_and_or *cmd, int bg)
 }
 
 /******************************************************************************/
-
+/*
 t_proc	*get_proc(pid_t pid)
 {
 	t_proc	*p;
@@ -984,6 +1013,7 @@ int		update_proc(pid_t pid, int status, int bg)
 		ft_print(STDOUT, "error updating %d: p not found\n", pid);
 	return (0);
 }
+*/
 
 int		get_opt(char **av, int *index)
 {
@@ -1012,57 +1042,48 @@ int		get_opt(char **av, int *index)
 	return (opt);
 }
 
-pid_t	get_pid_str(char *s)
+t_job	*get_pid_str(char *s)
 {
-	t_proc	*p;
-	pid_t	pid;
+	t_job	*j;
 	int		len;
 
 	len = ft_strlen(s);
-	p = (g_var.proc)->next;
-	pid = 0;
+	j = job_list;
 	if (*s == '?')
 	{
 		s++;
-		while (p)
+		while (j)
 		{
-			if (ft_strstr(p->str, s))
-			{
-				pid = p->ppid;
-				break ;
-			}
-			p = p->next;
+			if (ft_strstr(j->command, s))
+				return (j);
+			j = j->next;
 		}
 	}
-	else
+	while (j)
 	{
-		while (p)
-		{
-			if (!ft_strncmp(p->str, s, len))
-			{
-				pid = p->ppid;
-				break ;
-			}
-			p = p->next;
-		}
+		if (!ft_strncmp(j->command, s, len))
+			return (j);
+		j = j->next;
 	}
-	if (pid == 0)
-		ft_print(STDERR, "shell: job_util: %s: no such job.\n", s);
-	return (pid);
+	ft_print(STDERR, "shell: job_util: %s: no such job.\n", s);
+	return (NULL);
 }
 
-pid_t	get_pid_n_plus_min(char c, char *s)
+t_job	*get_pid_n_plus_min(char c, char *s)
 {
-	t_proc	*p;
+	t_job	*j;
 	int		index;
+	pid_t	pgid;
 
-	p = (g_var.proc)->next;
+	j = job_list;
 	index = (s != NULL) ? ft_atoi(s) : -1;
-	while (p)
+	pgid = (c == '+') ? current_job : 0;
+	pgid = (c == '-') ? previous_job : pgid;
+	while (j)
 	{
-		if (p->c == c || (c == -1 && p->index == index))
-			return (p->ppid);
-		p = p->next;
+		if (index == j->index || (pgid != 0 && pgid == j->pgid))
+			return (j);
+		j = j->next;
 	}
 	ft_putstr_fd("shell: job_util: ", STDERR);
 	if (c == '+')
@@ -1072,63 +1093,66 @@ pid_t	get_pid_n_plus_min(char c, char *s)
 	else
 		ft_putstr_fd(s, STDERR);
 	ft_putstr_fd(": no such job.\n", STDERR);
-	return (0);
+	return (NULL);
 }
 
 int		ft_bg(char **av)
 {
-	pid_t	p;
+	t_job	*j;
 
-	p = 0;
+	j = NULL;
 	if (av[1])
 	{
 		if (av[1][0] == '%')
 		{
 			if (av[1][1] == '+' || av[1][1] == '%')
-				p = get_pid_n_plus_min('+', NULL);
+				j = get_pid_n_plus_min('+', NULL);
 			else if (av[1][1] == '-')
-				p = get_pid_n_plus_min('-', NULL);
+				j = get_pid_n_plus_min('-', NULL);
 			else if (is_all_digits(&av[1][1]))
-				p = get_pid_n_plus_min(-1, &(av[1][1]));
+				j = get_pid_n_plus_min(-1, &(av[1][1]));
 			else
-				p = get_pid_str(&av[1][1]);
+				j = get_pid_str(&av[1][1]);
 		}
 		else
-			p = get_pid_str(av[1]);
+			j = get_pid_str(av[1]);
 	}
 	else
-		p = get_pid_n_plus_min('+', NULL);
-	if (p == 0)
+		j = get_pid_n_plus_min('+', NULL);
+	if (j == 0)
 		return (1);
-	return (putjob_background(p));
+	char	c;
+	c = (j->pgid == current_job) ? '+' : ((j->pgid == previous_job) ? '-' : ' ');
+	printf("-1-> [%d]%c  %s &\n", j->index, c, j->command);
+	return (put_job_in_background(j, 1));
 }
 
 int		ft_fg(char **av)
 {
-	pid_t	p;
+	t_job	*j;
 
-	p = 0;
+	j = NULL;
 	if (av[1])
 	{
 		if (av[1][0] == '%')
 		{
 			if (av[1][1] == '+' || av[1][1] == '%')
-				p = get_pid_n_plus_min('+', NULL);
+				j = get_pid_n_plus_min('+', NULL);
 			else if (av[1][1] == '-')
-				p = get_pid_n_plus_min('-', NULL);
+				j = get_pid_n_plus_min('-', NULL);
 			else if (is_all_digits(&av[1][1]))
-				p = get_pid_n_plus_min(-1, &(av[1][1]));
+				j = get_pid_n_plus_min(-1, &(av[1][1]));
 			else
-				p = get_pid_str(&av[1][1]);
+				j = get_pid_str(&av[1][1]);
 		}
 		else
-			p = get_pid_str(av[1]);
+			j = get_pid_str(av[1]);
 	}
 	else
-		p = get_pid_n_plus_min('+', NULL);
-	if (p == 0)
+		j = get_pid_n_plus_min('+', NULL);
+	if (j == NULL)
 		return (1);
-	return (putjob_forground(p));
+	return (put_job_in_foreground(j, 1));
 }
 
 int		ft_jobs_(char **av)
