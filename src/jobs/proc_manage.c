@@ -172,4 +172,3 @@ void	bg_jobs(void)
 	}
 	notify_user();
 }
-// was working on updating jobs (still ned to give current and previous valuse...)

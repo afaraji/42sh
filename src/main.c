@@ -72,7 +72,6 @@ int			main(int ac, char **av, char **env)
 		return (ret);
 	}
 	line = NULL;
-	ret = 0;
 	ft_signal();
 	if (init_shell(env))
 		return (1);
@@ -81,11 +80,10 @@ int			main(int ac, char **av, char **env)
 		if (ft_set_attr(0))
 			return (1);
 		line = readline(0);
-		// printf(" \n %d %s\n", expansions_dispatcher(&line), line);
 		g_var.errno = 0;
 		bg_jobs();
-		if (ft_strcmp(line, "") && (ret = main_parse(trim_cmd(line))))
-			exit_status(ret);
+		if (ft_strcmp(line, ""))
+			main_parse(trim_cmd(line));
 		if (line)
 			ft_strdel(&line);
 	}

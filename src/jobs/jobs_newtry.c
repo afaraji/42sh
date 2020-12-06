@@ -315,6 +315,7 @@ int		shell_is_interactive = 1;
 t_job	*job_list = NULL;
 pid_t	current_job = 0;
 pid_t	previous_job = 0;
+// FILE	*tty;
 
 
 
@@ -453,6 +454,7 @@ int		update_job(t_job *j, pid_t pid, int status)
 	{
 		if (p->pid == pid)
 		{
+			j->notified = 0;
 			p->status = status;
 			if (WIFSTOPPED(status))
 				p->stopped = 1;
@@ -553,11 +555,11 @@ int		remove_job(t_job *job)
 	{
 		if (current->pgid == job->pgid)
 		{
-
 			if (prec)
 				prec->next = current->next;
 			else
 				job_list = current->next;
+			remove_current_job(job->pgid);
 			free_job(job);
 			return (1);
 		}
@@ -567,7 +569,7 @@ int		remove_job(t_job *job)
 	return (0);
 }
 
-int		report_to_user(t_job *j)
+int		report_to_user(t_job *j, int fg)
 {
 	t_process	*p;
 	int			ret = 0;
@@ -579,7 +581,7 @@ int		report_to_user(t_job *j)
 		p = p->next;
 	if (job_is_completed(j))
 	{
-		if (j->index == 0)
+		if (j->index == 0 || fg)
 		{
 			if (WIFEXITED(p->status))
 				ret = WEXITSTATUS(p->status);
@@ -639,7 +641,7 @@ void	notify_user(void)
 	j = job_list;
 	while (j)
 	{
-		report_to_user(j);
+		report_to_user(j, 0);
 		j = j->next;
 	}
 }
@@ -727,7 +729,7 @@ int		wait_for_job(t_job *j)
 			find_job_and_update(pid, status);
 		}
 	}
-	status = report_to_user(j);
+	status = report_to_user(j, 1);
 	return (status);
 }
 
@@ -744,9 +746,6 @@ int		put_job_in_background (t_job *j, int cont)
 			perror ("kill (SIGCONT)");
 	return (0);
 }
-
-// job in bg --> to fg --> done. [should be deleted]
-// job in bg --> to fg --> ^C    [shouldn t show interrupt message]
 
 int		put_job_in_foreground (t_job *j, int cont)
 {
@@ -900,7 +899,7 @@ int		job_control(t_and_or *cmd, int bg)
 	t_job		*job;
 	int 		dp;
 	int 		ret;
-
+// tty = fopen("/dev/ttys006", "w");
 	ret = 0;
 	while (cmd)
 	{
@@ -909,7 +908,7 @@ int		job_control(t_and_or *cmd, int bg)
 		{
 			job = get_job(cmd);
 			ret = launch_job(job, !bg);
-			exit_status(ret);
+			exit_status(ret<<8);
 			// free_job ??
 		}
 		cmd = cmd->next;
@@ -1215,3 +1214,5 @@ int		ft_jobs(char **av)
 	}
 	return (0);
 }
+
+//	test exit status !!!!
