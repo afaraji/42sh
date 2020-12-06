@@ -17,6 +17,7 @@
 #include "../../inc/exec.h"
 #include "../../inc/ft_free.h"
 #include "../../inc/readline.h"
+#include "../../inc/expansion.h"
 
 int	is_valid_word(char *s)
 {
@@ -190,6 +191,7 @@ int	main_parse(char *line)
 	join_escape(tokens);
 	join_words(tokens);
 	join_words(tokens);
+	expansions(tokens);
 	here_doc(tokens);
 	cmdlist = token_split_sep_op(tokens);
 	free_tokens(tokens);

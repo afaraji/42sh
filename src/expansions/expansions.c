@@ -10,7 +10,15 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "../../inc/ft_21sh.h"
+#include "../../inc/builtins.h"
+#include "../../inc/parse.h"
+#include "../../inc/ast.h"
+#include "../../inc/exec.h"
+#include "../../inc/ft_free.h"
+#include "../../inc/readline.h"
 #include "../../inc/expansion.h"
+
 
 int		check_parenth_close(char **argument, int *end, int i, char c)
 {
@@ -90,9 +98,15 @@ int		expansions_dispatcher(char **argument)
 	int		i;
 	int		end;
 	int		c;
+	char	*tmp;
 
+	if (!ft_strcmp("${?}", *argument))
+	{
+		tmp = str_dollar_sub(*argument);
+		ft_strdel(argument);
+		*argument = ft_strdup(tmp);
+	}
 	i = -1;
-	end = 0;
 	while ((*argument)[++i])
 	{
 		c = -6;
@@ -108,8 +122,26 @@ int		expansions_dispatcher(char **argument)
 			i = expans_parameter(argument, i, end - i);
 		else if (c == 0)
 			i = dollar_replace(argument, i, juje_dolarate(argument, i ? i : 1));
-		if (i == -1)
+		if (i == -1 || c == -1)
 			return (1);
 	}
+	return (0);
+}
+
+int		expansions(t_list_token *tokens)
+{
+	t_list_token	*node;
+	int				ret;
+
+	node = tokens;
+	ret = 0;
+	while (node)
+	{
+		if (node->type == WORD)
+			ret = expansions_dispatcher(&node->data);
+		if (ret)
+			return (ret);
+		node = node->next;
+	}	
 	return (0);
 }

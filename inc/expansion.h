@@ -51,5 +51,8 @@ void			logical_operator(char *operator, char *str);
 int				logical_do_op(long long int first_operand,
 							long long int second_operand, char operator);
 int				dollared(char *word);
+void			clean_shities(char **word);
+void			replace_2p(char **word);
+int				expansions(t_list_token *cmd_token);
 
 #endif

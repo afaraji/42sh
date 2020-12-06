@@ -12,6 +12,33 @@
 
 #include "../../inc/expansion.h"
 
+#define	PP	':'
+#define PPR	'^'
+
+void	clean_shities(char **word)
+{
+	int		i;
+
+	i = -1;
+	while ((*word)[++i])
+	{
+		if ((*word)[i] == PPR)
+			(*word)[i] = PP;
+	}
+}
+
+void	replace_2p(char **word)
+{
+	int		i;
+
+	i = -1;
+	while ((*word)[++i])
+	{
+		if ((*word)[i] == PP)
+			(*word)[i] = PPR;
+	}
+}
+
 int		hash_param(char **word)
 {
 	char	*tmp_a;

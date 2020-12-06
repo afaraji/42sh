@@ -10,7 +10,13 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
+#include "../../inc/ft_21sh.h"
+#include "../../inc/builtins.h"
+#include "../../inc/parse.h"
+#include "../../inc/ast.h"
+#include "../../inc/exec.h"
+#include "../../inc/ft_free.h"
+#include "../../inc/readline.h"
 #include "../../inc/expansion.h"
 
 int		operation(char **operate, char **word, int check)
@@ -105,9 +111,10 @@ int		expans_para(char **word)
 		return (1);
 	else if (sep == 0 && (*word)[0] != '#' && !ft_strchr(*word, '#'))
 	{
-		temp = ft_strjoin_free("$", *word, 2);
+		temp = ft_strjoin("$", *word);
+		ft_strdel(word);
 		dollar_expansion(&temp);
-		*word = temp;
+		*word = ft_strdup(temp);
 	}
 	return (0);
 }
@@ -125,6 +132,7 @@ int		expans_parameter(char **argument, int start, int end)
 	}
 	if (!expans_para(&word))
 	{
+		clean_shities(&word);
 		if (!ft_strlen(word))
 			r = 0;
 		else

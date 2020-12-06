@@ -17,6 +17,7 @@
 #include "../../inc/exec.h"
 #include "../../inc/ft_free.h"
 #include "../../inc/readline.h"
+#include "../../inc/expansion.h"
 
 t_list_token	*add_quote(int *index, char *str)
 {
@@ -60,8 +61,8 @@ t_list_token	*add_dquote(int *index, char *str)
 	node->type = DQUOTE;
 	node->data = (ft_strsub(str, *index + 1, i - *index - 1));
 	if (is_dollar(node->data) >= 0)
-		node->data = str_dollar_sub(node->data);//expansion_dispatcher
-	// node->data = delete_escape(node->data);
+		replace_2p(&(node->data));
+	node->data = delete_escape(node->data);
 	node->next = NULL;
 	node->prec = NULL;
 	if (i + 1 < (int)ft_strlen(str))
