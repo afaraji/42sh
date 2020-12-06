@@ -6,7 +6,7 @@
 /*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/05 02:09:44 by awali-al          #+#    #+#             */
-/*   Updated: 2020/12/06 16:41:30 by awali-al         ###   ########.fr       */
+/*   Updated: 2020/12/06 19:02:50 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,10 @@ char		*get_real_path(char *path)
 	char	*ret;
 	char	*tmp;
 
-	ret = ft_strdup(var_get_value("PATH", 1));
+	if (path[0] == '/')
+		ret = ft_strdup("/");
+	else
+		ret = ft_strdup(var_get_value("PWD", 1));
 	tmp = path;
 	while (*tmp)
 	{
