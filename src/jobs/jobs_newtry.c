@@ -745,6 +745,9 @@ int		put_job_in_background (t_job *j, int cont)
 	return (0);
 }
 
+// job in bg --> to fg --> done. [should be deleted]
+// job in bg --> to fg --> ^C    [shouldn t show interrupt message]
+
 int		put_job_in_foreground (t_job *j, int cont)
 {
 	int	ret;
