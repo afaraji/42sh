@@ -18,53 +18,6 @@
 #include "../../inc/ft_free.h"
 #include "../../inc/readline.h"
 
-/*
-****** ref: https://www.cs.uleth.ca/~holzmann/C/system/pipeforkexec.html *******
-****** code: https://www.gnu.org/software/libc/manual/html_node/Launching-Jobs.html
-The shell maintains a table of jobs. Before every prompt for a command, the shell does a:
-
-	waitpid(-1, &status, WNOHANG | WUNTRACED)
-	to check if any of its children have changed status. Status changes are reported
-	to the user and table of jobs is updated.
-	The shell executes a pipeline list by forking off a child to handle the list.
-	This child immediately makes itself a process group leader by changing its PGID
-	to its own PID. To avoid race conditions the shell should also issue the command
-	to change the process group of the child. Then the child and any of its
-	descendants can be signaled as a unit. No descendent will leave this group
-	(excepting perhaps a new interactive subshell).
-
-	If the shell wishes to run this child in the foreground, then it will change the
-	terminal's process group to that of the child and then do a waitpid( ) on the
-	child's pid. The child now has control of the terminal and the shell disappears
-	as far as the user is concerned. A ^Z, if not caught by the child, will stop the
-	child (and the group) and the shell's waitpid( ) will return. The shell
-	determines that a stop was sent to the child by looking at the status value. At
-	this point the child still has control of the terminal. The shell uses an
-	tcsetpgrp( ) to get the terminal back but here is a tricky detail: since the
-	shell is not in the terminal's group the tcsetpgrp( ) will be sent a SIGTTOU
-	signal. In order to prevent being stopped by this signal, the shell must make
-	sure that it has ignored (SIG_IGN) signal SIGTTOU before doing the tcsetpgrp( ).
-	After recording the child as a suspended job in the shell's table of jobs and
-	resetting SIGTTOU, the shell proceeds probably prompting for the next command.
-
-	If the shell wishes to run the child in the background, then no waitpid( ) is
-	done and the terminal's process group remains that of the shell. The entire
-	child process group will be sent a SIGTTIN or SIGTTOU and become suspended if
-	any descendent attempts I/O on the terminal. If no attempt is made the child
-	runs to completion and turns into a zombie until the shell finally does a
-	waitpid( ) for it.
-
-	If the shell receives a fg command referring to a background child, a SIGSTSP is
-	sent to the child's process group, the terminal is given to the child via an
-	tcsetpgrp( ), a SIGCONT is sent to the child's process group, and then the shell
-	does a waitpid( ) for this child.
-
-	If a bg command is received for a currently suspended job, then a SIGCONT is
-	sent to the child's process group and the shell proceeds without doing a
-	waitpid( ).
-*/
-
-
 int		update_proc(pid_t pid, int status, int bg);
 
 char	*ft_getsigstr1_12(int sig)
@@ -90,6 +43,7 @@ char	*ft_getsigstr1_12(int sig)
 		return (str[sig]);
 	return (NULL);
 }
+
 char	*ft_getsigstr13_31(int sig)
 {
 	static char *str[20];
@@ -120,21 +74,21 @@ char	*ft_strsignal(int sig)
 	return (ft_getsigstr13_31(sig));
 }
 
-int		killed_by(int sig)
+int		killed_by(int sig)//not used yet
 {
 	ft_print(2, "killed func: %s: [%d]\n", ft_strsignal(sig), sig);
 	return (sig);
 }
 
-int		stopped_by(int sig)
+int		stopped_by(int sig)//not used yet
 {
 	ft_print(2, "stopped func: %s: [%d]\n", ft_strsignal(sig), sig);
 	return (sig);
 }
 
-void	initShell(void)
+void	initShell(void)//not used yet
 {
-	int shell_terminal;
+	int	shell_terminal;
 	int	shell_is_interactive;
 
 	shell_terminal = STDIN;
@@ -170,6 +124,7 @@ char	*io_redirect_to_str(t_io_redirect *io)
 	typ = tokentoa(io->redirect_type);
 	num = ft_itoa(io->io_num);
 	str = ft_4strjoin(num, typ, io->filename, "");
+	ft_strdel(&num);
 	return (str);
 }
 
@@ -184,7 +139,7 @@ char	*args_to_str2(t_cmd_suffix *suff, char *s)
 	{
 		if (suff->word)
 			tmp = ft_strjoin(str, suff->word);
-		if (suff->io_redirect)
+		else if (suff->io_redirect)
 		{
 			tmp2 = io_redirect_to_str(suff->io_redirect);
 			tmp = ft_strjoin(str, tmp2);
@@ -235,7 +190,7 @@ char	*simple_cmd_to_str(t_simple_cmd *cmd)
 	return (str);
 }
 
-char	*ast_to_str(t_pipe_seq *cmd)
+char	*ast_to_str(t_pipe_seq *cmd)//verify leak
 {
 	char	*tmp;
 	char	*args;
@@ -415,7 +370,9 @@ t_job	*get_job(t_and_or *cmd)
 	return (job);
 }
 
-/* Return true if all processes in the job have stopped or completed.  */
+/*
+** Return true if all processes in the job have stopped or completed.
+*/
 int job_is_stopped_completed(t_job *j)
 {
 	t_process *p;
@@ -430,7 +387,9 @@ int job_is_stopped_completed(t_job *j)
 	return (1);
 }
 
-/* Return true if all processes in the job have completed.  */
+/*
+** Return true if all processes in the job have completed.
+*/
 int	job_is_completed (t_job *j)
 {
 	t_process *p;
@@ -569,7 +528,7 @@ int		remove_job(t_job *job)
 	return (0);
 }
 
-int		report_to_user(t_job *j, int fg)
+int		report_to_user(t_job *j, int fg)//need norm
 {
 	t_process	*p;
 	int			ret = 0;
@@ -637,7 +596,7 @@ int		report_to_user(t_job *j, int fg)
 void	notify_user(void)
 {
 	t_job	*j;
-	// printf("notify user\n");
+
 	j = job_list;
 	while (j)
 	{
@@ -682,13 +641,12 @@ t_job	*find_job(pid_t pgid)
 
 int		find_job_and_update(pid_t pid, int status)
 {
-	// printf("pid:%d is in an other job, status[%X]\n", pid, status);
 	t_job		*j;
 	t_process	*p;
 
 	if ((j = find_job(pid)) == NULL)
 	{
-		printf("ERROR pid [%d] not in any job.\n", pid);
+		ft_print(STDERR, "ERROR pid [%d] not in any job.\n", pid);
 		return (1);
 	}
 	j->notified = 0;
@@ -710,19 +668,15 @@ int		find_job_and_update(pid_t pid, int status)
 
 int		wait_for_job(t_job *j)
 {
-	// t_process	*p;
 	pid_t		pid;
 	int			status;
-/*
-	should update all process status;
-*/
+
 	while (job_is_stopped_completed(j) == 0)
 	{
 		pid = waitpid(-1, &status, WUNTRACED | WCONTINUED);
 		if (pid == -1)
 		{
-			perror("waitpid:");
-			exit(1);
+			system_calls("waitpid: ", pid, -1);
 		}
 		if (update_job(j, pid, status) == 0)
 		{
@@ -743,7 +697,7 @@ int		put_job_in_background (t_job *j, int cont)
 	j->index = (j->index == 0) ? get_new_index() : j->index;
 	if (cont)
 		if (kill (-j->pgid, SIGCONT) < 0)
-			perror ("kill (SIGCONT)");
+			system_calls ("kill (SIGCONT)", 1, 1);
 	return (0);
 }
 
@@ -758,11 +712,10 @@ int		put_job_in_foreground (t_job *j, int cont)
 		ft_set_attr(1);
 		if (kill (- j->pgid, SIGCONT) < 0)
 		{
-			perror ("kill (SIGCONT)");
-			return (1);
+			system_calls("kill (SIGCONT)", 1, 1);
 		}
 		pid = waitpid(- j->pgid, &ret, WUNTRACED | WCONTINUED);
-		if (WIFCONTINUED(ret))// ?????
+		if (WIFCONTINUED(ret))
 		{
 			update_job(j, pid, ret);
 		}
@@ -773,7 +726,7 @@ int		put_job_in_foreground (t_job *j, int cont)
 	return (ret);
 }
 
-void	launch_process (t_process *p, pid_t pgid, int infile, int outfile, int errfile, int foreground)
+void	launch_process (t_process *p, pid_t pgid, int infile, int outfile, int errfile, int foreground)//need norm
 {
 	pid_t pid;
 
@@ -824,7 +777,7 @@ void	launch_process (t_process *p, pid_t pgid, int infile, int outfile, int errf
 	exit (126);
 }
 
-int		launch_job(t_job *j, int foreground)
+int		launch_job(t_job *j, int foreground)//need norm
 {
 	t_process	*p;
 	pid_t		pid;
@@ -922,106 +875,6 @@ int		job_control(t_and_or *cmd, int bg)
 	return (ret);
 }
 
-/******************************************************************************/
-/*
-t_proc	*get_proc(pid_t pid)
-{
-	t_proc	*p;
-
-	p = (g_var.proc)->next;
-	while (p)
-	{
-		if (p->ppid == pid)
-			return (p);
-		p = p->next;
-	}
-	return (p);
-}
-
-int		putjob_forground(pid_t pid)
-{
-	int		status;
-	t_proc	*p;
-
-	if ((p = get_proc(pid)))
-	{
-		ft_print(STDOUT, "%s\n", p->str);
-	}
-	kill(pid, SIGSTOP);
-	int ret = tcsetpgrp(STDIN, pid);// dont forget return value !!!
-	ft_set_attr(1);
-	kill(pid, SIGCONT);	// return value !!
-	if ((ret = waitpid(pid, &status, WUNTRACED | WCONTINUED)) < 0)
-	{
-		perror("error at waitpid:");
-		return (-2);
-	}
-	if (WIFCONTINUED(status))
-	{
-		// ret = tcsetpgrp(STDIN, pid);// dont forget return value !!!
-		// ft_set_attr(1);
-		update_proc(pid, status, 0);
-		if (waitpid(pid, &status, WUNTRACED | WCONTINUED) < 0)
-		{
-			perror("error at waitpid:");
-			return (-2);
-		}
-	}
-	tcsetpgrp (STDIN, getpid());
-	ft_set_attr(0);
-	update_proc(pid,(WIFEXITED(status) || WIFSIGNALED(status) ? 0 : 2), status);
-	if (WIFEXITED(status))
-		return (WEXITSTATUS(status));
-	if (WIFSIGNALED(status))
-		return (killed_by(WTERMSIG(status)));
-	if (WIFSTOPPED(status))
-		return (stopped_by(WSTOPSIG(status)));
-	return (0);
-}
-
-int		putjob_background(pid_t pid)
-{
-	int		status;
-	t_proc	*p;
-
-	status = 0;
-	kill(pid, SIGCONT);
-	pid = waitpid(pid, &status, WNOHANG | WUNTRACED);
-	update_proc(pid, status, 1);
-	if ((p = get_proc(pid)))
-	{
-		ft_print(STDOUT, "--->[%d]%c %s &\n", p->index, p->c, p->str);
-	}
-	return (0);
-}
-
-void	delet_proc(pid_t pid);
-
-int		update_proc(pid_t pid, int status, int bg)
-{
-	t_proc	*p;
-	int		sig;
-
-	(void)bg;
-	sig = WIFEXITED(status) ? WEXITSTATUS(status) : 0;
-	sig = WIFSIGNALED(status) ? WTERMSIG(status) : sig;
-	sig = WIFSTOPPED(status) ? WSTOPSIG(status) : sig;
-	p = g_var.proc;
-	while (p)
-	{
-		if (p->ppid == pid)
-			break ;
-		p = p->next;
-	}
-	if (p)
-		ft_print(STDOUT, "", p->index, p->c, ft_strsignal(sig), p->str);
-	else if (WIFSIGNALED(status) && sig != 2)
-		ft_print(STDOUT, "-ad54sw->%s: %d\n", ft_strsignal(sig), sig);
-	else
-		ft_print(STDOUT, "error updating %d: p not found\n", pid);
-	return (0);
-}
-*/
 
 int		get_opt(char **av, int *index)
 {
@@ -1104,7 +957,7 @@ t_job	*get_pid_n_plus_min(char c, char *s)
 	return (NULL);
 }
 
-int		ft_bg(char **av)
+int		ft_bg(char **av)//need norm
 {
 	t_job	*j;
 
@@ -1177,7 +1030,6 @@ int		ft_jobs_(char **av)
 		i++;
 	}
 	j = job_list;
-	// printf("jobs list:[%d][%d]\n", g_var.proc->index, p->index);
 	while (j)
 	{
 		c = (j->pgid == current_job) ? '+' : ' ';
@@ -1222,4 +1074,8 @@ int		ft_jobs(char **av)
 	return (0);
 }
 
-// remove dead proc from job
+// norm functions with "need norm" tag
+// echo 4> file ---> need debug
+// builtins exit status
+// fix builtins arg management
+// builtin folowed by a pipe
