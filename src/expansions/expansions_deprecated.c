@@ -74,7 +74,7 @@ void		dollar_expansion(char **words)
 			(*words)[i] = 0;
 			p = ft_strjoin(*words, p);
 			p = ft_strjoin_free(p, *words + temp, 1);
-			free(*words);
+			ft_strdel(words);
 			*words = p;
 		}
 	}
@@ -92,6 +92,7 @@ int			dollar_replace(char **argument, int i, int end)
 	else
 		r = i + ft_strlen(to_change) - 1;
 	ft_expans_replace(argument, to_change, i, end);
+	ft_strdel(&to_change);
 	return (r);
 }
 

@@ -6,7 +6,7 @@
 /*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/01 17:11:01 by awali-al          #+#    #+#             */
-/*   Updated: 2020/12/03 20:46:20 by awali-al         ###   ########.fr       */
+/*   Updated: 2020/12/07 17:51:44 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ int		get_fd(int o);
 int		ft_hash(char *cmd, char **av);
 int		built_in(char *cmd);
 
-int		ft_type(char *cmd, char **arr);
+int		ft_type(char **arr);
 int		is_alias(char *str);
 char	*get_alias(char *str);
 

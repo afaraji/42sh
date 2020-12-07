@@ -35,7 +35,7 @@ int		operation(char **operate, char **word, int check)
 		*word = ft_strdup(ft_strtrim(operate[1] + 1));
 	}
 	else if (operate[1][0] == '?' && check != 1)
-		return (1);
+		return (ft_print(STDOUT, "42sh: %s: %s\n", operate[0], operate[1] + 1));
 	else if (!(operate[1][0] == '+' || operate[1][0] == '-' ||
 			operate[1][0] == '?' || ft_isalnum(operate[1][0]) ||
 			ft_isspace(operate[1][0])))
