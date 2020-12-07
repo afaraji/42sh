@@ -64,5 +64,6 @@ int		verify_index(int index);
 int		get_opt_av(int opt[5], char **av, char **editor);
 int		get_opt_av_1(int opt[5], char **av, char **editor, int *i);
 int		get_opt_str(int opt[5], char *str);
+int		print_env_1(char **env);
 
 #endif
