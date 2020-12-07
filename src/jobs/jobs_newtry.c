@@ -1160,6 +1160,7 @@ int		ft_fg(char **av)
 		j = get_pid_n_plus_min('+', NULL);
 	if (j == NULL)
 		return (1);
+	printf("%s\n", j->command);
 	return (put_job_in_foreground(j, 1));
 }
 
@@ -1221,4 +1222,4 @@ int		ft_jobs(char **av)
 	return (0);
 }
 
-//	test exit status !!!!
+// remove dead proc from job
