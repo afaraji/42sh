@@ -105,9 +105,9 @@ int		builtins(char *cmd, char **av, char **env)
 		print_env(env);
 		return (0);
 	}
-	else if (ft_strcmp(cmd, "setenv") == 0)
+	else if (ft_strcmp(cmd, "setenv") == 0 || ft_strcmp(cmd, "set") == 0)
 		return (ft_setenv(av, env));
-	else if (ft_strcmp(cmd, "unsetenv") == 0)
+	else if (ft_strcmp(cmd, "unsetenv") == 0 || ft_strcmp(cmd, "unset") == 0)
 		return (ft_unsetenv(av));
 	else if (ft_strcmp(cmd, "export") == 0)
 		return (ft_export(av, env));
