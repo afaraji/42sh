@@ -6,7 +6,7 @@
 /*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/03 14:35:54 by awali-al          #+#    #+#             */
-/*   Updated: 2020/12/04 01:48:50 by awali-al         ###   ########.fr       */
+/*   Updated: 2020/12/07 17:51:55 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,13 +33,12 @@ static int	output_message(char *arri, char *str, int type)
 	return (0);
 }
 
-int			ft_type(char *cmd, char **arr)
+int			ft_type(char **arr)
 {
 	char	*tmp;
 	int		ret;
 	int		i;
 
-	(void)cmd;
 	ret = 0;
 	i = 1;
 	if (!arr[1])
