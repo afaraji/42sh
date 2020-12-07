@@ -101,7 +101,9 @@ long long int			get_first_operand(char **str, int *err)
 		logical_operator(&operator, *str);
 		operator = operator >= 0 ? (*str)[0] : operator;
 		*str = operator < -2 ? *str + 2 : *str + 1;
-		if (operator == '+' || operator == '-' || operator < -5)
+		if (operator < 0)
+			second_operand = operations(str, err);
+		else if (operator == '+' || operator == '-')
 			second_operand = operations(str, err);
 		else
 			second_operand = parenth_operation(str, err);

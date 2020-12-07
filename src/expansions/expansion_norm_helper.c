@@ -21,9 +21,13 @@
 
 void	ft_expans_replace(char **argument, char *to_change, int start, int end)
 {
-	*argument = ft_strjoin_free(ft_strndup(*argument, start),
-				ft_strjoin_free(to_change,
-				ft_strdup(*argument + end), 3), 3);
+	char	*first;
+	char	*second;
+
+	first = ft_strndup(*argument, start);
+	second = ft_strdup(*argument + end);
+	*argument = ft_strjoin_free(first, ft_strjoin_free(to_change,
+				second, 2), 1);
 }
 
 void	simple_dollar(char **word)
