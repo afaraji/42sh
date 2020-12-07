@@ -65,7 +65,7 @@ void		dollar_expansion(char **words)
 		if ((*words)[i] == '$')
 		{
 			temp = i;
-			while (ft_isalnum((*words)[++temp]))
+			while (ft_isalnum((*words)[++temp]) || (*words)[temp] == '_')
 				continue ;
 			delimiter = (*words)[temp];
 			(*words)[temp] = 0;
