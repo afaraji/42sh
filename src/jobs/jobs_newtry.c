@@ -769,6 +769,10 @@ void	launch_process (t_process *p, pid_t pgid, int infile, int outfile, int errf
 	if (do_simple_cmd(p->cmd))
 		exit(1);
 	/* Exec the new process.  Make sure we exit.  */
+	if (is_builtin(p->argv[0]))
+	{
+		exit(builtins(p->argv[0], p->argv, p->env));
+	}
 	char	*cmd_path;
 	if (!(cmd_path = get_cmdpath(p->argv[0])))
 		exit (127);
@@ -786,7 +790,7 @@ int		launch_job(t_job *j, int foreground)//need norm
 	int			outfile;
 
 	if ((infile = exec_no_fork(j->cmd->ast, !foreground)) != -42)
-		return (infile << 8);
+		return (infile);
 	infile = j->fd_in;
 	p = j->first_process;
 	while (p)
@@ -854,7 +858,7 @@ int		job_control(t_and_or *cmd, int bg)
 	int 		ret;
 
 	if (tty == NULL)
-		tty = fopen("/dev/ttys006", "w");
+		tty = fopen("/dev/ttys003", "w");
 	ret = 0;
 	while (cmd)
 	{
@@ -1075,7 +1079,4 @@ int		ft_jobs(char **av)
 }
 
 // norm functions with "need norm" tag
-// echo 4> file ---> need debug
-// builtins exit status
 // fix builtins arg management
-// builtin folowed by a pipe
