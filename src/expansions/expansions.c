@@ -105,7 +105,7 @@ int		expansions_dispatcher(char **argument)
 		else if (c == 2)
 			i = expans_parameter(argument, i, end - i);
 		else if (c == 0)
-			i = dollar_replace(argument, i, juje_dolarate(argument, i ? i : 1));
+			i = dollar_replace(argument, i, ft_strlen(*argument));
 		if (i == -1 || c == -1)
 			return (1);
 	}

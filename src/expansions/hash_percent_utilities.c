@@ -19,14 +19,13 @@
 #include "../../inc/readline.h"
 #include "../../inc/expansion.h"
 
-int		ft_strrstr(const char *haystack, const char *needle,
-					size_t len, int lim)
+int		ft_strrstr(char *haystack, char *needle, size_t len, int lim)
 {
 	char	*str;
 	size_t	j;
 	size_t	i;
 
-	str = (char *)haystack;
+	str = haystack;
 	if (*needle == '\0')
 		return (0);
 	i = ft_strlen(haystack) - 1;
@@ -100,8 +99,7 @@ void	trim_replace(char **trim, char *val, int *i)
 		}
 		if ((*trim)[*i] == '*' && (*trim)[*i + 1])
 		{
-			if (find_and_replace(trim, val, i))
-				return ;
+			find_and_replace(trim, val, i);
 		}
 		else if ((*trim)[*i] != val[*i])
 			return ;

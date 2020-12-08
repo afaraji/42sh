@@ -57,7 +57,7 @@ int				dollared(char *word);
 void			clean_shities(char **word);
 void			replace_2p(char **word);
 int				expansions(t_list_token *cmd_token);
-int				ft_strrstr(const char *haystack, const char *needle,
+int				ft_strrstr(char *haystack, char *needle,
 							size_t len, int lim);
 int				next_sta(char *str);
 int				find_and_replace(char **trim, char *val, int *i);

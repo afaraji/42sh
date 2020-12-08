@@ -108,7 +108,8 @@ int		hash_separator_para(char **word)
 	hash_pos = 0;
 	trim = get_trim_str(*word, &hash_pos, '#');
 	if (dollared(trim))
-		dollar_expansion(&trim);
+		dollar_replace(&trim, 0, ft_strlen(trim));
+	clean_shities(word);
 	triming_start(word, trim, hash_pos);
 	ft_strdel(&trim);
 	return (0);

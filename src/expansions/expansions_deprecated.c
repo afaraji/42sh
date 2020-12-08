@@ -10,6 +10,13 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "../../inc/ft_21sh.h"
+#include "../../inc/builtins.h"
+#include "../../inc/parse.h"
+#include "../../inc/ast.h"
+#include "../../inc/exec.h"
+#include "../../inc/ft_free.h"
+#include "../../inc/readline.h"
 #include "../../inc/expansion.h"
 
 static char	*tilde_replace(char *login)
@@ -74,7 +81,7 @@ void		dollar_expansion(char **words)
 			(*words)[i] = 0;
 			p = ft_strjoin(*words, p);
 			p = ft_strjoin_free(p, *words + temp, 1);
-			ft_strdel(words);
+			free(*words);
 			*words = p;
 		}
 	}
@@ -83,14 +90,16 @@ void		dollar_expansion(char **words)
 int			dollar_replace(char **argument, int i, int end)
 {
 	char	*to_change;
+	char	*to_change1;
 	int		r;
 
-	to_change = ft_strndup(*argument + i, end);
-	dollar_expansion(&to_change);
+	to_change1 = ft_strndup(*argument + i, end);
+	to_change = ft_strdup(str_dollar_sub(to_change1));
 	if (!ft_strlen(to_change))
 		r = 0;
 	else
 		r = i + ft_strlen(to_change) - 1;
+	ft_print(STDOUT, "--> %s\n", to_change);
 	ft_expans_replace(argument, to_change, i, end);
 	ft_strdel(&to_change);
 	return (r);
