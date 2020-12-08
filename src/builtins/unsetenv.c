@@ -70,6 +70,11 @@ int		ft_unsetenv(char **flag)
 	i = 1;
 	while (flag[i])
 	{
+		if (!(ft_isalpha(flag[1][0])) && flag[1][0] != '_')
+		{
+			ft_putstr_fd("setenv: invalid option\n", 2);
+			return (1);
+		}
 		tmp = ft_unsetenv_2(flag[i]);
 		if (tmp)
 			ret = tmp;

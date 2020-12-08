@@ -37,7 +37,7 @@ int		get_opt_str(int opt[5], char *str)
 			opt[E_OPT] = 1;
 		else
 		{
-			ft_print(STDERR, "fc: -%c: invalid option", str[i]);
+			ft_print(STDERR, "fc: -%c: invalid option\n", str[i]);
 			return (0);
 		}
 		i++;
