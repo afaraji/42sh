@@ -18,8 +18,6 @@
 #include "../../inc/ft_free.h"
 #include "../../inc/readline.h"
 
-FILE *tttt;
-
 char	*incremental_search(t_terminal *term, t_hist **head, int *indice)
 {
 	t_hist	*node;
@@ -90,15 +88,12 @@ void	display_result(t_terminal *term, char *s, t_hist **head)
 		go_right(term->line);
 		i--;
 	}
-	if ((*head)->s_chr)
+	if (*head && (*head)->s_chr)
 		ft_strdel(&((*head)->s_chr));
 	(*head)->s_chr = ft_strdup(term->line->str);
-//	fprintf(tttt, "-- -> |%p| || -- -> |%p|\n", s ,term->line->str);
 	if (term->line->str)
 		ft_strdel(&(term->line->str));
-//	fprintf(tttt, "-- -> |%p| || -- -> |%p|\n", s ,term->line->str);
 	term->line->str = ft_strdup(s);
-//	fprintf(tttt, "-- -> |%p| || -- -> |%p|\n", s ,term->line->str);
 	term->line->curs = 0;
 	display_line(term->line);
 	i = ft_strlen(term->line->str);
@@ -114,7 +109,6 @@ void	ft_put_line(char *line, t_terminal *term, t_hist **head)
 	char	*tmp;
 	char	*tmp1;
 
-	tttt = fopen("/dev/ttys003", "w");
 	if (line)
 	{
 		tmp = ft_strdup(term->line->str);
