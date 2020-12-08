@@ -17,6 +17,7 @@
 #include "../../inc/exec.h"
 #include "../../inc/ft_free.h"
 #include "../../inc/readline.h"
+#include "../../inc/jobs.h"
 
 int		update_proc(pid_t pid, int status, int bg);
 
@@ -101,12 +102,12 @@ void	initShell(void)//not used yet
 		signal(SIGTTIN, SIG_IGN);
 		signal(SIGTTOU, SIG_IGN);
 		signal(SIGCHLD, SIG_IGN);
-		if (setpgid (g_var.proc->ppid, g_var.proc->ppid) < 0)
+		if (setpgid (g_var.shell_pid, g_var.shell_pid) < 0)
 		{
 			perror ("Couldn't put the shell in its own process group: ");
 			exit (1);
 		}
-		tcsetpgrp (shell_terminal, g_var.proc->ppid);
+		tcsetpgrp (shell_terminal, g_var.shell_pid);
 		if (ft_set_attr(0))
 		{
 			perror ("Couldn't set attributes: ");
@@ -238,33 +239,6 @@ char	*and_or_to_str(t_and_or *cmd)
 }
 
 /******************************* jobs begin ***********************************/
-
-typedef struct			s_process
-{
-	char				*command;			/* command line, used for messages */
-	char				**argv;				/* for exec (cmd arguments) */
-	char				**env;				/* for exec (cmd env)*/
-	pid_t				pid;				/* process ID */
-	char				completed;			/* true if process has completed */
-	char				stopped;			/* true if process has stopped */
-	int					status;				/* reported status value */
-	t_simple_cmd		*cmd;				/* cmd origin */
-	struct s_process	*next;				/* next process in pipeline */
-}						t_process;
-
-typedef struct			s_job
-{
-	char				*command;			/* command line, used for messages */
-	t_process			*first_process;		/* list of processes in this job */
-	pid_t				pgid;				/* process group ID */
-	char				notified;			/* true if user told about stopped job */
-	int					fd_in;				/* standard input */
-	int					fd_out;				/* standard output */
-	int					fd_err;				/* standard error */
-	t_and_or			*cmd;				/* cmd origin */
-	int					index;				/* if in bg index > 0, if in fg index == 0 */
-	struct s_job		*next;				/* next active job */
-}						t_job;
 
 int		shell_is_interactive = 1;
 t_job	*job_list = NULL;
@@ -721,7 +695,7 @@ int		put_job_in_foreground (t_job *j, int cont)
 		}
 	}
 	ret = wait_for_job (j);
-	tcsetpgrp (STDIN, g_var.proc->ppid);
+	tcsetpgrp (STDIN, g_var.shell_pid);
 	ft_set_attr(0);
 	return (ret);
 }
@@ -845,11 +819,7 @@ int		job_control(t_and_or *cmd, int bg)
 			job = get_job(cmd);
 			ret = launch_job(job, !bg);
 			exit_status(ret<<8);
-			// fprintf(tty, "########## job_list ########\n");
-			// fprintf(tty, "  index | pgid  | command\n");
-			// for (job = job_list; job ; job = job->next)
-			// 	fprintf(tty, " %d\t| %d\t| %s\n", job->index, job->pgid, job->command);
-			// free_job ??
+			//free_job; should free when exit;
 		}
 		cmd = cmd->next;
 	}

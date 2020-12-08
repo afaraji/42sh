@@ -108,34 +108,6 @@ typedef struct			s_variable
 	struct s_variable	*next;
 }						t_variable;
 
-/*
-** done: 0 --> done, 1 --> running, 2 --> stopped
-** (c == +) --> current job; (c == -) --> previous job;
-*/
-
-typedef struct			s_proc
-{
-	pid_t				ppid;
-	char				c;		// (c == '+') --> current job; (c == '-') --> previous job; (c == ' ') --> neither
-	int					index;
-	int					status;
-	int					done;	// done: 0 --> running, 1 --> done, 2 --> stopped
-	char				*str;
-	struct s_proc		*next;
-}						t_proc;
-
-typedef struct			s_shell_var
-{
-	int					errno;
-	int					exit_status;
-	int					sig;
-	char				*cpy_past;
-	t_alias				*aliases;
-	t_variable			*var;
-	t_hist				*history;
-	t_proc				*proc;
-}						t_shell_var;
-
 typedef struct			s_io_redirect
 {
 	int					redirect_type;
@@ -195,11 +167,45 @@ typedef struct			s_cmdlist
 **bg : 0 = forground, 1 = background
 */
 
-typedef struct			s_io_list
+typedef struct			s_process
 {
-	t_io_redirect		*node;
-	struct s_io_list	*next;
-}						t_io_list;
+	char				*command;			/* command line, used for messages */
+	char				**argv;				/* for exec (cmd arguments) */
+	char				**env;				/* for exec (cmd env)*/
+	pid_t				pid;				/* process ID */
+	char				completed;			/* true if process has completed */
+	char				stopped;			/* true if process has stopped */
+	int					status;				/* reported status value */
+	t_simple_cmd		*cmd;				/* cmd origin */
+	struct s_process	*next;				/* next process in pipeline */
+}						t_process;
+
+typedef struct			s_job
+{
+	char				*command;			/* command line, used for messages */
+	t_process			*first_process;		/* list of processes in this job */
+	pid_t				pgid;				/* process group ID */
+	char				notified;			/* true if user told about stopped job */
+	int					fd_in;				/* standard input */
+	int					fd_out;				/* standard output */
+	int					fd_err;				/* standard error */
+	t_and_or			*cmd;				/* cmd origin */
+	int					index;				/* if in bg index > 0, if in fg index == 0 */
+	struct s_job		*next;				/* next active job */
+}						t_job;
+
+typedef struct			s_shell_var
+{
+	int					errno;
+	int					exit_status;
+	int					sig;
+	char				*cpy_past;
+	t_alias				*aliases;
+	t_variable			*var;
+	t_hist				*history;
+	pid_t				shell_pid;
+	t_job				*job;
+}						t_shell_var;
 
 t_shell_var				g_var;
 
