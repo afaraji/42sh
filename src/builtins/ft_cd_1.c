@@ -6,7 +6,7 @@
 /*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/03/01 17:43:17 by sazouaka          #+#    #+#             */
-/*   Updated: 2020/12/08 14:24:42 by awali-al         ###   ########.fr       */
+/*   Updated: 2020/12/08 18:15:15 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,18 +47,26 @@ int		ft_cd_home(char **env)
 int		ft_cd_1(char *flag, char **env)
 {
 	char	*oldpwd;
+	char	*pwd;
 
-	if (ft_pdenied(flag))
+	pwd = NULL;
+	if (!flag)
+		pwd = get_var_from_tab(env, "HOME");
+	else
+		pwd = ft_strdup(flag);
+	if (ft_pdenied(pwd))
 		return (1);
 	oldpwd = get_pwd(env);
-	if (chdir(flag))
+	if (chdir(pwd))
 	{
 		ft_strdel(&oldpwd);
 		return (1);
 	}
+	ft_strdel(&pwd);
+	pwd = getcwd(NULL, 0);
 	change_pwd("OLDPWD", oldpwd);
-	change_pwd("PWD", flag);
-	ft_putendl(flag);
+	change_pwd("PWD", pwd);
+	ft_putendl(pwd);
 	ft_strdel(&oldpwd);
 	return (0);
 }
