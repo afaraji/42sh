@@ -99,6 +99,8 @@ int		ft_cd(char *flag, char **env)
 	char	*path;
 	int		typ;
 
+	if (flag == NULL)
+		return (ft_cd_home(env));
 	if (ft_strcmp(flag, ".") == 0)
 		return (0);
 	path = get_real_path(flag);

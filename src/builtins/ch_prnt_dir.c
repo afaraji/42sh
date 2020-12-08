@@ -60,7 +60,6 @@ static char	*new_path(char **ret, char *path)
 	}
 	else
 	{
-		printf("\n");
 		*ret = ft_strjoin(buf, path);
 		n = ft_strlen(path) - 1;
 	}
