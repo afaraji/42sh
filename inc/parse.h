@@ -35,8 +35,7 @@
 # define SMLAND	-24
 # define GRTAND	-25
 # define WORD	-42
-# define BUILTINS	"echo|export|cd|setenv|unsetenv|env|exit|alias|unalias|\
-jobs|fg|bg|test|hash|fc|type"
+# define BUILTINS	"echo|export|cd|set|setenv|unset|unsetenv|env|exit|alias|unalias|jobs|fg|bg|test|hash|fc|type"
 # define RSRVDWORD	"case|do|done|elif|else|esac|fi|for|if|in|then|until|while"
 
 int				main_parse(char *line);
@@ -71,7 +70,7 @@ char			*str_dollar_sub(char *str);
 int				dollar_sub(t_list_token **cmd_token);
 char			*get_pwd(char **env);
 int				lexer(t_list_token **cmd_token);
-t_proc			*add_proc(pid_t pid, int done,int status);
+t_proc			*add_proc(pid_t pid, int done, int status);
 void			bg_jobs(void);
 int				ft_alias(char **av);
 int				ft_unalias(char **av);

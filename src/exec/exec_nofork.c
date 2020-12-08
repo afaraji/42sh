@@ -44,9 +44,9 @@ void		reset_in_out(int set)
 
 	if (set)
 	{
-		in = dup(STDIN);
-		out = dup(STDOUT);
-		err = dup(STDOUT);
+		in = dup2(STDIN, 250);
+		out = dup2(STDOUT, 251);
+		err = dup2(STDOUT, 252);
 	}
 	else if (in != -1 && out != -1 && err != -1)
 	{
@@ -59,6 +59,32 @@ void		reset_in_out(int set)
 		dup2(err, STDERR);
 		if (in != STDERR)
 			close(err);
+	}
+}
+
+void		close_open_fd(t_cmd_prefix *pref, t_cmd_suffix *suff)
+{
+	t_cmd_prefix	*p;
+	t_cmd_suffix	*s;
+	int				io;
+
+	p = pref;
+	s = suff;
+	while (p)
+	{
+		if (p->io_redirect && (io = p->io_redirect->io_num) > 2)
+		{
+			close(io);
+		}
+		p = p->prefix;
+	}
+	while (s)
+	{
+		if (s->io_redirect && (io = s->io_redirect->io_num) > 2)
+		{
+			close(io);
+		}
+		s = s->suffix;
 	}
 }
 
@@ -80,6 +106,7 @@ int			exec_no_fork_builtin(t_simple_cmd *cmd, char **av)
 	free_t_var(tmp);
 	status = builtins(av[0], av, env);
 	reset_in_out(GETDFL);
+	close_open_fd(cmd->prefix, cmd->suffix);
 	free_tab(env);
 	return (status);
 }

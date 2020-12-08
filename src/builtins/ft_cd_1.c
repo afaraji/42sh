@@ -6,7 +6,7 @@
 /*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/03/01 17:43:17 by sazouaka          #+#    #+#             */
-/*   Updated: 2020/12/07 16:55:27 by awali-al         ###   ########.fr       */
+/*   Updated: 2020/12/07 20:29:46 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,6 @@ int		ft_cd_1(char *flag, char **env)
 	ft_putstr(flag);
 	ft_putchar('\n');
 	ft_strdel(&oldpwd);
-	free(flag);
 	return (0);
 }
 

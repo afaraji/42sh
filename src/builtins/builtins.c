@@ -32,6 +32,8 @@ int		ft_export(char **flag, char **env)
 		print_env(env);
 		return (0);
 	}
+	else if (flag[1][0] == '-' && flag[1][1] == 'p' && flag[1][2] == '\0')
+		return (print_env_1(env));
 	value = NULL;
 	while (flag[i])
 	{
@@ -43,21 +45,6 @@ int		ft_export(char **flag, char **env)
 		i++;
 	}
 	return (0);
-}
-
-void	print_env(char **env)
-{
-	int	i;
-
-	if (!env)
-		return ;
-	i = 0;
-	while (env[i])
-	{
-		ft_putstr(env[i]);
-		ft_putchar('\n');
-		i++;
-	}
 }
 
 int		cd_builtin(char **av, char **env)
@@ -118,9 +105,9 @@ int		builtins(char *cmd, char **av, char **env)
 		print_env(env);
 		return (0);
 	}
-	else if (ft_strcmp(cmd, "setenv") == 0)
+	else if (ft_strcmp(cmd, "setenv") == 0 || ft_strcmp(cmd, "set") == 0)
 		return (ft_setenv(av, env));
-	else if (ft_strcmp(cmd, "unsetenv") == 0)
+	else if (ft_strcmp(cmd, "unsetenv") == 0 || ft_strcmp(cmd, "unset") == 0)
 		return (ft_unsetenv(av));
 	else if (ft_strcmp(cmd, "export") == 0)
 		return (ft_export(av, env));
