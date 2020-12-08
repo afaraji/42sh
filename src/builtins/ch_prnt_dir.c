@@ -6,7 +6,7 @@
 /*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/05 02:09:44 by awali-al          #+#    #+#             */
-/*   Updated: 2020/12/08 14:05:35 by awali-al         ###   ########.fr       */
+/*   Updated: 2020/12/08 20:58:46 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,19 @@ static char	*first_str(char *str1, char *str2)
 		return (NULL);
 }
 
+static char	*fixing_ret(char *buf, char *path)
+{
+	char	*ret;
+
+	ret = ft_strjoin(buf, path);
+	if (ft_strstr(ret, "/..") == (ret + ft_strlen(ret) - 3))
+	{
+		up_a_parent(&ret, "helloo");
+		up_a_parent(&ret, "helloo");
+	}
+	return (ret);
+}
+
 static char	*new_path(char **ret, char *path)
 {
 	char	*chosen;
@@ -56,11 +69,12 @@ static char	*new_path(char **ret, char *path)
 		tmp = ft_strsub(path, 0, n);
 		*ret = ft_strjoin(buf, tmp);
 		ft_strdel(&tmp);
-		n = chosen[1] == '/' ? n + 2 : n + 3;
+		n = chosen[2] == '/' ? n + 2 : n + 3;
 	}
 	else
 	{
-		*ret = ft_strjoin(buf, path);
+		// *ret = ft_strjoin(buf, path);
+		*ret = fixing_ret(buf, path);
 		n = ft_strlen(path) - 1;
 	}
 	ft_strdel(&buf);
@@ -79,6 +93,7 @@ char		*get_real_path(char *path)
 	tmp = path;
 	while (*tmp)
 	{
+		printf("[%s]    [%s]", ret, tmp);
 		if (tmp[0] == '.' && tmp[1] == '.' && tmp[2] == '.')
 		{
 			ft_strdel(&ret);
