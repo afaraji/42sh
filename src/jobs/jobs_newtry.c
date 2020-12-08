@@ -726,22 +726,22 @@ int		put_job_in_foreground (t_job *j, int cont)
 	return (ret);
 }
 
-void	launch_process (t_process *p, pid_t pgid, int infile, int outfile, int errfile, int foreground)//need norm
+void	launch_process (t_process *p, t_job *j, int foreground, int io[2])//need norm
 {
-	pid_t pid;
+	pid_t	pid;
+	char	*cmd_path;
 
 	if (shell_is_interactive)
 	{
 		pid = getpid ();
-		if (pgid == 0)
-			pgid = pid;
-		setpgid (pid, pgid);
+		if (j->pgid == 0)
+			j->pgid = pid;
+		setpgid (pid, j->pgid);
 		if (foreground)
 		{
-			tcsetpgrp (STDIN, pgid);
+			tcsetpgrp (STDIN, j->pgid);
 			ft_set_attr(1);
 		}
-		/* Set the handling for job control signals back to the default.  */
 		signal (SIGINT, SIG_DFL);
 		signal (SIGQUIT, SIG_DFL);
 		signal (SIGTSTP, SIG_DFL);
@@ -749,31 +749,20 @@ void	launch_process (t_process *p, pid_t pgid, int infile, int outfile, int errf
 		signal (SIGTTOU, SIG_DFL);
 		signal (SIGCHLD, SIG_DFL);
 	}
-
-	/* Set the standard input/output channels of the new process.  */
-	if (infile != STDIN_FILENO)
+	if (io[1] != STDIN)
 	{
-		dup2 (infile, STDIN_FILENO);
-		close (infile);
+		dup2 (io[1], STDIN);
+		close (io[1]);
 	}
-	if (outfile != STDOUT_FILENO)
+	if (io[0] != STDOUT)
 	{
-		dup2 (outfile, STDOUT_FILENO);
-		close (outfile);
-	}
-	if (errfile != STDERR_FILENO)
-	{
-		dup2 (errfile, STDERR_FILENO);
-		close (errfile);
+		dup2 (io[0], STDOUT);
+		close (io[0]);
 	}
 	if (do_simple_cmd(p->cmd))
 		exit(1);
-	/* Exec the new process.  Make sure we exit.  */
 	if (is_builtin(p->argv[0]))
-	{
 		exit(builtins(p->argv[0], p->argv, p->env));
-	}
-	char	*cmd_path;
 	if (!(cmd_path = get_cmdpath(p->argv[0])))
 		exit (127);
 	execve (cmd_path, p->argv, p->env);
@@ -795,33 +784,26 @@ int		launch_job(t_job *j, int foreground)//need norm
 	p = j->first_process;
 	while (p)
 	{
-		/* Set up pipes, if necessary.  */
 		if (p->next)
 		{
-			if (pipe (mypipe) < 0)
-			{
-				perror ("pipe");
-				exit (1);
-			}
+			system_calls("pipe", pipe(mypipe), -1);
 			outfile = mypipe[1];
 		}
 		else
 			outfile = j->fd_out;
-
-		/* Fork the child processes.  */
-		pid = fork ();
+		system_calls("fork", (pid = fork ()), -1);
 		if (pid == 0)
-			/* This is the child process.  */
-			launch_process (p, j->pgid, infile, outfile, j->fd_err, foreground);
-		else if (pid < 0)
 		{
-			/* The fork failed.  */
-			perror ("fork");
-			exit (1);
+			if (infile != mypipe[0])
+				close(mypipe[0]);
+			if (outfile != mypipe[1])
+				close(mypipe[1]);
+			mypipe[0] = outfile;
+			mypipe[1] = infile;
+			launch_process (p, j, foreground, mypipe);
 		}
 		else
 		{
-			/* This is the parent process.  */
 			p->pid = pid;
 			if (shell_is_interactive)
 			{
@@ -829,20 +811,15 @@ int		launch_job(t_job *j, int foreground)//need norm
 					j->pgid = pid;
 				setpgid (pid, j->pgid);
 			}
+			if (infile != j->fd_in)
+				close (infile);
+			if (outfile != j->fd_out)
+				close (outfile);
+			infile = mypipe[0];
 		}
-
-		/* Clean up after pipes.  */
-		if (infile != j->fd_in)
-			close (infile);
-		if (outfile != j->fd_out)
-			close (outfile);
-		infile = mypipe[0];
 		p = p->next;
 	}
-
-	// format_job_info (j, "launched");
 	add_job(j);
-
 	if (!shell_is_interactive)
 		return (wait_for_job (j));
 	else if (foreground)
@@ -858,7 +835,7 @@ int		job_control(t_and_or *cmd, int bg)
 	int 		ret;
 
 	if (tty == NULL)
-		tty = fopen("/dev/ttys003", "w");
+		tty = fopen("/dev/ttys006", "w");
 	ret = 0;
 	while (cmd)
 	{
