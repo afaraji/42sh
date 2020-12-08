@@ -6,7 +6,7 @@
 /*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/03/01 17:43:17 by sazouaka          #+#    #+#             */
-/*   Updated: 2020/12/07 20:29:46 by awali-al         ###   ########.fr       */
+/*   Updated: 2020/12/08 14:24:42 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,20 +24,20 @@ int		ft_cd_home(char **env)
 	char	*oldpwd;
 
 	path = get_var_from_tab(env, "HOME");
+	// printf("%s\n", path);
 	if (!path)
 		return (1);
 	oldpwd = get_pwd(env);
 	if (chdir(path))
 	{
-		ft_print(STDERR, "cd: %s: no such file or diroctory", path);
+		ft_print(STDERR, "cd: %s: no such file or diroctory\n", path);
 		free(path);
 		return (1);
 	}
 	if (oldpwd)
 		change_pwd("OLDPWD", oldpwd);
 	change_pwd("PWD", path);
-	ft_putstr(path);
-	ft_putchar('\n');
+	ft_putendl(path);
 	free(path);
 	if (oldpwd)
 		free(oldpwd);
@@ -58,8 +58,7 @@ int		ft_cd_1(char *flag, char **env)
 	}
 	change_pwd("OLDPWD", oldpwd);
 	change_pwd("PWD", flag);
-	ft_putstr(flag);
-	ft_putchar('\n');
+	ft_putendl(flag);
 	ft_strdel(&oldpwd);
 	return (0);
 }
@@ -67,8 +66,7 @@ int		ft_cd_1(char *flag, char **env)
 int		ft_cd_2(char *flag)
 {
 	ft_putstr_fd("cd: no such file or directory: ", 2);
-	ft_putstr_fd(flag, 2);
-	ft_putchar('\n');
+	ft_putendl_fd(flag, 2);
 	free(flag);
 	return (1);
 }
@@ -89,8 +87,7 @@ int		ft_cd_3(char *flag, char **env)
 	if (oldcwd)
 		change_pwd("OLDPWD", oldcwd);
 	change_pwd("PWD", flag);
-	ft_putstr(flag);
-	ft_putchar('\n');
+	ft_putendl(flag);
 	if (oldcwd)
 		free(oldcwd);
 	free(flag);
@@ -112,9 +109,8 @@ int		ft_cd(char *flag, char **env)
 		return (ft_cd_2(path));
 	else if (typ == 2)
 	{
-		ft_putstr("cd: not a directory: ");
-		ft_putstr(path);
-		ft_putchar('\n');
+		ft_putstr_fd("cd: not a directory: ", 2);
+		ft_putendl_fd(path, 2);
 		ft_strdel(&path);
 		return (1);
 	}

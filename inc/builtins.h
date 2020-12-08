@@ -6,7 +6,7 @@
 /*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/10 16:49:32 by sazouaka          #+#    #+#             */
-/*   Updated: 2020/12/05 18:14:24 by awali-al         ###   ########.fr       */
+/*   Updated: 2020/12/08 14:05:10 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@
 int		get_next_line(const int fd, char **line);
 int		ft_cd(char *flag, char **env);
 char	*get_real_path(char *path);
+int		ft_strshave(char **str, int n);
 int		ft_cd_1(char *flag, char **env);
 int		ft_cd_old(char **env);
 int		ft_cd_home(char **env);
