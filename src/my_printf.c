@@ -29,6 +29,8 @@ void	handle_percent(int fd, char **format, va_list args, int *i)
 	if (*ptr == 's')
 	{
 		str = va_arg(args, char *);
+		if (!str)
+			str = "(null)";
 		ft_putstr_fd(str, fd);
 		*i += ft_strlen(str);
 	}

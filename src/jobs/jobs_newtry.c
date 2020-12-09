@@ -19,7 +19,9 @@
 #include "../../inc/readline.h"
 #include "../../inc/jobs.h"
 
-int		update_proc(pid_t pid, int status, int bg);
+pid_t	g_current_job = 0;
+pid_t	g_previous_job = 0;
+FILE	*tty = NULL;
 
 char	*ft_getsigstr1_12(int sig)
 {
@@ -136,13 +138,13 @@ char	*args_to_str(t_cmd_suffix *suff, t_cmd_prefix *pref)
 	while (pref)
 	{
 		if (pref->io_redirect)
-		{
 			tmp2 = io_redirect_to_str(pref->io_redirect);
-			tmp = ft_4strjoin(str, " ",tmp2, " ");
-			ft_strdel(&str);
-			ft_strdel(&tmp2);
-			str = tmp;
-		}
+		else if (pref->ass_word)
+			tmp2 = ft_4strjoin(pref->ass_word->key, "=", pref->ass_word->value, "");
+		tmp = ft_4strjoin(str, " ",tmp2, " ");
+		ft_strdel(&str);
+		ft_strdel(&tmp2);
+		str = tmp;
 		pref = pref->prefix;
 	}
 	return (args_to_str2(suff, str));
@@ -176,8 +178,9 @@ char	*ast_to_str(t_pipe_seq *cmd)//verify leak
 	while (cmd)
 	{
 		name = (cmd->left->name) ? cmd->left->name : cmd->left->word;
+		name = (name) ? name : "";
 		args = args_to_str(cmd->left->suffix, cmd->left->prefix);
-		pipe = (cmd->right) ? "|" : "";
+		pipe = (cmd->right) ? " | " : "";
 		tmp = ft_4strjoin(str, name, args, pipe);
 		ft_strdel(&str);
 		ft_strdel(&args);
@@ -212,10 +215,6 @@ char	*and_or_to_str(t_and_or *cmd)
 }
 
 /******************************* jobs begin ***********************************/
-
-pid_t	g_current_job = 0;
-pid_t	g_previous_job = 0;
-FILE	*tty = NULL;
 
 
 
@@ -303,7 +302,8 @@ t_job	*get_job(t_and_or *cmd)
 
 	job = (t_job *)malloc(sizeof(t_job));
 	job->cmd = cmd;
-	job->command = and_or_to_str(cmd);
+	job->command = ast_to_str(cmd->ast);
+	// job->command = and_or_to_str(cmd);
 	job->first_process = get_first_proc(cmd->ast);
 	job->pgid = 0;
 	job->notified = 0;
@@ -643,8 +643,12 @@ int		put_job_in_background (t_job *j, int cont)
 	j->notified = 0;
 	j->index = (j->index == 0) ? get_new_index() : j->index;
 	if (cont)
+	{
 		if (kill (-j->pgid, SIGCONT) < 0)
 			system_calls ("kill (SIGCONT)", 1, 1);
+	}
+	else
+		ft_print(STDOUT, "[%d] %s\n", j->index, j->command);
 	return (0);
 }
 
