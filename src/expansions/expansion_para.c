@@ -106,10 +106,12 @@ int		expans_para(char **word)
 		return (hash_separator_para(word));
 	else if (sep > 1)
 		return (1);
-	else if (sep == 0 && dollared(*word))
+	else if (sep == 0 && (dollared(*word) && !ilegal_do(*word, '$')))
+		return (1);
+	else if (sep == 0 && !ilegal_do(*word, (*word)[0]))
 		return (1);
 	else if (sep == 0 && (*word)[0] != '#' && !ft_strchr(*word, '#'))
-		simple_dollar(word);
+		ques_dollar(word);
 	return (0);
 }
 
@@ -118,7 +120,10 @@ int		expans_parameter(char **argument, int start, int end)
 	char	*word;
 	int		r;
 
-	word = ft_strndup(*argument + start + 2, end - 2);
+	r = 0;
+	word = (*argument)[start + 2] == '?' &&
+		(!ft_isalnum((*argument)[start + 3]) || (*argument)[start + 3] != '_') ?
+		ft_strdup("?") : ft_strndup(*argument + start + 2, end - 2);
 	if (ft_strlen(ft_strtrim(word)) != ft_strlen(word))
 	{
 		ft_strdel(&word);
@@ -127,9 +132,7 @@ int		expans_parameter(char **argument, int start, int end)
 	if (!expans_para(&word))
 	{
 		clean_shities(&word);
-		if (!ft_strlen(word))
-			r = 0;
-		else
+		if (ft_strlen(word))
 			r = ft_strlen(word) - 1;
 		ft_expans_replace(argument, word, start, end + 1 + start);
 	}

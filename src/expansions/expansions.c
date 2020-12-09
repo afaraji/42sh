@@ -89,7 +89,6 @@ int		expansions_dispatcher(char **argument)
 	int		end;
 	int		c;
 
-	ques_dollar(argument);
 	i = -1;
 	while ((*argument)[++i])
 	{
@@ -104,7 +103,7 @@ int		expansions_dispatcher(char **argument)
 			i = expans_arithmetic(argument, i, end);
 		else if (c == 2)
 			i = expans_parameter(argument, i, end - i);
-		else if (c == 0)
+		else if (c == 0 || dollared((*argument)))
 			i = dollar_replace(argument, i, ft_strlen(*argument));
 		if (i == -1 || c == -1)
 			return (1);

@@ -6,7 +6,7 @@
 /*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/03/01 17:43:17 by sazouaka          #+#    #+#             */
-/*   Updated: 2020/12/08 18:15:15 by awali-al         ###   ########.fr       */
+/*   Updated: 2020/12/09 20:17:37 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,14 +17,15 @@
 #include "../../inc/exec.h"
 #include "../../inc/ft_free.h"
 #include "../../inc/readline.h"
+#include "../../inc/expansion.h"
 
 int		ft_cd_home(char **env)
 {
 	char	*path;
 	char	*oldpwd;
 
-	path = get_var_from_tab(env, "HOME");
-	// printf("%s\n", path);
+	if (!(path = get_var_from_tab(env, "HOME")))
+		path = ft_strdup(var_get_value("HOME", 1));
 	if (!path)
 		return (1);
 	oldpwd = get_pwd(env);
@@ -50,10 +51,8 @@ int		ft_cd_1(char *flag, char **env)
 	char	*pwd;
 
 	pwd = NULL;
-	if (!flag)
-		pwd = get_var_from_tab(env, "HOME");
-	else
-		pwd = ft_strdup(flag);
+	pwd = !flag ? get_var_from_tab(env, "HOME") : ft_strdup(flag);
+	pwd = !pwd ? ft_strdup(var_get_value("HOME", 1)) : pwd;
 	if (ft_pdenied(pwd))
 		return (1);
 	oldpwd = get_pwd(env);
@@ -67,6 +66,7 @@ int		ft_cd_1(char *flag, char **env)
 	change_pwd("OLDPWD", oldpwd);
 	change_pwd("PWD", pwd);
 	ft_putendl(pwd);
+	ft_strdel(&flag);
 	ft_strdel(&pwd);
 	ft_strdel(&oldpwd);
 	return (0);

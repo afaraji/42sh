@@ -70,6 +70,6 @@ int				second_case_baf(char **trim, char *val, int i, int ns);
 int				before_and_aft(char **trim, char *val, int i);
 void			trim_end_replace(char **trim, char *val, int *i);
 int				only_after(char **trim, char *val, int *i);
-
+int				ilegal_do(char *word, char c);
 
 #endif

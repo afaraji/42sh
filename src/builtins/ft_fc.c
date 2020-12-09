@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_fc.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sazouaka <sazouaka@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/20 18:18:50 by sazouaka          #+#    #+#             */
-/*   Updated: 2020/11/20 18:18:52 by sazouaka         ###   ########.fr       */
+/*   Updated: 2020/12/09 20:31:39 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,7 @@ int		ft_fc_1(char *f, char *l, int opt[5], char *e)
 
 	list = get_fc_list(f, l, opt[L_OPT]);
 	if (list == NULL)
-	{ 
+	{
 		if (e)
 			ft_strdel(&e);
 		ft_print(STDOUT, "fc: no events in that range\n");
@@ -129,8 +129,7 @@ int		ft_fc(char **av)
 		return (i);
 	if (opt[S_OPT])
 	{
-		if (opt[E_OPT] == 2)
-			ft_strdel(&editor);
+		opt[E_OPT] == 2 ? ft_strdel(&editor) : 0;
 		return (fc_do_s(av, i));
 	}
 	if (av[i] && av[i + 1] && av[i + 2])

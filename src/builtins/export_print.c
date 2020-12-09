@@ -51,5 +51,3 @@ int		print_env_1(char **env)
 	}
 	return (0);
 }
-
-
