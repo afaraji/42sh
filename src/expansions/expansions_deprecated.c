@@ -99,7 +99,6 @@ int			dollar_replace(char **argument, int i, int end)
 		r = 0;
 	else
 		r = i + ft_strlen(to_change) - 1;
-	ft_print(STDOUT, "--> %s\n", to_change);
 	ft_expans_replace(argument, to_change, i, end);
 	ft_strdel(&to_change);
 	return (r);

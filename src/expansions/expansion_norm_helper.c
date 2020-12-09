@@ -40,14 +40,30 @@ void	simple_dollar(char **word)
 	*word = ft_strdup(temp);
 }
 
+int		ilegal_do(char *word, char c)
+{
+	int		i;
+
+	i = 0;
+	if (word[i] != c || word[i] == '+' || word[i] == '-' || word[i] == '%'
+		|| word[i] == '*' || word[i] == '|' || word[i] == '\\'
+		|| word[i] == '/')
+		return (0);
+	while (word[++i])
+	{
+		if (ft_isalnum(word[i]) || word[i] == c || word[i] == '_')
+			return (0);
+		else
+			word[i] = '\0';
+	}
+	return (1);
+}
+
 void	ques_dollar(char **argument)
 {
 	char	*tmp;
 
-	if (!ft_strcmp("${?}", *argument))
-	{
-		tmp = str_dollar_sub(*argument);
-		ft_strdel(argument);
-		*argument = ft_strdup(tmp);
-	}
+	tmp = str_dollar_sub(ft_strjoin("$", *argument));
+	ft_strdel(argument);
+	*argument = ft_strdup(tmp);
 }
