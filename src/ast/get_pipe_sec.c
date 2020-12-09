@@ -99,7 +99,7 @@ t_simple_cmd	*get_simple_cmd(t_list_token *start, t_list_token *end)
 	}
 	else if (!g_var.errno)
 		g_var.errno = 122;
-	free(ret);
+	free_simple_cmd(ret);
 	return (NULL);
 }
 
@@ -119,7 +119,8 @@ t_pipe_seq		*ast_fill(t_list_token *tokens, t_list_token *node, int right)
 		tmp->right = NULL;
 	if (g_var.errno)
 	{
-		free(tmp);
+		ft_print(STDERR, "shell: syntax error, unexpected token.\n");
+		free_ast(tmp);
 		return (NULL);
 	}
 	return (tmp);

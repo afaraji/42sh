@@ -261,8 +261,8 @@ t_process	*get_process(t_simple_cmd *cmd)
 	t_process	*p;
 
 	p = (t_process *)malloc(sizeof(t_process));
-	p->argv = get_arg_var_sub(cmd);
-	p->env = env_to_tab(g_var.var, 0);
+	p->argv = NULL; //get_arg_var_sub(cmd);
+	p->env = NULL; //env_to_tab(g_var.var, 0);
 	p->pid = 0;
 	p->completed = 0;
 	p->stopped = 0;
@@ -712,6 +712,8 @@ void	launch_process (t_process *p, t_job *j, int foreground, int io[2])//need no
 	}
 	if (do_simple_cmd(p->cmd))
 		exit(1);
+	p->argv = get_arg_var_sub(p->cmd);
+	p->env = env_to_tab(g_var.var, 0);
 	if (is_builtin(p->argv[0]))
 		exit(builtins(p->argv[0], p->argv, p->env));
 	if (!(cmd_path = get_cmdpath(p->argv[0])))

@@ -83,7 +83,8 @@ int			main(int ac, char **av, char **env)
 		g_var.errno = 0;
 		bg_jobs();
 		if (ft_strcmp(line, ""))
-			main_parse(trim_cmd(line));
+			ret = main_parse(trim_cmd(line));
+		printf("+-+-+[%d]+-+-\n", ret);
 		if (line)
 			ft_strdel(&line);
 	}
