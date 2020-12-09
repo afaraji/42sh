@@ -6,7 +6,7 @@
 /*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/05 02:09:44 by awali-al          #+#    #+#             */
-/*   Updated: 2020/12/08 20:58:46 by awali-al         ###   ########.fr       */
+/*   Updated: 2020/12/09 03:14:09 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,6 @@ static char	*new_path(char **ret, char *path)
 	}
 	else
 	{
-		// *ret = ft_strjoin(buf, path);
 		*ret = fixing_ret(buf, path);
 		n = ft_strlen(path) - 1;
 	}
@@ -93,7 +92,6 @@ char		*get_real_path(char *path)
 	tmp = path;
 	while (*tmp)
 	{
-		printf("[%s]    [%s]", ret, tmp);
 		if (tmp[0] == '.' && tmp[1] == '.' && tmp[2] == '.')
 		{
 			ft_strdel(&ret);
