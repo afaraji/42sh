@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_fc_3.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sazouaka <sazouaka@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/04 16:47:47 by sazouaka          #+#    #+#             */
-/*   Updated: 2020/12/04 16:47:50 by sazouaka         ###   ########.fr       */
+/*   Updated: 2020/12/09 20:33:10 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,8 +86,7 @@ int		get_index_hist_first(char *s, int l)
 	else
 		index = get_last_hist();
 	fc_history_add(tmp, l);
-	if (tmp)
-		ft_strdel(&tmp);
+	tmp ? ft_strdel(&tmp) : 0;
 	return (index);
 }
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_fc_2.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sazouaka <sazouaka@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/04 16:45:21 by sazouaka          #+#    #+#             */
-/*   Updated: 2020/12/04 16:45:23 by sazouaka         ###   ########.fr       */
+/*   Updated: 2020/12/09 20:34:53 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,19 +35,15 @@ int		ft_editor(char *editor, char *file)
 		ft_strdel(&tmp);
 	}
 	line = ft_strjoin(editor, file);
-	ret = main_parse(line);
-	if (ret == 0)
+	if (!(ret = main_parse(line)))
 	{
 		system_calls("open", (fd = open("/tmp/fc_tmp_file", O_RDONLY)), -1);
 		while (get_next_line(fd, &line))
-		{
 			ret = main_parse(line);
-		}
 		close(fd);
 		unlink("/tmp/fc_tmp_file");
 	}
-	if (editor)
-		ft_strdel(&editor);
+	editor ? ft_strdel(&editor) : 0;
 	return (ret);
 }
 
