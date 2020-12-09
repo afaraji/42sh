@@ -72,9 +72,9 @@ int			main(int ac, char **av, char **env)
 		return (ret);
 	}
 	line = NULL;
-	ft_signal();
 	if (init_shell(env))
 		return (1);
+	ft_signal();
 	while (1)
 	{
 		if (ft_set_attr(0))

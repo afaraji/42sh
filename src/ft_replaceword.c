@@ -29,6 +29,18 @@ int		system_calls(char *func, int ret, int failure_value)
 	exit(42);
 }
 
+void	*ft_malloc(size_t	size)
+{
+	void	*ptr;
+
+	ptr = malloc(size);
+	if (!ptr)
+	{
+		system_calls("malloc: ", 0, 0);
+	}
+	return (ptr);
+}
+
 int		word_count(char *s, char *old)
 {
 	int	cnt;

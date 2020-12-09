@@ -17,6 +17,7 @@
 #include "../../inc/exec.h"
 #include "../../inc/ft_free.h"
 #include "../../inc/readline.h"
+#include "../../inc/jobs.h"
 
 int		update_proc(pid_t pid, int status, int bg);
 
@@ -86,34 +87,7 @@ int		stopped_by(int sig)//not used yet
 	return (sig);
 }
 
-void	initShell(void)//not used yet
-{
-	int	shell_terminal;
-	int	shell_is_interactive;
 
-	shell_terminal = STDIN;
-	shell_is_interactive = isatty (shell_terminal);
-	if (shell_is_interactive)
-	{
-		signal(SIGINT, SIG_IGN);
-		signal(SIGQUIT, SIG_IGN);
-		signal(SIGTSTP, SIG_IGN);
-		signal(SIGTTIN, SIG_IGN);
-		signal(SIGTTOU, SIG_IGN);
-		signal(SIGCHLD, SIG_IGN);
-		if (setpgid (g_var.proc->ppid, g_var.proc->ppid) < 0)
-		{
-			perror ("Couldn't put the shell in its own process group: ");
-			exit (1);
-		}
-		tcsetpgrp (shell_terminal, g_var.proc->ppid);
-		if (ft_set_attr(0))
-		{
-			perror ("Couldn't set attributes: ");
-			exit (1);
-		}
-	}
-}
 
 char	*io_redirect_to_str(t_io_redirect *io)
 {
@@ -239,37 +213,8 @@ char	*and_or_to_str(t_and_or *cmd)
 
 /******************************* jobs begin ***********************************/
 
-typedef struct			s_process
-{
-	char				*command;			/* command line, used for messages */
-	char				**argv;				/* for exec (cmd arguments) */
-	char				**env;				/* for exec (cmd env)*/
-	pid_t				pid;				/* process ID */
-	char				completed;			/* true if process has completed */
-	char				stopped;			/* true if process has stopped */
-	int					status;				/* reported status value */
-	t_simple_cmd		*cmd;				/* cmd origin */
-	struct s_process	*next;				/* next process in pipeline */
-}						t_process;
-
-typedef struct			s_job
-{
-	char				*command;			/* command line, used for messages */
-	t_process			*first_process;		/* list of processes in this job */
-	pid_t				pgid;				/* process group ID */
-	char				notified;			/* true if user told about stopped job */
-	int					fd_in;				/* standard input */
-	int					fd_out;				/* standard output */
-	int					fd_err;				/* standard error */
-	t_and_or			*cmd;				/* cmd origin */
-	int					index;				/* if in bg index > 0, if in fg index == 0 */
-	struct s_job		*next;				/* next active job */
-}						t_job;
-
-int		shell_is_interactive = 1;
-t_job	*job_list = NULL;
-pid_t	current_job = 0;
-pid_t	previous_job = 0;
+pid_t	g_current_job = 0;
+pid_t	g_previous_job = 0;
 FILE	*tty = NULL;
 
 
@@ -302,7 +247,7 @@ int			get_new_index(void)
 	t_job	*node;
 	int		index;
 
-	node = job_list;
+	node = g_var.job;
 	index = 1;
 	while (node)
 	{
@@ -434,26 +379,26 @@ int		update_job(t_job *j, pid_t pid, int status)
 void	add_job(t_job *j)
 {
 	t_job	*tmp;
-	if (job_list == NULL)
-		job_list = j;
+	if (g_var.job == NULL)
+		g_var.job = j;
 	else
 	{
-		tmp = job_list;
+		tmp = g_var.job;
 		while (tmp->next)
 			tmp = tmp->next;
 		tmp->next = j;
 	}
 }
 
-void	free_job(t_job *j)
+void	free_job(t_job **j)
 {
 	t_process	*p;
 	t_process	*p2;
 
-	if (!j)
+	if (!j || !*j)
 		return ;
-	ft_strdel(&(j->command));
-	p = j->first_process;
+	ft_strdel(&((*j)->command));
+	p = (*j)->first_process;
 	while (p)
 	{
 		p2 = p;
@@ -464,6 +409,8 @@ void	free_job(t_job *j)
 		free(p2);
 		p2 = NULL;
 	}
+	free(*j);
+	*j = NULL;
 }
 
 pid_t	find_last_bg_job(void)
@@ -471,11 +418,11 @@ pid_t	find_last_bg_job(void)
 	t_job	*j;
 	pid_t	tmp;
 
-	j = job_list;
+	j = g_var.job;
 	tmp = 0;
 	while (j)
 	{
-		if (j->index != 0 && j->pgid != current_job && j->pgid != previous_job)
+		if (j->index != 0 && j->pgid != g_current_job && j->pgid != g_previous_job)
 			tmp = j->pgid;
 		j = j->next;
 	}
@@ -484,22 +431,22 @@ pid_t	find_last_bg_job(void)
 
 void	give_current_job(pid_t pgid)
 {
-	if (current_job == pgid)
+	if (g_current_job == pgid)
 		return ;
-	previous_job = current_job;
-	current_job = pgid;
+	g_previous_job = g_current_job;
+	g_current_job = pgid;
 }
 
 void	remove_current_job(pid_t pgid)
 {
-	if (current_job == pgid)
+	if (g_current_job == pgid)
 	{
-		current_job = previous_job;
-		previous_job = find_last_bg_job();
+		g_current_job = g_previous_job;
+		g_previous_job = find_last_bg_job();
 	}
-	else if (previous_job == pgid)
+	else if (g_previous_job == pgid)
 	{
-		previous_job = find_last_bg_job();
+		g_previous_job = find_last_bg_job();
 	}
 }
 
@@ -508,7 +455,7 @@ int		remove_job(t_job *job)
 	t_job	*current;
 	t_job	*prec;
 
-	current = job_list;
+	current = g_var.job;
 	prec = NULL;
 	while (current)
 	{
@@ -517,9 +464,9 @@ int		remove_job(t_job *job)
 			if (prec)
 				prec->next = current->next;
 			else
-				job_list = current->next;
+				g_var.job = current->next;
 			remove_current_job(job->pgid);
-			free_job(job);
+			free_job(&job);
 			return (1);
 		}
 		prec = current;
@@ -556,8 +503,8 @@ int		report_to_user(t_job *j, int fg)//need norm
 		else
 		{
 			char	c;
-			c = (j->pgid == current_job) ? '+' : ' ';
-			c = (j->pgid == previous_job) ? '-' : c;
+			c = (j->pgid == g_current_job) ? '+' : ' ';
+			c = (j->pgid == g_previous_job) ? '-' : c;
 			if (WIFEXITED(p->status) && WEXITSTATUS(p->status) == 0)
 				printf("*2*> [%d]%c  Done\t\t%s\n", j->index, c, j->command);
 			else if (WIFEXITED(p->status) && WEXITSTATUS(p->status) != 0)
@@ -597,7 +544,7 @@ void	notify_user(void)
 {
 	t_job	*j;
 
-	j = job_list;
+	j = g_var.job;
 	while (j)
 	{
 		report_to_user(j, 0);
@@ -610,7 +557,7 @@ t_job	*find_job_ppid(pid_t pid)
 	t_job		*j;
 	t_process	*p;
 
-	j = job_list;
+	j = g_var.job;
 	while (j)
 	{
 		p = j->first_process;
@@ -629,7 +576,7 @@ t_job	*find_job(pid_t pgid)
 {
 	t_job	*j;
 
-	j = job_list;
+	j = g_var.job;
 	while (j)
 	{
 		if (j->pgid == pgid)
@@ -689,10 +636,10 @@ int		wait_for_job(t_job *j)
 
 int		put_job_in_background (t_job *j, int cont)
 {
-	if (current_job == 0)
-		current_job = j->pgid;
-	else if (previous_job == 0)
-		previous_job = j->pgid;
+	if (g_current_job == 0)
+		g_current_job = j->pgid;
+	else if (g_previous_job == 0)
+		g_previous_job = j->pgid;
 	j->notified = 0;
 	j->index = (j->index == 0) ? get_new_index() : j->index;
 	if (cont)
@@ -721,7 +668,7 @@ int		put_job_in_foreground (t_job *j, int cont)
 		}
 	}
 	ret = wait_for_job (j);
-	tcsetpgrp (STDIN, g_var.proc->ppid);
+	tcsetpgrp (STDIN, g_var.shell_pid);
 	ft_set_attr(0);
 	return (ret);
 }
@@ -731,7 +678,7 @@ void	launch_process (t_process *p, t_job *j, int foreground, int io[2])//need no
 	pid_t	pid;
 	char	*cmd_path;
 
-	if (shell_is_interactive)
+	if (g_var.shell_is_interactive)
 	{
 		pid = getpid ();
 		if (j->pgid == 0)
@@ -779,7 +726,10 @@ int		launch_job(t_job *j, int foreground)//need norm
 	int			outfile;
 
 	if ((infile = exec_no_fork(j->cmd->ast, !foreground)) != -42)
+	{
+		free_job(&j);
 		return (infile);
+	}
 	infile = j->fd_in;
 	p = j->first_process;
 	while (p)
@@ -805,7 +755,7 @@ int		launch_job(t_job *j, int foreground)//need norm
 		else
 		{
 			p->pid = pid;
-			if (shell_is_interactive)
+			if (g_var.shell_is_interactive)
 			{
 				if (!j->pgid)
 					j->pgid = pid;
@@ -820,7 +770,7 @@ int		launch_job(t_job *j, int foreground)//need norm
 		p = p->next;
 	}
 	add_job(j);
-	if (!shell_is_interactive)
+	if (!g_var.shell_is_interactive)
 		return (wait_for_job (j));
 	else if (foreground)
 		return (put_job_in_foreground (j, 0));
@@ -835,7 +785,7 @@ int		job_control(t_and_or *cmd, int bg)
 	int 		ret;
 
 	if (tty == NULL)
-		tty = fopen("/dev/ttys006", "w");
+		tty = fopen("/dev/ttys003", "w");
 	ret = 0;
 	while (cmd)
 	{
@@ -845,11 +795,7 @@ int		job_control(t_and_or *cmd, int bg)
 			job = get_job(cmd);
 			ret = launch_job(job, !bg);
 			exit_status(ret<<8);
-			// fprintf(tty, "########## job_list ########\n");
-			// fprintf(tty, "  index | pgid  | command\n");
-			// for (job = job_list; job ; job = job->next)
-			// 	fprintf(tty, " %d\t| %d\t| %s\n", job->index, job->pgid, job->command);
-			// free_job ??
+			//free_job; should free when exit;
 		}
 		cmd = cmd->next;
 	}
@@ -890,7 +836,7 @@ t_job	*get_pid_str(char *s)
 	int		len;
 
 	len = ft_strlen(s);
-	j = job_list;
+	j = g_var.job;
 	if (*s == '?')
 	{
 		s++;
@@ -917,10 +863,10 @@ t_job	*get_pid_n_plus_min(char c, char *s)
 	int		index;
 	pid_t	pgid;
 
-	j = job_list;
+	j = g_var.job;
 	index = (s != NULL) ? ft_atoi(s) : -1;
-	pgid = (c == '+') ? current_job : 0;
-	pgid = (c == '-') ? previous_job : pgid;
+	pgid = (c == '+') ? g_current_job : 0;
+	pgid = (c == '-') ? g_previous_job : pgid;
 	while (j)
 	{
 		if (index == j->index || (pgid != 0 && pgid == j->pgid))
@@ -964,7 +910,7 @@ int		ft_bg(char **av)//need norm
 	if (j == 0)
 		return (1);
 	char	c;
-	c = (j->pgid == current_job) ? '+' : ((j->pgid == previous_job) ? '-' : ' ');
+	c = (j->pgid == g_current_job) ? '+' : ((j->pgid == g_previous_job) ? '-' : ' ');
 	printf("-1-> [%d]%c  %s &\n", j->index, c, j->command);
 	return (put_job_in_background(j, 1));
 }
@@ -1010,11 +956,11 @@ int		ft_jobs_(char **av)
 		// impliment here jobs argvs
 		i++;
 	}
-	j = job_list;
+	j = g_var.job;
 	while (j)
 	{
-		c = (j->pgid == current_job) ? '+' : ' ';
-		c = (j->pgid == previous_job) ? '-' : c;
+		c = (j->pgid == g_current_job) ? '+' : ' ';
+		c = (j->pgid == g_previous_job) ? '-' : c;
 		ft_print(STDOUT,"[%d]%c\t", j->index, c);
 		if (job_is_stopped_completed(j) == 0)
 			ft_print(STDOUT,"running\t\t%s\n", j->command);

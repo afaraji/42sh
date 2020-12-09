@@ -18,61 +18,27 @@
 #include "../../inc/ft_free.h"
 #include "../../inc/readline.h"
 
-void		get_ppid_list(void)
+void	ft_signal(void)//not used yet
 {
-	g_var.proc = (t_proc *)malloc(sizeof(t_proc));
-	g_var.proc->ppid = getpid();
-	g_var.proc->index = 0;
-	g_var.proc->done = 0;
-	g_var.proc->status = 0;
-	g_var.proc->str = NULL;
-	g_var.proc->next = NULL;
-}
-
-void		signal_callback_handler(int signum)
-{
-	if (signum == 2)
+	g_var.shell_is_interactive = isatty (STDIN);
+	if (g_var.shell_is_interactive)
 	{
-		ft_putchar('\n');
-		g_var.sig = signum;
-		ft_set_attr(0);
-	}
-	else
-		ft_exit(NULL);
-}
-
-void		child_handler(int signum)
-{
-	pid_t	pid;
-	int		status;
-	t_proc	*proc;
-
-	proc = g_var.proc;
-	ft_print(STDOUT, "child_handler1 -->");
-	pid = waitpid(-1 , &status, WNOHANG);
-	if (pid < 0)
-		perror("waiterror:");
-	while (proc)
-	{
-		if (proc->ppid == pid)
+		signal(SIGINT, SIG_IGN);
+		signal(SIGQUIT, SIG_IGN);
+		signal(SIGTSTP, SIG_IGN);
+		signal(SIGTTIN, SIG_IGN);
+		signal(SIGTTOU, SIG_IGN);
+		signal(SIGCHLD, SIG_DFL);
+		if (setpgid (g_var.shell_pid, g_var.shell_pid) < 0)
 		{
-			ft_print(STDOUT, "child_handler2 pid[%d] = sig[%d]\n", pid, signum);
-			proc->status = status;
-			waitpid(pid, &status, 0);
-			proc->done = 1;
-			return ;
+			perror ("Couldn't put the shell in its own process group: ");
+			exit (1);
 		}
-		proc = proc->next;
+		system_calls("Tcsetpgrp: ", tcsetpgrp (STDIN, g_var.shell_pid), -1);
+		// if (ft_set_attr(0))
+		// {
+		// 	perror ("Couldn't set attributes: ");
+		// 	exit (1);
+		// }
 	}
-	ft_print(STDOUT, "child_handler3 pid[%d] = sig[%d]\n", pid, signum);
-	(void)signum;
-}
-
-void		ft_signal(void)
-{
-	signal(SIGINT, &signal_callback_handler);
-	// signal(SIGCHLD, &child_handler);
-	signal(SIGCHLD, SIG_DFL);
-	signal(SIGTTOU, SIG_IGN);
-	signal(SIGTTIN, SIG_IGN);
 }

@@ -17,6 +17,7 @@
 #include "../../inc/exec.h"
 #include "../../inc/ft_free.h"
 #include "../../inc/readline.h"
+#include "../../inc/jobs.h"
 
 void	free_t_var(t_variable *list)
 {
@@ -29,15 +30,13 @@ void	free_t_var(t_variable *list)
 	list = NULL;
 }
 
-void	free_proc(t_proc *proc)
+void	free_job_list(t_job **j)
 {
-	if (!proc)
+	if (!j || !*j)
 		return ;
-	if (proc->next)
-		free_proc(proc->next);
-	ft_strdel(&(proc->str));
-	free(proc);
-	proc = NULL;
+	if ((*j)->next)
+		free_job_list(&(*j)->next);
+	free_job(j);
 }
 
 void	free_aliases(t_alias **alias)
@@ -72,7 +71,7 @@ void	free_g_var(void)
 	free_t_var(g_var.var);
 	free_aliases(&g_var.aliases);
 	free_history_list(g_var.history);
-	free_proc(g_var.proc);
+	free_job_list(&g_var.job);
 	if (g_var.cpy_past)
 		ft_strdel(&(g_var.cpy_past));
 }
