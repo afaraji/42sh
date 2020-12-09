@@ -6,7 +6,7 @@
 /*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/03/09 17:15:16 by sazouaka          #+#    #+#             */
-/*   Updated: 2020/12/07 17:51:23 by awali-al         ###   ########.fr       */
+/*   Updated: 2020/12/09 20:17:49 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ int		cd_builtin(char **av, char **env)
 			if (av[1][1] == '\0')
 				return (ft_cd_old(env));
 			else if (av[1][1] == 'P')
-				return (ft_cd_1(av[2], env));
+				return (ft_cd_1(ft_strdup(av[2]), env));
 			else if (av[1][1] == 'L')
 				return (ft_cd(av[2], env));
 			else
