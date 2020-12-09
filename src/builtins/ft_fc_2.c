@@ -23,11 +23,17 @@ int		ft_editor(char *editor, char *file)
 	char	*line;
 	int		ret;
 	int		fd;
+	char	*tmp;
 
 	if (!editor)
 		editor = ft_strdup("/usr/bin/vim ");
 	else
-		editor = ft_strjoin(editor, " ");
+	{
+		tmp = ft_strdup(editor);
+		ft_strdel(&editor);
+		editor = ft_strjoin(tmp, " ");
+		ft_strdel(&tmp);
+	}
 	line = ft_strjoin(editor, file);
 	ret = main_parse(line);
 	if (ret == 0)
@@ -40,6 +46,8 @@ int		ft_editor(char *editor, char *file)
 		close(fd);
 		unlink("/tmp/fc_tmp_file");
 	}
+	if (editor)
+		ft_strdel(&editor);
 	return (ret);
 }
 
@@ -72,14 +80,16 @@ int		fc_add_to_file(t_hist *list, char *editor, int r)
 	t_hist	*node;
 	int		fd;
 
+	if ((fd = open("/tmp/fc_tmp_file", O_WRONLY | O_CREAT, 0744)) == -1)
+	{
+		if (editor)
+			ft_strdel(&editor);
+		ft_print(STDERR, "couldn't create fc_tmp_file.\n");
+		return (-1);
+	}
 	node = list;
 	while (r && node->next)
 		node = node->next;
-	if ((fd = open("/tmp/fc_tmp_file", O_WRONLY | O_CREAT, 0744)) == -1)
-	{
-		ft_print(STDERR, "couldn't create nor tmp_file.\n");
-		return (-1);
-	}
 	while (node)
 	{
 		ft_print(fd, "%s\n", node->hist_str);

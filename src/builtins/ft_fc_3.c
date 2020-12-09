@@ -86,6 +86,8 @@ int		get_index_hist_first(char *s, int l)
 	else
 		index = get_last_hist();
 	fc_history_add(tmp, l);
+	if (tmp)
+		ft_strdel(&tmp);
 	return (index);
 }
 

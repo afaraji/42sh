@@ -34,22 +34,26 @@ int		get_next_line(const int fd, char **line)
 
 	if (fd < 0 || read(fd, buff, 0) < 0 || line == NULL)
 		return (-1);
-	(str == NULL) ? (str = ft_strnew(1)) : 0;
+	(str == NULL) ? (str = ft_strdup("")) : 0;
 	while ((i = read(fd, buff, BUFF_SIZE)))
 	{
 		buff[i] = '\0';
 		tmp = str;
 		str = ft_strjoin(str, buff);
-		free(tmp);
+		ft_strdel(&tmp);
 		if (ft_strchr(str, '\n'))
 			break ;
 	}
 	if (ft_strlen(str) == 0 && i == 0)
+	{
+		if (str)
+			ft_strdel(&str);
 		return (0);
+	}
 	ft_get_index(str, &i);
 	*line = ft_strsub(str, 0, i);
 	tmp = ft_strdup(str + i + 1);
-	free(str);
+	ft_strdel(&str);
 	str = tmp;
 	return (1);
 }

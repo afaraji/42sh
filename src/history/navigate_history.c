@@ -85,7 +85,7 @@ void	navigate_history(t_terminal *term, t_hist **current)
 		|| term->index == (get_node_index(current, 0))->index + 1)
 		{
 			if (old_line)
-				free(old_line);
+				ft_strdel(&(old_line));
 			old_line = ft_strdup(term->line->str);
 		}
 		if (term->buff == UPARROW)

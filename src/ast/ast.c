@@ -97,7 +97,8 @@ char	*get_event_disignator(char *s)
 	j = 1;
 	while (s[i])
 	{
-		if (s[i] == '!' && (i == 0 || (i > 1 && s[i - 1] != '\\')))
+		if (s[i] == '!' && (s[i + 1] != '=' && s[i + 1] != '\0') && (i == 0 ||
+												(i > 1 && s[i - 1] != '\\')))
 		{
 			if (s[i + 1] == '!')
 				return (ft_strsub(s, i, 2));
@@ -106,9 +107,7 @@ char	*get_event_disignator(char *s)
 			num = (ft_isdigit(s[i + j])) ? 1 : 0;
 			while (s[i + j] && ((!num && ft_isalpha(s[i + j])) ||
 												(num && ft_isdigit(s[i + j]))))
-			{
 				j++;
-			}
 			return (ft_strsub(s, i, j));
 		}
 		i++;

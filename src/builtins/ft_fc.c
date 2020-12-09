@@ -93,17 +93,26 @@ int		get_opt_av(int opt[5], char **av, char **editor)
 int		ft_fc_1(char *f, char *l, int opt[5], char *e)
 {
 	t_hist	*list;
+	int		ret;
 
 	list = get_fc_list(f, l, opt[L_OPT]);
 	if (list == NULL)
-	{
+	{ 
+		if (e)
+			ft_strdel(&e);
 		ft_print(STDOUT, "fc: no events in that range\n");
 		return (1);
 	}
 	if (opt[L_OPT])
-		return (fc_print_list(list, opt[N_OPT], opt[R_OPT]));
+	{
+		if (e)
+			ft_strdel(&e);
+		ret = fc_print_list(list, opt[N_OPT], opt[R_OPT]);
+	}
 	else
-		return (fc_add_to_file(list, e, opt[R_OPT]));
+		ret = fc_add_to_file(list, e, opt[R_OPT]);
+	free_history_list(list);
+	return (ret);
 }
 
 int		ft_fc(char **av)
@@ -119,7 +128,11 @@ int		ft_fc(char **av)
 	if (i == -1)
 		return (i);
 	if (opt[S_OPT])
+	{
+		if (opt[E_OPT] == 2)
+			ft_strdel(&editor);
 		return (fc_do_s(av, i));
+	}
 	if (av[i] && av[i + 1] && av[i + 2])
 	{
 		ft_print(STDERR, "shell: fc: too many args\n");
