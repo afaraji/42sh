@@ -648,7 +648,7 @@ int		put_job_in_background (t_job *j, int cont)
 			system_calls ("kill (SIGCONT)", 1, 1);
 	}
 	else
-		ft_print(STDOUT, "[%d] %s\n", j->index, j->command);
+		ft_print(STDOUT, "[%d] %d\n", j->index, j->pgid);
 	return (0);
 }
 

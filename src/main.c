@@ -55,22 +55,28 @@ int			ft_exit(char **av)
 	exit(status);
 }
 
+int			not_interactive(char **env)
+{
+	char	*line;
+	int		ret;
+
+	if (init_shell(env))
+		return (1);
+	while (get_next_line(STDIN, &line))
+	{
+		ret = main_parse(trim_cmd(line));
+		ft_strdel(&line);
+	}
+	return (ret);
+}
+
 int			main(int ac, char **av, char **env)
 {
 	char	*line;
 	int		ret;
 
 	if (!ttyname(0) || !ttyname(1) || !ttyname(2))
-	{
-		if (init_shell(env))
-			return (1);
-		while (get_next_line(STDIN, &line))
-		{
-			ret = main_parse(trim_cmd(line));
-			ft_strdel(&line);
-		}
-		return (ret);
-	}
+		return (not_interactive(env));
 	line = NULL;
 	if (init_shell(env))
 		return (1);
@@ -84,7 +90,7 @@ int			main(int ac, char **av, char **env)
 		bg_jobs();
 		if (ft_strcmp(line, ""))
 			ret = main_parse(trim_cmd(line));
-		printf("+-+-+[%d]+-+-\n", ret);
+		exit_status(ret << 8);
 		if (line)
 			ft_strdel(&line);
 	}

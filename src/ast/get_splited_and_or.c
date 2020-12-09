@@ -71,17 +71,14 @@ t_cmdlist	*sep_op_mllc(t_list_token *tokens, t_list_token *tmp, int bg)
 	node = (t_cmdlist *)malloc(sizeof(t_cmdlist));
 	if (!node)
 		return (NULL);
+	node->bg = (bg == BGJOB) ? 1 : 0;
+	node->next = NULL;
 	node->and_or = token_split_andor(tokens, tmp);
 	if (node->and_or == NULL || g_var.errno)
 	{
-		printf("/**.**/%d/*****/\n", g_var.errno);
-		// if (node->and_or)
-		// 	free node->and_or;
-		free(node);
+		free_cmd_list(node);
 		return (NULL);
 	}
-	node->bg = (bg == BGJOB) ? 1 : 0;
-	node->next = NULL;
 	return (node);
 }
 
@@ -126,7 +123,7 @@ t_cmdlist	*token_split_sep_op(t_list_token *tokens)
 	list = token_split_sep_op_2(&tokens);
 	if (g_var.errno)
 	{
-		//FREE list
+		free_cmd_list(list);
 		return (NULL);
 	}
 	if (!list)
