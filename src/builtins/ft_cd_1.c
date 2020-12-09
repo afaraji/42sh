@@ -67,6 +67,7 @@ int		ft_cd_1(char *flag, char **env)
 	change_pwd("OLDPWD", oldpwd);
 	change_pwd("PWD", pwd);
 	ft_putendl(pwd);
+	ft_strdel(&pwd);
 	ft_strdel(&oldpwd);
 	return (0);
 }
