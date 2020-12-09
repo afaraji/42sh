@@ -31,7 +31,7 @@ int		env_tab_count(int all)
 			count++;
 		node = node->next;
 	}
-	return (count);
+	return (count + 1);
 }
 
 char	**env_to_tab(t_variable *var, int all)
