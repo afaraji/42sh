@@ -25,6 +25,7 @@
 int		get_next_line(const int fd, char **line);
 int		ft_cd(char *flag, char **env);
 char	*get_real_path(char *path);
+void	free_tab(char **flag);
 int		ft_strshave(char **str, int n);
 int		ft_cd_1(char *flag, char **env);
 int		ft_cd_old(char **env);
