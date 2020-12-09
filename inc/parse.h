@@ -70,12 +70,10 @@ char			*str_dollar_sub(char *str);
 int				dollar_sub(t_list_token **cmd_token);
 char			*get_pwd(char **env);
 int				lexer(t_list_token **cmd_token);
-t_proc			*add_proc(pid_t pid, int done, int status);
 void			bg_jobs(void);
 int				ft_alias(char **av);
 int				ft_unalias(char **av);
 void			ft_signal(void);
-void			get_ppid_list(void);
 int				init_shell(char **env);
 t_hist			*create_history(void);
 char			*delete_escape(char *str);
@@ -83,5 +81,6 @@ int				system_calls(char *func, int ret, int failure_value);
 void			replace_node(t_list_token **dst, t_list_token **src);
 char			*fc_history_remove(void);
 void			fc_history_add(char *s, int l);
+void			*ft_malloc(size_t	size);
 
 #endif

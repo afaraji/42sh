@@ -204,6 +204,7 @@ typedef struct			s_shell_var
 	t_variable			*var;
 	t_hist				*history;
 	pid_t				shell_pid;
+	int					shell_is_interactive;
 	t_job				*job;
 }						t_shell_var;
 

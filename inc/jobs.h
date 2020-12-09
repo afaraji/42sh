@@ -12,3 +12,4 @@
 
 #include "ft_21sh.h"
 
+void	free_job(t_job **j);

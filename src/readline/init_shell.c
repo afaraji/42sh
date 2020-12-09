@@ -97,9 +97,9 @@ t_variable	*get_set(char **env)
 
 int			init_shell(char **env)
 {
-	g_var = (t_shell_var){0, 0, 0, NULL, NULL, NULL, NULL, NULL};
+	g_var = (t_shell_var){0, 0, 0, NULL, NULL, NULL, NULL, 0, 0, NULL};
 	g_var.var = get_set(env);
 	g_var.history = create_history();
-	get_ppid_list();
+	g_var.shell_pid = getpid();
 	return (0);
 }
