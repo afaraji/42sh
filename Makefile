@@ -57,7 +57,8 @@ FILE_EXPANSION = expansion_arithmetic_utilities.c expansion_para.c\
 				expansion_para_utilities.c expansions.c\
 				expansions_arithmetic.c expansions_deprecated.c\
 				hash_percent_expans.c logical_operation.c utilities_exp.c\
-				hash_percent_utilities.c expansion_norm_helper.c
+				hash_percent_utilities.c expansion_norm_helper.c\
+				has_percent_n.c has_percent_n2.c
 
 SRC_AST = $(foreach file,$(FILE_AST), ./src/ast/$(file))
 

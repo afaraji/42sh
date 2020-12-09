@@ -64,5 +64,12 @@ int				find_and_replace(char **trim, char *val, int *i);
 void			trim_replace(char **trim, char *val, int *i);
 void			simple_dollar(char **word);
 void			ques_dollar(char **argument);
+int				ft_strstri(const char *haystack, const char *needle);
+void			before_and_not_aft(char **trim, char *val, int i);
+int				second_case_baf(char **trim, char *val, int i, int ns);
+int				before_and_aft(char **trim, char *val, int i);
+void			trim_end_replace(char **trim, char *val, int *i);
+int				only_after(char **trim, char *val, int *i);
+
 
 #endif

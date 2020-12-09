@@ -24,15 +24,12 @@ void	triming_end_helper(char **word, char **trim,
 {
 	char	*key;
 	int		i;
-	int		t;
 
 	key = ft_strndup(*word, percent_pos);
-	*word_value = var_get_value(key, 2);
-	t = ft_strlen(*word_value) - 1;
-	while ((*word_value)[t] && (*word_value)[t] != (*trim)[0] && t > 0)
-		t--;
+	*word_value = ft_strdup(var_get_value(key, 2));
 	i = -1;
-	trim_replace(trim, *word_value + t, &i);
+	if (ft_strlen(*word_value))
+		trim_end_replace(trim, *word_value, &i);
 	ft_strdel(&key);
 }
 
@@ -51,6 +48,7 @@ void	triming_end(char **word, char *trim, int percent_pos)
 		{
 			ft_strdel(word);
 			*word = ft_strdup(word_value);
+			ft_strdel(&word_value);
 			return ;
 		}
 		i--;
@@ -70,7 +68,8 @@ void	triming_start(char **word, char *trim, int hash_pos)
 	key = ft_strndup(*word, hash_pos);
 	word_value = var_get_value(key, 2);
 	i = -1;
-	trim_replace(&trim, word_value, &i);
+	if (ft_strlen(word_value))
+		trim_replace(&trim, word_value, &i);
 	i = -1;
 	while (word_value[++i] && trim[i])
 	{

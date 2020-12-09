@@ -42,7 +42,7 @@ int		ft_strrstr(char *haystack, char *needle, size_t len, int lim)
 		}
 		i--;
 	}
-	return (0);
+	return (-1);
 }
 
 int		next_sta(char *str)
