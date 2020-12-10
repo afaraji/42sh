@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expansion_norm_helper.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: arochdi <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/06 14:12:17 by arochdi           #+#    #+#             */
-/*   Updated: 2020/12/06 14:12:19 by arochdi          ###   ########.fr       */
+/*   Updated: 2020/12/10 20:46:59 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,9 +34,10 @@ void	ft_expans_replace(char **argument, char *to_change, int start, int end)
 	char	*second;
 
 	first = ft_strndup(*argument, start);
-	second = ft_strdup(*argument + end);
-	*argument = ft_strjoin_free(first, ft_strjoin_free(to_change,
-				second, 2), 1);
+	second = ft_strjoin(to_change, *argument + end);
+	*argument = ft_strjoin(first, second);
+	first ? ft_strdel(&first) : 0;
+	second ? ft_strdel(&second) : 0;
 }
 
 void	simple_dollar(char **word)

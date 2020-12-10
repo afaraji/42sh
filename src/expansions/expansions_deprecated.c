@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expansions_deprecated.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: merras <merras@student.42.fr>              +#+  +:+       +#+        */
+/*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/02/26 18:45:11 by merras            #+#    #+#             */
-/*   Updated: 2020/03/05 02:04:09 by arochdi          ###   ########.fr       */
+/*   Created: 2020/12/10 20:49:40 by awali-al          #+#    #+#             */
+/*   Updated: 2020/12/10 20:50:24 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,7 @@ int			dollar_replace(char **argument, int i, int end)
 	int		r;
 
 	to_change1 = ft_strndup(*argument + i, end);
-	to_change = ft_strdup(str_dollar_sub(to_change1));
+	to_change = str_dollar_sub(to_change1);
 	if (!ft_strlen(to_change))
 		r = 0;
 	else
