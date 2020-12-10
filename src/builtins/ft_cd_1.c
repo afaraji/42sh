@@ -54,10 +54,16 @@ int		ft_cd_1(char *flag, char **env)
 	pwd = !flag ? get_var_from_tab(env, "HOME") : ft_strdup(flag);
 	pwd = !pwd ? ft_strdup(var_get_value("HOME", 1)) : pwd;
 	if (ft_pdenied(pwd))
+	{
+		ft_strdel(&flag);
+		ft_strdel(&pwd);
 		return (1);
+	}
 	oldpwd = get_pwd(env);
 	if (chdir(pwd))
 	{
+		ft_strdel(&flag);
+		ft_strdel(&pwd);
 		ft_strdel(&oldpwd);
 		return (1);
 	}
@@ -76,7 +82,7 @@ int		ft_cd_2(char *flag)
 {
 	ft_putstr_fd("cd: no such file or directory: ", 2);
 	ft_putendl_fd(flag, 2);
-	free(flag);
+	ft_strdel(&flag);
 	return (1);
 }
 
@@ -85,12 +91,16 @@ int		ft_cd_3(char *flag, char **env)
 	char	*oldcwd;
 
 	if (ft_pdenied(flag))
+	{
+		ft_strdel(&flag);
 		return (1);
+	}
 	oldcwd = get_pwd(env);
 	if (chdir(flag))
 	{
+		ft_strdel(&flag);
 		if (oldcwd)
-			free(oldcwd);
+			ft_strdel(&oldcwd);
 		return (1);
 	}
 	if (oldcwd)
@@ -98,8 +108,8 @@ int		ft_cd_3(char *flag, char **env)
 	change_pwd("PWD", flag);
 	ft_putendl(flag);
 	if (oldcwd)
-		free(oldcwd);
-	free(flag);
+		ft_strdel(&oldcwd);
+	ft_strdel(&flag);
 	return (0);
 }
 

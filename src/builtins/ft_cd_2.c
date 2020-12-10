@@ -87,9 +87,17 @@ int		ft_pdenied(char *flag)
 		if (access(flag, F_OK) == 0 && access(flag, X_OK) == -1)
 			ft_putstr_fd("cd: permission denied: ", STDERR);
 		else
-			ft_putstr_fd("cd: no such file or directory***: ", STDERR);
+			ft_putstr_fd("cd: no such file or directory: ", STDERR);
 		ft_putstr_fd(flag, STDERR);
 		ft_putchar_fd('\n', STDERR);
+		return (1);
+	}	
+	if (access(flag, F_OK) == 0 && access(flag, X_OK) == -1)
+	{
+		ft_putstr_fd("cd: permission denied: ", STDERR);
+		ft_putstr_fd(flag, STDERR);
+		ft_putchar_fd('\n', STDERR);
+		closedir(dir);
 		return (1);
 	}
 	closedir(dir);
