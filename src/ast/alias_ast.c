@@ -43,25 +43,6 @@ char	*alias_check(char *s, t_alias *list)
 	return (NULL);
 }
 
-// int		alias_infinit_loop(char *str, t_alias *aliases)
-// {
-// 	char	*tmp;
-// 	t_alias	*node;
-
-// 	node = aliases;
-// 	while (node)
-// 	{
-// 		if (!ft_strcmp(str, node->key))
-// 		{
-// 			tmp = node->sub;
-// 			alias_check(aliases, str, node->sub);
-// 		}
-// 		node = node->next;
-// 	}
-// 	ft_strdel(&tmp);
-// 	return (0);
-// }
-
 int		alias_infinit_loop(char *str, char *sub, t_alias *aliases)
 {
 	char	**t;
@@ -88,36 +69,12 @@ int		alias_infinit_loop(char *str, char *sub, t_alias *aliases)
 	return ((lol) ? 1 : 0);
 }
 
-// int		alias_infinit_loop(char *str, t_alias *aliases)
-// {
-// 	char	*tmp;
-// 	t_alias	*node;
 
-// 	node = aliases;
-// 	tmp = ft_strdup(str);
-// 	while (node)
-// 	{
-// 		if (!ft_strcmp(tmp, node->key))
-// 		{
-// 			ft_strdel(&tmp);
-// 			tmp = ft_strsub_delimit(node->sub, ' ');
-// 			if (!ft_strcmp(tmp, str))
-// 			{
-// 				ft_strdel(&tmp);
-// 				return (1);
-// 			}
-// 			else
-// 				node = aliases;
-// 		}
-// 		node = node->next;
-// 	}
-// 	ft_strdel(&tmp);
-// 	return (0);
-// }
 
 int		alias_sub(t_list_token *word, t_alias *aliases)
 {
-	t_alias	*node;
+	t_alias			*node;
+	t_list_token	*tmp;
 
 	node = aliases;
 	while (node)
@@ -127,8 +84,15 @@ int		alias_sub(t_list_token *word, t_alias *aliases)
 			if (!alias_infinit_loop(node->key, node->sub, aliases))
 			{
 				ft_strdel(&(word->data));
-				word->data = ft_strdup(node->sub);
-				return (1);
+				if (ft_isspace(node->sub[ft_strlen(node->sub) - 1]))
+				{
+					tmp = word->next;
+					while (tmp && tmp->type == SPACE)
+						tmp = tmp->next;
+					if (tmp && tmp->type == WORD)
+						alias_sub(tmp, aliases);
+				}
+				return ((word->data = ft_strdup(node->sub)) ? 1: 1);
 			}
 		}
 		node = node->next;

@@ -122,7 +122,7 @@ char	**get_arg_var_sub(t_simple_cmd *cmd)
 	list = get_args(cmd);
 	table = list_to_tab(list);
 	// table = dollar_subtutution(table);
-	// table = pattern_matching(table);
+	// table = pattern_matching(table);expand_pattern(char **argv)
 	return (table);
 }
 
