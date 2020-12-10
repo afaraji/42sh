@@ -6,7 +6,7 @@
 /*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/05 02:09:44 by awali-al          #+#    #+#             */
-/*   Updated: 2020/12/10 14:32:14 by awali-al         ###   ########.fr       */
+/*   Updated: 2020/12/10 17:17:27 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,6 @@ static char	*new_path(char **ret, char *path)
 		tmp = ft_strsub(path, 0, n);
 		*ret = ft_strjoin(buf, tmp);
 		ft_strdel(&tmp);
-		// n = chosen[2] == '/' ? n + 2 : n + 3;
 	}
 	else
 	{
