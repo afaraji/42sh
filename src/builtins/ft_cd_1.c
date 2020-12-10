@@ -6,7 +6,7 @@
 /*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/03/01 17:43:17 by sazouaka          #+#    #+#             */
-/*   Updated: 2020/12/09 20:17:37 by awali-al         ###   ########.fr       */
+/*   Updated: 2020/12/10 14:26:36 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,18 +53,12 @@ int		ft_cd_1(char *flag, char **env)
 	pwd = NULL;
 	pwd = !flag ? get_var_from_tab(env, "HOME") : ft_strdup(flag);
 	pwd = !pwd ? ft_strdup(var_get_value("HOME", 1)) : pwd;
-	if (ft_pdenied(pwd))
-	{
-		ft_strdel(&flag);
-		ft_strdel(&pwd);
-		return (1);
-	}
 	oldpwd = get_pwd(env);
-	if (chdir(pwd))
+	if (ft_pdenied(pwd) || chdir(pwd))
 	{
-		ft_strdel(&flag);
-		ft_strdel(&pwd);
-		ft_strdel(&oldpwd);
+		flag ? ft_strdel(&flag) : 0;
+		pwd ? ft_strdel(&pwd) : 0;
+		oldpwd ? ft_strdel(&oldpwd) : 0;
 		return (1);
 	}
 	ft_strdel(&pwd);
@@ -72,9 +66,9 @@ int		ft_cd_1(char *flag, char **env)
 	change_pwd("OLDPWD", oldpwd);
 	change_pwd("PWD", pwd);
 	ft_putendl(pwd);
-	ft_strdel(&flag);
-	ft_strdel(&pwd);
-	ft_strdel(&oldpwd);
+	flag ? ft_strdel(&flag) : 0;
+	pwd ? ft_strdel(&pwd) : 0;
+	oldpwd ? ft_strdel(&oldpwd) : 0;
 	return (0);
 }
 
@@ -90,26 +84,19 @@ int		ft_cd_3(char *flag, char **env)
 {
 	char	*oldcwd;
 
-	if (ft_pdenied(flag))
-	{
-		ft_strdel(&flag);
-		return (1);
-	}
 	oldcwd = get_pwd(env);
-	if (chdir(flag))
+	if (ft_pdenied(flag) || chdir(flag))
 	{
-		ft_strdel(&flag);
-		if (oldcwd)
-			ft_strdel(&oldcwd);
+		flag ? ft_strdel(&flag) : 0;
+		oldcwd ? ft_strdel(&oldcwd) : 0;
 		return (1);
 	}
 	if (oldcwd)
 		change_pwd("OLDPWD", oldcwd);
 	change_pwd("PWD", flag);
 	ft_putendl(flag);
-	if (oldcwd)
-		ft_strdel(&oldcwd);
-	ft_strdel(&flag);
+	flag ? ft_strdel(&flag) : 0;
+	oldcwd ? ft_strdel(&oldcwd) : 0;
 	return (0);
 }
 
