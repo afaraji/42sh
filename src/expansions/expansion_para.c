@@ -58,7 +58,7 @@ int		normal_case(char **word)
 	if (operate[1] && (ft_isalnum(operate[1][0]) || operate[1][0] == '_'
 		|| operate[1][0] == '*' || operate[1][0] == '|'
 		|| operate[1][0] == '\\' || operate[1][0] == '/'
-		|| (operate[1][0] == '$' || operate[1][0] == '?')))
+		|| operate[1][0] == '$'))
 	{
 		ft_strdel(word);
 		ques_dollar(&(operate[0]));
@@ -133,7 +133,7 @@ int		expans_parameter(char **argument, int start, int end)
 	word = (*argument)[start + 2] == '?' &&
 		(!ft_isalnum((*argument)[start + 3]) || (*argument)[start + 3] != '_') ?
 		ft_strdup("?") : ft_strndup(*argument + start + 2, end - 2);
-	if (ft_strlen(ft_strtrim(word)) != ft_strlen(word))
+	if (norming_shiiiiiiiit(argument, word, start))
 	{
 		ft_strdel(&word);
 		return (-1);

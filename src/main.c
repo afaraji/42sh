@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: afaraji <afaraji@student.1337.ma>          +#+  +:+       +#+        */
+/*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/13 22:00:18 by sazouaka          #+#    #+#             */
-/*   Updated: 2020/10/29 23:56:26 by afaraji          ###   ########.fr       */
+/*   Updated: 2020/12/10 18:51:21 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ void		ft_exit_1(void)
 	save_list();
 	free_g_var();
 }
+
 int			ft_exit(char **av)
 {
 	int		status;

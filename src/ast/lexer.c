@@ -76,12 +76,21 @@ int		is_assword(char *str)
 
 int		lexer(t_list_token **cmd_token)
 {
+	t_list_token	**node;
+
 	if (!cmd_token || !(*cmd_token))
 		return (1);
 	if (keywords_alias_sub(cmd_token))
 	{
 		g_var.exit_status = 42;
 		return (42);
+	}
+	while (*cmd_token && (*cmd_token)->type == SPACE)
+	{
+		node = cmd_token;
+		*cmd_token = (*cmd_token)->next;
+		free(*node);
+		*node = NULL;
 	}
 	tilde_sub(cmd_token);
 	return (0);

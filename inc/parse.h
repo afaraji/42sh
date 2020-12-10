@@ -52,7 +52,7 @@ t_variable		*get_env(char *s, int typ);
 char			*get_var_from_tab(char **env, char *str);
 char			*ft_appendstr(char *s1, char *s2);
 char			*ft_strsub_delimit(char *s, char c);
-int				alias_infinit_loop(char *str, t_alias *aliases);
+int				alias_infinit_loop(char *str, char *s, t_alias *aliases);
 int				alias_sub(t_list_token *word, t_alias *aliases);
 int				is_reserved(char *str);
 void			insert_alias(char *key, char *sub);
