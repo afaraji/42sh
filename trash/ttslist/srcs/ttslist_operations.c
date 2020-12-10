@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ttslist.h"
+#include "../../inc/ttslist.h"
 
 t_list_node	*ttslist_push(t_list_head *head, t_list_node *newnode)
 {

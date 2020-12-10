@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ttslist.h"
+#include "../../inc/ttslist.h"
 
 void		*ttslist_iter_content(t_list_head *head)
 {

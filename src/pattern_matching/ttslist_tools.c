@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ttslist.h"
+#include "../../inc/ttslist.h"
 
 void	*tts_memalloc(size_t size)
 {

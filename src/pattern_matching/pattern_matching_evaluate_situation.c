@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "pattern_matching.h"
+#include "../../inc/pattern_matching.h"
 
 int	evaluate_current_situation(t_list_node *range, char *to_match,
 		int match_index)

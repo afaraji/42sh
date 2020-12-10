@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "pattern_matching.h"
+#include "../../inc/pattern_matching.h"
 
 void			handle_range_characters(t_range_match *result, char *expression,
 		int i, int escaped)

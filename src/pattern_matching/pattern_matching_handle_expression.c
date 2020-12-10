@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "pattern_matching.h"
+#include "../../inc/pattern_matching.h"
 
 void	handle_empty_expression(t_list_head *past_result,
 		t_list_head *current_result)

@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "pattern_matching.h"
+#include "../../inc/pattern_matching.h"
 
 int		match_file_results(char *initial_expression, int start_index,
 		t_list_head *past_results, t_list_head *final_result)
@@ -22,7 +22,7 @@ int		match_file_results(char *initial_expression, int start_index,
 
 	ttslist_init(&current_results);
 	ttslist_init(&ranges);
-	if (ft_strlen(initial_expression) <= start_index)
+	if ((int)ft_strlen(initial_expression) <= start_index)
 		return (merge_ttslist(final_result, past_results));
 	expression = extract_expression(initial_expression,
 			start_index, &match_folders);
@@ -58,7 +58,7 @@ char	*unescaped_string(char *expression)
 	i = 0;
 	result_index = 0;
 	result = expression;
-	while (i < ft_strlen(expression))
+	while (i < (int)ft_strlen(expression))
 	{
 		if (expression[i] == '\\' && !escaped)
 			escaped = 1;
@@ -81,7 +81,7 @@ t_list_head	pattern_matching(char *expression)
 {
 	t_list_head current_results;
 	t_list_head final_results;
-	
+
 	ttslist_init(&current_results);
 	ttslist_init(&final_results);
 	match_file_results(expression, 0, &current_results, &final_results);
@@ -141,12 +141,12 @@ t_list_head tab_to_list(char **argv)
 	return my_list;
 }
 
-char** list_to_tab(t_list_head *arg_list)
+char** list_to_tab_oz(t_list_head *arg_list)
 {
 	char	**argv;
 	int		i;
 	t_list_node *current_arg;
-	
+
 	i = 0;
 	argv = (char**)malloc(sizeof(char*) * (arg_list->size + 1));
 	arg_list->iterator = arg_list->first;
@@ -159,7 +159,7 @@ char** list_to_tab(t_list_head *arg_list)
  	return (argv);
 }
 
-char**		expand_pattern(char **argv)
+char		**expand_pattern(char **argv)
 {
 	int	i;
 	t_list_head final_result;
@@ -187,29 +187,7 @@ char**		expand_pattern(char **argv)
 		}
 		i++;
 	}
-	result = list_to_tab(&arg_list);
+	result = list_to_tab_oz(&arg_list);
 	ttslist_purge(&arg_list, free);
 	return (result);
-}
-
-int	main(int argc, char **argv)
-{
-	char **test;
-	int i=0;
-	char **this_tab;
-
-	this_tab = malloc(sizeof(char *) * (argc + 1));
-	while (i < argc)
-	{
-		this_tab[i] = ft_strdup(argv[i]);
-		i++;
-	}
-	test = expand_pattern(this_tab);
-	i = 0;
-	while (test[i])
-	{
-		printf("|%s|\n", test[i]);
-		i++;
-	}
-	return (0);
 }

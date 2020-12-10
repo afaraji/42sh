@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "pattern_matching.h"
+#include "../../inc/pattern_matching.h"
 
 int			is_dir(char *path)
 {

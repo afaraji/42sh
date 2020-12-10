@@ -53,12 +53,18 @@ FILE_JOBS = proc_manage.c signal.c jobs_newtry.c
 
 FILE_SEARCH = back_search_1.c back_search_2.c
 
-FILE_EXPANSION = expansion_arithmetic_utilities.c expansion_para.c\
-				expansion_para_utilities.c expansions.c\
-				expansions_arithmetic.c expansions_deprecated.c\
-				hash_percent_expans.c logical_operation.c utilities_exp.c\
-				hash_percent_utilities.c expansion_norm_helper.c\
-				has_percent_n.c has_percent_n2.c
+FILE_EXPANSION = expansion_arithmetic_utilities.c expansion_para.c			\
+	expansion_para_utilities.c expansions.c expansions_arithmetic.c			\
+	expansions_deprecated.c	hash_percent_expans.c logical_operation.c 		\
+	utilities_exp.c hash_percent_utilities.c expansion_norm_helper.c		\
+	has_percent_n.c has_percent_n2.c
+
+FILE_PATTERN = pattern_matching.c pattern_matching_bracket_parser.c			\
+	pattern_matching_evaluate_situation.c pattern_matching_handle_expression.c\
+	pattern_matching_handle_range.c pattern_matching_handler.c 				\
+	pattern_matching_match.c pattern_matching_util.c ttslist_constructors.c	\
+	ttslist_delete.c ttslist_iterator.c ttslist_operations.c ttslist_purge.c\
+	ttslist_tools.c
 
 SRC_AST = $(foreach file,$(FILE_AST), ./src/ast/$(file))
 
@@ -83,6 +89,8 @@ SRC_JOBS = $(foreach file,$(FILE_JOBS), ./src/jobs/$(file))
 SRC_SEARCH = $(foreach file,$(FILE_SEARCH), ./src/incremental_search/$(file))
 
 SRC_EXPANSION = $(foreach file,$(FILE_EXPANSION), ./src/expansions/$(file))
+
+SRC_PATTERN = $(foreach file,$(FILE_PATTERN), ./src/pattern_matching/$(file))
 
 LIBFTA = ./libft/libft.a
 
@@ -116,24 +124,28 @@ OBJ_READLINE = $(SRC_READLINE:.c=.o)
 
 OBJ_EXPANSIONS = $(SRC_EXPANSION:.c=.o)
 
+OBJ_PATTERN = $(SRC_PATTERN:.c=.o)
+
 all : msg $(NAME)
 
 $(NAME) : $(OBJ_SHL) $(OBJ_AST) $(OBJ_AUTOCMPLT) $(OBJ_BUILTINS)			\
 		$(OBJ_HASHTABLE) $(OBJ_JOBS) $(OBJ_EXEC) $(OBJ_FREE) $(OBJ_HIST)	\
-		$(OBJ_PARSE) $(OBJ_READLINE) $(OBJ_SEARCH) $(OBJ_EXPANSIONS)
+		$(OBJ_PARSE) $(OBJ_READLINE) $(OBJ_SEARCH) $(OBJ_EXPANSIONS)		\
+		$(OBJ_PATTERN)
 		$(MAKE) -C ./libft
 	printf "linking OBJ files... "
 	gcc $(FLAGS) $(OBJ_SHL) $(LIBFTA) $(OBJ_AST) $(OBJ_AUTOCMPLT) $(OBJ_JOBS)\
 		$(OBJ_BUILTINS) $(OBJ_HASHTABLE) $(OBJ_EXEC) $(OBJ_FREE) $(OBJ_HIST)\
-		$(OBJ_PARSE) $(OBJ_SEARCH) $(OBJ_READLINE) $(OBJ_EXPANSIONS) -ltermcap\
-		-o $(NAME)
+		$(OBJ_PARSE) $(OBJ_SEARCH) $(OBJ_READLINE) $(OBJ_EXPANSIONS)		\
+		$(OBJ_PATTERN) -ltermcap -o $(NAME)
 	echo "done"
 
 clean :
 	printf "removing OBJ files ./src/\n"
 	/bin/rm -f $(OBJ_SHL) $(OBJ_AST) $(OBJ_AUTOCMPLT) $(OBJ_BUILTINS)		\
 		$(OBJ_HASHTABLE) $(OBJ_EXEC) $(OBJ_FREE) $(OBJ_HIST) $(OBJ_PARSE)	\
-		$(OBJ_READLINE)	$(OBJ_JOBS) $(OBJ_SEARCH) $(OBJ_EXPANSIONS)
+		$(OBJ_READLINE)	$(OBJ_JOBS) $(OBJ_SEARCH) $(OBJ_EXPANSIONS)			\
+		$(OBJ_PATTERN)
 	$(MAKE) -C ./libft/ clean
 
 fclean : clean

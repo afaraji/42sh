@@ -14,7 +14,8 @@
 # define PATTERN_MATCHING_H
 
 # include "ttslist.h"
-# include "libft/libft.h"
+# include "../libft/libft.h"
+# include "expansion.h"
 # include "dirent.h"
 # include "sys/stat.h"
 # include <stdio.h>
@@ -68,4 +69,6 @@ int					match_file_results(char *initial_expression,
 char				*unescaped_string(char *expression);
 void				handle_star_mark(t_range_match *result);
 void				handle_interrogation_mark(t_range_match *result);
+char				**expand_pattern(char **argv);
+
 #endif

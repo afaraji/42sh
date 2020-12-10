@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ttslist.h"
+#include "../../inc/ttslist.h"
 
 void	ttslist_purge(t_list_head *list, void (*purge)(void *))
 {

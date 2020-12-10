@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ttslist.h"
+#include "../../inc/ttslist.h"
 
 void		*ttslist_splice(t_list_head *head, t_list_node *node)
 {

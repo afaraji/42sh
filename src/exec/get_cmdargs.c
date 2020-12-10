@@ -18,6 +18,7 @@
 #include "../../inc/ft_free.h"
 #include "../../inc/readline.h"
 #include "../../inc/expansion.h"
+#include "../../inc/pattern_matching.h"
 
 t_l		*fill_get_args(char *str)
 {
@@ -122,7 +123,7 @@ char	**get_arg_var_sub(t_simple_cmd *cmd)
 	list = get_args(cmd);
 	table = list_to_tab(list);
 	// table = dollar_subtutution(table);
-	// table = pattern_matching(table);expand_pattern(char **argv)
+	table = expand_pattern(table);
 	return (table);
 }
 
