@@ -17,6 +17,7 @@
 #include "../../inc/exec.h"
 #include "../../inc/ft_free.h"
 #include "../../inc/readline.h"
+#include "../../inc/expansion.h"
 
 t_l		*fill_get_args(char *str)
 {
@@ -116,9 +117,13 @@ t_l		*var_sub(t_l *head)
 char	**get_arg_var_sub(t_simple_cmd *cmd)
 {
 	t_l	*list;
+	char	**table;
 
 	list = get_args(cmd);
-	return (list_to_tab(list));
+	table = list_to_tab(list);
+	// table = dollar_subtutution(table);
+	// table = pattern_matching(table);
+	return (table);
 }
 
 /*
