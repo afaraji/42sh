@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expansion.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: arochdi <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/28 01:34:25 by arochdi           #+#    #+#             */
-/*   Updated: 2020/11/28 01:34:40 by arochdi          ###   ########.fr       */
+/*   Updated: 2020/12/10 17:24:54 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 # include "exec.h"
 # include "builtins.h"
 
-# define PP	':'
+# define PP		':'
 # define PPR	'^'
 
 void			ft_move_space(char **str);
