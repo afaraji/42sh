@@ -6,7 +6,7 @@
 /*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/03 17:47:03 by afaraji           #+#    #+#             */
-/*   Updated: 2020/12/10 19:29:26 by awali-al         ###   ########.fr       */
+/*   Updated: 2020/12/10 19:40:02 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,10 +94,14 @@ static int	close_quotes(t_list_token *node)
 	while (is_quote_closed(toappend, node->type) == 0)
 	{
 		if (!(tmp = read_to_append(node)))
+		{
+			toappend ? ft_strdel(&toappend) : 0;
 			return (1);
+		}
 		tmp2 = ft_4strjoin(toappend, "\n", tmp, "");
 		toappend ? ft_strdel(&toappend) : 0;
 		toappend = tmp2;
+		tmp ? ft_strdel(&tmp) : 0;
 	}
 	ttt = ft_tokenize(toappend);
 	replace_node(&node, &ttt);
