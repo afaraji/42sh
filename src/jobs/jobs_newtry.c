@@ -315,6 +315,25 @@ t_job	*get_job(t_and_or *cmd)
 	return (job);
 }
 
+t_job	*get_job_list(t_and_or *cmd)
+{
+	t_job	*job;
+
+	job = (t_job *)malloc(sizeof(t_job));
+	job->cmd = cmd;
+	// job->command = ast_to_str(cmd->ast);
+	job->command = and_or_to_str(cmd);
+	job->first_process = get_first_proc(cmd->ast);
+	job->pgid = 0;
+	job->notified = 0;
+	job->index = 0;
+	job->fd_in = STDIN;
+	job->fd_out = STDOUT;
+	job->fd_err = STDERR;
+	job->next = NULL;
+	return (job);
+}
+
 /*
 ** Return true if all processes in the job have stopped or completed.
 */
@@ -784,6 +803,35 @@ int		launch_job(t_job *j, int foreground)//need norm
 		return (put_job_in_background (j, 0));
 }
 
+void	grouped_job(t_and_or *cmd)
+{
+	int		pid;
+	t_job	*job;
+
+	system_calls("fork", (pid = fork ()), -1);
+	if (pid == 0)
+	{
+		pid = getpid();
+		setpgid(pid, pid);
+		signal (SIGINT, SIG_DFL);
+		signal (SIGQUIT, SIG_DFL);
+		signal (SIGTSTP, SIG_DFL);
+		signal (SIGTTIN, SIG_DFL);
+		signal (SIGTTOU, SIG_DFL);
+		signal (SIGCHLD, SIG_DFL);
+		exit (execute(cmd, pid));
+	}
+	else
+	{
+		setpgid(pid, pid);
+		job = get_job_list(cmd);
+		job->pgid = pid;
+		job->first_process->pid = pid;
+		add_job(job);
+		put_job_in_background(job, 0);
+	}
+}
+
 int		job_control(t_and_or *cmd, int bg)
 {
 	t_job		*job;
@@ -793,6 +841,11 @@ int		job_control(t_and_or *cmd, int bg)
 	if (tty == NULL)
 		tty = fopen("/dev/ttys003", "w");
 	ret = 0;
+	if (bg && cmd->next)
+	{
+		grouped_job(cmd);
+		return (ret);
+	}
 	while (cmd)
 	{
 		dp = cmd->dependent;
@@ -800,8 +853,7 @@ int		job_control(t_and_or *cmd, int bg)
 		{
 			job = get_job(cmd);
 			ret = launch_job(job, !bg);
-			exit_status(ret<<8);
-			//free_job; should free when exit;
+			exit_status(ret << 8);
 		}
 		cmd = cmd->next;
 	}
