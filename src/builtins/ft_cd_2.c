@@ -6,7 +6,7 @@
 /*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/03/01 17:43:17 by sazouaka          #+#    #+#             */
-/*   Updated: 2020/12/08 17:59:11 by awali-al         ###   ########.fr       */
+/*   Updated: 2020/12/10 18:56:15 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,7 @@ int		ft_pdenied(char *flag)
 		ft_putstr_fd(flag, STDERR);
 		ft_putchar_fd('\n', STDERR);
 		return (1);
-	}	
+	}
 	if (access(flag, F_OK) == 0 && access(flag, X_OK) == -1)
 	{
 		ft_putstr_fd("cd: permission denied: ", STDERR);

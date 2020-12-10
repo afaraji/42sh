@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   alias_ast.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: afaraji <afaraji@student.1337.ma>          +#+  +:+       +#+        */
+/*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/05 17:45:55 by afaraji           #+#    #+#             */
-/*   Updated: 2020/11/05 17:46:00 by afaraji          ###   ########.fr       */
+/*   Updated: 2020/12/10 18:58:16 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ char	*ft_strsub_delimit(char *s, char c)
 	return (ft_strsub(s, 0, i));
 }
 
-char		*alias_check(char *s, t_alias *list)
+char	*alias_check(char *s, t_alias *list)
 {
 	t_alias	*node;
 
@@ -67,8 +67,8 @@ int		alias_infinit_loop(char *str, char *sub,t_alias *aliases)
 	char	**t;
 	char	*tmp;
 	char	*tmp2;
-	int			i;
-	int			lol;
+	int		i;
+	int		lol;
 
 	t = strsplit_str(sub, "&|;");
 	i = 0;

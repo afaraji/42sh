@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   list_to_tab.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: afaraji <afaraji@student.1337.ma>          +#+  +:+       +#+        */
+/*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:37:17 by afaraji           #+#    #+#             */
-/*   Updated: 2020/11/04 16:37:24 by afaraji          ###   ########.fr       */
+/*   Updated: 2020/12/10 18:51:59 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 #include "../inc/ft_free.h"
 #include "../inc/readline.h"
 
-int		list_count(t_l *list)
+int			list_count(t_l *list)
 {
 	t_l	*node;
 	int	i;
@@ -33,7 +33,7 @@ int		list_count(t_l *list)
 	return (i + 1);
 }
 
-char	**list_to_tab(t_l *list)
+char		**list_to_tab(t_l *list)
 {
 	t_l		*node;
 	int		i;
@@ -56,7 +56,7 @@ char	**list_to_tab(t_l *list)
 	return (args);
 }
 
-int				is_char_in_str(char c, char *s)
+int			is_char_in_str(char c, char *s)
 {
 	while (*s)
 	{
@@ -67,7 +67,7 @@ int				is_char_in_str(char c, char *s)
 	return (0);
 }
 
-static int		cnt_parts(const char *s, char *c)
+static int	cnt_parts(const char *s, char *c)
 {
 	int		cnt;
 	int		in_substring;
@@ -88,7 +88,7 @@ static int		cnt_parts(const char *s, char *c)
 	return (cnt);
 }
 
-static int		wlen(const char *s, char *c)
+static int	wlen(const char *s, char *c)
 {
 	int		len;
 
@@ -101,7 +101,7 @@ static int		wlen(const char *s, char *c)
 	return (len);
 }
 
-char			**strsplit_str(char const *s, char *c)
+char		**strsplit_str(char const *s, char *c)
 {
 	char	**t;
 	int		nb_word;
