@@ -55,11 +55,22 @@ int		normal_case(char **word)
 	int		ret;
 
 	operate = ft_strsplit(*word, ':');
+	if (operate[1] && (ft_isalnum(operate[1][0]) || operate[1][0] == '_'
+		|| operate[1][0] == '*' || operate[1][0] == '|'
+		|| operate[1][0] == '\\' || operate[1][0] == '/'
+		|| (operate[1][0] == '$' || operate[1][0] == '?')))
+	{
+		ft_strdel(word);
+		ques_dollar(&(operate[0]));
+		*word = ft_strdup(operate[0]);
+		free_tab(operate);
+		return (0);
+	}
 	check = param_is_set(operate[0]);
 	if (dollared(operate[0]))
 		return (1);
 	if (operate[1] && dollared(operate[1]))
-		dollar_expansion(&(operate[1]));
+		ques_dollar(&(operate[1]));
 	ret = operate[1] ? operation(operate, word, check) : 1;
 	free_tab(operate);
 	return (ret);
@@ -81,7 +92,7 @@ int		sep_count(char **word)
 			if (dollared(ft_strsub((*word), 0, i)))
 				return (0);
 			if (dollared((*word) + i + 2))
-				dollar_expansion(word);
+				ques_dollar(word);
 			set_local_variable(word, i + 1);
 			return (-1);
 		}
@@ -108,10 +119,8 @@ int		expans_para(char **word)
 		return (1);
 	else if (sep == 0 && (dollared(*word) && !ilegal_do(*word, '$')))
 		return (1);
-	else if (sep == 0 && !ilegal_do(*word, (*word)[0]))
-		return (1);
 	else if (sep == 0 && (*word)[0] != '#' && !ft_strchr(*word, '#'))
-		ques_dollar(word);
+		return (ques_dollar(word));
 	return (0);
 }
 

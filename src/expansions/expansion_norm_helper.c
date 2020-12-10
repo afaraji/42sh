@@ -45,10 +45,6 @@ int		ilegal_do(char *word, char c)
 	int		i;
 
 	i = 0;
-	if (word[i] != c || word[i] == '+' || word[i] == '-' || word[i] == '%'
-		|| word[i] == '*' || word[i] == '|' || word[i] == '\\'
-		|| word[i] == '/')
-		return (0);
 	while (word[++i])
 	{
 		if (ft_isalnum(word[i]) || word[i] == c || word[i] == '_')
@@ -59,11 +55,16 @@ int		ilegal_do(char *word, char c)
 	return (1);
 }
 
-void	ques_dollar(char **argument)
+int		ques_dollar(char **argument)
 {
 	char	*tmp;
 
 	tmp = str_dollar_sub(ft_strjoin("$", *argument));
+	if ((*argument)[0] == '+' || (*argument)[0] == '-' || (*argument)[0] == '%'
+		|| (*argument)[0] == '*' || (*argument)[0] == '|'
+		|| (*argument)[0] == '\\' || (*argument)[0] == '/')
+		return (1);
 	ft_strdel(argument);
 	*argument = ft_strdup(tmp);
+	return (0);
 }
