@@ -91,7 +91,7 @@ int		need_append(t_list_token *tokens)
 	char			*tmp;
 
 	node = get_last_node_toappend(tokens);
-	if (is_need_append(node))
+	if (node && is_need_append(node))
 	{
 		if (node->type == QUOTE || node->type == DQUOTE)
 		{//-------------------------- append_quotes ----------------------------

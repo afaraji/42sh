@@ -44,6 +44,8 @@ void	parse_and_replace(t_list_token **cmd_token, t_list_token *node)
 	t_list_token	*tmp;
 
 	toinsert = ft_tokenize(node->data);
+	if (!toinsert)
+		toinsert = ft_tokenize(" ");
 	tmp = toinsert;
 	while (tmp->next)
 		tmp = tmp->next;
@@ -73,7 +75,9 @@ int		keywords_alias_sub_2(t_list_token **cmd_token, t_list_token *node)
 {
 	parse_and_replace(cmd_token, node);
 	if (keywords_alias_sub(cmd_token))
+	{
 		return (1);
+	}
 	return (0);
 }
 
