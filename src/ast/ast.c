@@ -151,23 +151,27 @@ int		history_sub(t_list_token *tokens)
 	{
 		if ((node->type == WORD || node->type == DQUOTE) && (old = get_event_disignator(node->data)))
 		{
-			fc_history_remove();
+			free(fc_history_remove());
 			new = history_search(old + 1, &g_var.history);
 			if (new == NULL)
 			{
 				ft_print(STDERR, "shell: %s: event not found.\n", old);
+				ft_strdel(&old);
 				return (1);
 			}
 			tmp = ft_replaceword(node->data, old, new);
+			ft_strdel(&old);
+			ft_strdel(&new);
 			www = ft_tokenize(tmp);
+			ft_strdel(&tmp);
 			zzz = node->next;
 			replace_node(&node, &www);
 			node = tokens;
 			while (node->next)
 				node = node->next;
 			node->next = zzz;
-			fc_history_add(tokens_to_str(tokens), 1);
-			ft_strdel(&new);
+			tmp = tokens_to_str(tokens);
+			fc_history_add(tmp, 1);
 			ft_strdel(&tmp);
 		}
 		node = node->next;
