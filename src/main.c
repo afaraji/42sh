@@ -28,20 +28,26 @@ int			is_number(char *str)
 	return (is_all_digits(str));
 }
 
+void		ft_exit_1(void)
+{
+	ft_set_attr(1);
+	save_list();
+	free_g_var();
+}
 int			ft_exit(char **av)
 {
 	int		status;
 
-	ft_set_attr(1);
-	save_list();
-	free_g_var();
 	if (av[1])
 	{
 		if (ft_strlen(av[1]) < 10 && is_number(av[1]))
 		{
 			status = ft_atoi(av[1]);
 			if (av[2])
+			{
 				ft_print(STDERR, "exit\nshell: exit: too many arguments.\n");
+				return (1);
+			}
 		}
 		else
 		{
@@ -52,6 +58,7 @@ int			ft_exit(char **av)
 	}
 	else
 		status = 0;
+	ft_exit_1();
 	exit(status);
 }
 
