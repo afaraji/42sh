@@ -6,7 +6,7 @@
 /*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/05 17:45:55 by afaraji           #+#    #+#             */
-/*   Updated: 2020/12/10 18:58:16 by awali-al         ###   ########.fr       */
+/*   Updated: 2020/12/10 19:00:49 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ char	*alias_check(char *s, t_alias *list)
 // 	return (0);
 // }
 
-int		alias_infinit_loop(char *str, char *sub,t_alias *aliases)
+int		alias_infinit_loop(char *str, char *sub, t_alias *aliases)
 {
 	char	**t;
 	char	*tmp;

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   append_and_verify.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: afaraji <afaraji@student.1337.ma>          +#+  +:+       +#+        */
+/*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/03 17:47:03 by afaraji           #+#    #+#             */
-/*   Updated: 2020/11/03 17:47:23 by afaraji          ###   ########.fr       */
+/*   Updated: 2020/12/10 19:29:26 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 #include "../../inc/ft_free.h"
 #include "../../inc/readline.h"
 
-int		is_all_digits(char *s)
+int			is_all_digits(char *s)
 {
 	while (*s)
 	{
@@ -29,7 +29,7 @@ int		is_all_digits(char *s)
 	return (1);
 }
 
-int		is_need_append(t_list_token *node)
+int			is_need_append(t_list_token *node)
 {
 	int typ;
 
@@ -41,7 +41,7 @@ int		is_need_append(t_list_token *node)
 	return (0);
 }
 
-char	*read_to_append(t_list_token *node)
+char		*read_to_append(t_list_token *node)
 {
 	char	*str;
 
@@ -54,7 +54,7 @@ char	*read_to_append(t_list_token *node)
 	return (str);
 }
 
-void	replace_node(t_list_token **dst, t_list_token **src)
+void		replace_node(t_list_token **dst, t_list_token **src)
 {
 	if ((*src)->next)
 		(*src)->next->prec = *dst;
@@ -67,7 +67,7 @@ void	replace_node(t_list_token **dst, t_list_token **src)
 	free((*src));
 }
 
-int		is_quote_closed(char *s, int type)
+int			is_quote_closed(char *s, int type)
 {
 	int		i;
 	char	c;
@@ -83,39 +83,49 @@ int		is_quote_closed(char *s, int type)
 	return (0);
 }
 
-int		need_append(t_list_token *tokens)
+static int	close_quotes(t_list_token *node)
 {
-	t_list_token	*node;
 	t_list_token	*ttt;
 	char			*toappend;
 	char			*tmp;
+	char			*tmp2;
 
+	toappend = ft_strjoin(tokentoa(node->type), node->data);
+	while (is_quote_closed(toappend, node->type) == 0)
+	{
+		if (!(tmp = read_to_append(node)))
+			return (1);
+		tmp2 = ft_4strjoin(toappend, "\n", tmp, "");
+		toappend ? ft_strdel(&toappend) : 0;
+		toappend = tmp2;
+	}
+	ttt = ft_tokenize(toappend);
+	replace_node(&node, &ttt);
+	toappend ? ft_strdel(&toappend) : 0;
+	return (0);
+}
+
+int			need_append(t_list_token *tokens)
+{
+	t_list_token	*node;
+	char			*tmp;
+
+	tmp = NULL;
 	node = get_last_node_toappend(tokens);
 	if (node && is_need_append(node))
 	{
 		if (node->type == QUOTE || node->type == DQUOTE)
-		{//-------------------------- append_quotes ----------------------------
-			char	*tmp2;
-			toappend = ft_strjoin(tokentoa(node->type), node->data);
-			while (is_quote_closed(toappend, node->type) == 0)
-			{
-				if (!(tmp = read_to_append(node)))
-					return (1);
-				tmp2 = ft_4strjoin(toappend, "\n", tmp,"");
-				ft_strdel(&toappend);
-				toappend = tmp2;
-			}
-			ttt = ft_tokenize(toappend);
-			replace_node(&node, &ttt);
-			ft_strdel(&toappend);
-		}//---------------------------------------------------------------------
+		{
+			if (close_quotes(node) == 1)
+				return (1);
+		}
 		else
 		{
 			if (!(tmp = read_to_append(node)))
 				return (1);
 			node->next = ft_tokenize(tmp);
 		}
-		ft_strdel(&tmp);
+		tmp ? ft_strdel(&tmp) : 0;
 		if (lexer(&tokens) || verify_tokens(tokens))
 			return (100);
 		return (need_append(tokens));
