@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: afaraji <afaraji@student.42.fr>            +#+  +:+       +#+        */
+/*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/10 16:13:41 by afaraji           #+#    #+#             */
-/*   Updated: 2020/10/31 20:54:52 by afaraji          ###   ########.fr       */
+/*   Updated: 2020/12/10 11:32:21 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,7 +118,7 @@ int		execute(t_and_or *cmd, int pgid)
 	while (cmd)
 	{
 		dp = cmd->dependent;
-		if (!dp || (dp == 1 && !ret) ||	(dp == 2 && ret))
+		if (!dp || (dp == 1 && !ret) || (dp == 2 && ret))
 		{
 			ret = exec_ast(cmd->ast, pgid);
 		}

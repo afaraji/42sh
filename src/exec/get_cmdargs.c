@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_cmdargs.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: afaraji <afaraji@student.1337.ma>          +#+  +:+       +#+        */
+/*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/03 18:19:11 by afaraji           #+#    #+#             */
-/*   Updated: 2020/11/03 18:19:44 by afaraji          ###   ########.fr       */
+/*   Updated: 2020/12/10 11:29:16 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,7 +116,7 @@ t_l		*var_sub(t_l *head)
 
 char	**get_arg_var_sub(t_simple_cmd *cmd)
 {
-	t_l	*list;
+	t_l		*list;
 	char	**table;
 
 	list = get_args(cmd);

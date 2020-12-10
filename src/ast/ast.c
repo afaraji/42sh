@@ -6,7 +6,7 @@
 /*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/14 22:35:31 by afaraji           #+#    #+#             */
-/*   Updated: 2020/12/03 00:22:28 by awali-al         ###   ########.fr       */
+/*   Updated: 2020/12/10 11:34:42 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 #include "../../inc/readline.h"
 #include "../../inc/expansion.h"
 
-int	is_valid_word(char *s)
+int		is_valid_word(char *s)
 {
 	int	i;
 
@@ -35,7 +35,7 @@ int	is_valid_word(char *s)
 	return (1);
 }
 
-int	is_valid_file(char *file, t_list_token *node)
+int		is_valid_file(char *file, t_list_token *node)
 {
 	if (!node || !file)
 		return (1);
@@ -49,7 +49,7 @@ int	is_valid_file(char *file, t_list_token *node)
 	return (1);
 }
 
-int	manage_cmd_list(t_cmdlist *cmdlist)
+int		manage_cmd_list(t_cmdlist *cmdlist)
 {
 	t_cmdlist		*node;
 	int				ret;
@@ -66,7 +66,7 @@ int	manage_cmd_list(t_cmdlist *cmdlist)
 	return (ret);
 }
 
-int	join_escape(t_list_token *token)
+int		join_escape(t_list_token *token)
 {
 	t_list_token	*node;
 
@@ -126,7 +126,8 @@ char	*tokens_to_str(t_list_token *node)
 		if (node->type == WORD)
 			tmp = ft_strjoin(s, node->data);
 		else if (node->type == QUOTE || node->type == DQUOTE)
-			tmp = ft_4strjoin(s, tokentoa(node->type), node->data, tokentoa(node->type));
+			tmp = ft_4strjoin(s, tokentoa(node->type), node->data,
+					tokentoa(node->type));
 		else
 			tmp = ft_strjoin(s, tokentoa(node->type));
 		ft_strdel(&s);
@@ -136,7 +137,7 @@ char	*tokens_to_str(t_list_token *node)
 	return (s);
 }
 
-int	history_sub(t_list_token *tokens)
+int		history_sub(t_list_token *tokens)
 {
 	t_list_token	*node;
 	char			*new;
@@ -174,7 +175,7 @@ int	history_sub(t_list_token *tokens)
 	return (0);
 }
 
-int	main_parse(char *line)
+int		main_parse(char *line)
 {
 	t_list_token	*tokens;
 	t_cmdlist		*cmdlist;
