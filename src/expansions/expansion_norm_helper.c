@@ -19,6 +19,15 @@
 #include "../../inc/readline.h"
 #include "../../inc/expansion.h"
 
+int		norming_shiiiiiiiit(char **argument, char *word, int start)
+{
+	if ((ft_strlen(ft_strtrim(word)) != ft_strlen(word)) ||
+		((*argument)[start + 2] == '?' &&
+		(ft_isalnum((*argument)[start + 3]) || (*argument)[start + 3] == '_')))
+		return (1);
+	return (0);
+}
+
 void	ft_expans_replace(char **argument, char *to_change, int start, int end)
 {
 	char	*first;

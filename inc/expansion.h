@@ -71,5 +71,6 @@ int				before_and_aft(char **trim, char *val, int i);
 void			trim_end_replace(char **trim, char *val, int *i);
 int				only_after(char **trim, char *val, int *i);
 int				ilegal_do(char *word, char c);
+int				norming_shiiiiiiiit(char **argument, char *word, int start);
 
 #endif
