@@ -3,13 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   jobs.h                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: afaraji <afaraji@student.1337.ma>          +#+  +:+       +#+        */
+/*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/08 20:45:09 by afaraji           #+#    #+#             */
-/*   Updated: 2020/12/08 20:45:15 by afaraji          ###   ########.fr       */
+/*   Updated: 2020/12/10 11:17:43 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_21sh.h"
+#ifndef JOBS_H
+# define JOBS_H
+# include "ft_21sh.h"
 
 void	free_job(t_job **j);
+#endif

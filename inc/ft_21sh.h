@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_21sh.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: afaraji <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/13 20:04:24 by afaraji           #+#    #+#             */
-/*   Updated: 2020/01/13 20:04:34 by afaraji          ###   ########.fr       */
+/*   Updated: 2020/12/10 11:43:47 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,9 +95,10 @@ typedef struct			s_alias
 }						t_alias;
 
 /*
-**env == 0 --> part of env(eg. export).
-**env == 1 --> part of set && only tmp.
-**env == 2 --> part of set && permanent and read only.
+**						s_alias
+** env == 0 --> part of env(eg. export).
+** env == 1 --> part of set && only tmp.
+** env == 2 --> part of set && permanent and read only.
 */
 
 typedef struct			s_variable
@@ -133,10 +134,15 @@ typedef struct			s_simple_cmd
 {
 	char				*word;
 	char				*name;
-	char				*command;	/* stores command for jobs prints */
+	char				*command;
 	t_cmd_prefix		*prefix;
 	t_cmd_suffix		*suffix;
 }						t_simple_cmd;
+
+/*
+**						s_simple_cmd
+** command stores command for jobs prints
+*/
 
 typedef struct			s_pipe_seq
 {
@@ -152,8 +158,9 @@ typedef struct			s_and_or
 }						t_and_or;
 
 /*
-**dependent : (0';&' not dependt, 1 exec if $? == 0 '&&',
-**2 exec if $? != 0 '||')
+**						s_and_or
+** dependent : (0';&' not dependt, 1 exec if $? == 0 '&&',
+** 2 exec if $? != 0 '||')
 */
 
 typedef struct			s_cmdlist
@@ -164,35 +171,63 @@ typedef struct			s_cmdlist
 }						t_cmdlist;
 
 /*
-**bg : 0 = forground, 1 = background
+**						s_cmdlist
+** bg : 0 = forground, 1 = background
 */
 
 typedef struct			s_process
 {
-	char				*command;			/* command line, used for messages */
-	char				**argv;				/* for exec (cmd arguments) */
-	char				**env;				/* for exec (cmd env)*/
-	pid_t				pid;				/* process ID */
-	char				completed;			/* true if process has completed */
-	char				stopped;			/* true if process has stopped */
-	int					status;				/* reported status value */
-	t_simple_cmd		*cmd;				/* cmd origin */
-	struct s_process	*next;				/* next process in pipeline */
+	char				*command;
+	char				**argv;
+	char				**env;
+	pid_t				pid;
+	char				completed;
+	char				stopped;
+	int					status;
+	t_simple_cmd		*cmd;
+	struct s_process	*next;
 }						t_process;
+
+/*
+** 						s_process
+** command: command line, used for messages
+** argv: for exec (cmd arguments)
+** env: for exec (cmd env)
+** pid: process ID
+** completed: true if process has completed
+** stopped: true if process has stopped
+** status: reported status value
+** cmd: origin
+** next: next process in pipeline
+*/
 
 typedef struct			s_job
 {
-	char				*command;			/* command line, used for messages */
-	t_process			*first_process;		/* list of processes in this job */
-	pid_t				pgid;				/* process group ID */
-	char				notified;			/* true if user told about stopped job */
-	int					fd_in;				/* standard input */
-	int					fd_out;				/* standard output */
-	int					fd_err;				/* standard error */
-	t_and_or			*cmd;				/* cmd origin */
-	int					index;				/* if in bg index > 0, if in fg index == 0 */
-	struct s_job		*next;				/* next active job */
+	char				*command;
+	t_process			*first_process;
+	pid_t				pgid;
+	char				notified;
+	int					fd_in;
+	int					fd_out;
+	int					fd_err;
+	t_and_or			*cmd;
+	int					index;
+	struct s_job		*next;
 }						t_job;
+
+/*
+**						s_job
+** command: command line, used for messages
+** first_process: list of processes in this job
+** pgid: process group ID
+** notified: true if user told about stopped job
+** fd_in: standard input
+** ft_out: standard output
+** fd_err: standard error
+** cmd: cmd origin
+** index: if in bg index > 0, if in fg index == 0
+** next: next active job
+*/
 
 typedef struct			s_shell_var
 {

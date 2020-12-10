@@ -28,20 +28,26 @@ int			is_number(char *str)
 	return (is_all_digits(str));
 }
 
+void		ft_exit_1(void)
+{
+	ft_set_attr(1);
+	save_list();
+	free_g_var();
+}
 int			ft_exit(char **av)
 {
 	int		status;
 
-	ft_set_attr(1);
-	save_list();
-	free_g_var();
 	if (av[1])
 	{
 		if (ft_strlen(av[1]) < 10 && is_number(av[1]))
 		{
 			status = ft_atoi(av[1]);
 			if (av[2])
+			{
 				ft_print(STDERR, "exit\nshell: exit: too many arguments.\n");
+				return (1);
+			}
 		}
 		else
 		{
@@ -52,7 +58,23 @@ int			ft_exit(char **av)
 	}
 	else
 		status = 0;
+	ft_exit_1();
 	exit(status);
+}
+
+int			not_interactive(char **env)
+{
+	char	*line;
+	int		ret;
+
+	if (init_shell(env))
+		return (1);
+	while (get_next_line(STDIN, &line))
+	{
+		ret = main_parse(trim_cmd(line));
+		ft_strdel(&line);
+	}
+	return (ret);
 }
 
 int			main(int ac, char **av, char **env)
@@ -61,16 +83,7 @@ int			main(int ac, char **av, char **env)
 	int		ret;
 
 	if (!ttyname(0) || !ttyname(1) || !ttyname(2))
-	{
-		if (init_shell(env))
-			return (1);
-		while (get_next_line(STDIN, &line))
-		{
-			ret = main_parse(trim_cmd(line));
-			ft_strdel(&line);
-		}
-		return (ret);
-	}
+		return (not_interactive(env));
 	line = NULL;
 	if (init_shell(env))
 		return (1);
@@ -83,7 +96,8 @@ int			main(int ac, char **av, char **env)
 		g_var.errno = 0;
 		bg_jobs();
 		if (ft_strcmp(line, ""))
-			main_parse(trim_cmd(line));
+			ret = main_parse(trim_cmd(line));
+		exit_status(ret << 8);
 		if (line)
 			ft_strdel(&line);
 	}

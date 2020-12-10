@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sazouaka <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/11/04 13:48:40 by sazouaka          #+#    #+#             */
-/*   Updated: 2018/11/10 09:55:04 by sazouaka         ###   ########.fr       */
+/*   Updated: 2020/12/10 11:24:04 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,14 +18,20 @@
 #include "../../inc/ft_free.h"
 #include "../../inc/readline.h"
 
-void	ft_get_index(char *str, int *i)
+void		ft_get_index(char *str, int *i)
 {
 	*i = 0;
 	while (str[*i] != '\n' && str[*i] != '\0')
 		(*i)++;
 }
 
-int		get_next_line(const int fd, char **line)
+static int	getting_out(char **str)
+{
+	*str ? ft_strdel(str) : 0;
+	return (0);
+}
+
+int			get_next_line(const int fd, char **line)
 {
 	char			buff[BUFF_SIZE + 1];
 	static	char	*str;
@@ -45,11 +51,7 @@ int		get_next_line(const int fd, char **line)
 			break ;
 	}
 	if (ft_strlen(str) == 0 && i == 0)
-	{
-		if (str)
-			ft_strdel(&str);
-		return (0);
-	}
+		return (getting_out(&str));
 	ft_get_index(str, &i);
 	*line = ft_strsub(str, 0, i);
 	tmp = ft_strdup(str + i + 1);

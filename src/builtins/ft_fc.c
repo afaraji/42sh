@@ -50,6 +50,8 @@ int		get_opt_av_1(int opt[5], char **av, char **editor, int *i)
 	if (av[*i + 1])
 	{
 		(*i)++;
+		if (*editor)
+			ft_strdel(editor);
 		*editor = ft_strdup(av[*i]);
 		opt[E_OPT] = 2;
 		return (0);
@@ -134,12 +136,12 @@ int		ft_fc(char **av)
 	}
 	if (av[i] && av[i + 1] && av[i + 2])
 	{
+		opt[E_OPT] == 2 ? ft_strdel(&editor) : 0;
 		ft_print(STDERR, "shell: fc: too many args\n");
 		return (-2);
 	}
 	first = (av[i]) ? av[i] : NULL;
 	last = (opt[L_OPT]) ? NULL : first;
 	last = (av[i] && av[i + 1]) ? av[i + 1] : last;
-	i = ft_fc_1(first, last, opt, editor);
-	return (i);
+	return (ft_fc_1(first, last, opt, editor));
 }

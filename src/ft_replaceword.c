@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_replaceword.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sazouaka <sazouaka@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/20 18:18:50 by sazouaka          #+#    #+#             */
-/*   Updated: 2020/11/20 18:18:52 by sazouaka         ###   ########.fr       */
+/*   Updated: 2020/12/10 11:26:44 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ int		system_calls(char *func, int ret, int failure_value)
 	exit(42);
 }
 
-void	*ft_malloc(size_t	size)
+void	*ft_malloc(size_t size)
 {
 	void	*ptr;
 

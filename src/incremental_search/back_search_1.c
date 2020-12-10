@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   back_search_1.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sazouaka <sazouaka@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/20 16:49:25 by sazouaka          #+#    #+#             */
-/*   Updated: 2020/11/20 16:49:26 by sazouaka         ###   ########.fr       */
+/*   Updated: 2020/12/09 21:02:11 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,6 @@
 #include "../../inc/ft_free.h"
 #include "../../inc/readline.h"
 
-FILE *ttyf;
-
 char	*print_search(t_terminal *term, t_hist **head, int *indice)
 {
 	char	*line;
@@ -30,21 +28,19 @@ char	*print_search(t_terminal *term, t_hist **head, int *indice)
 	return (line);
 }
 
-char	*bck_search_2(t_terminal **term, t_hist **head, char *line, int mlt_line)
+char	*bck_search_2(t_terminal **term, t_hist **hed, char *line, int mlt_line)
 {
 	if ((*term)->buff == CTRL_C || ((*term)->buff == CTRL_D &&
 										!ft_strcmp((*term)->line->str, "")))
 	{
-		if (line)
-			ft_strdel(&line);
-		if (*head && (*head)->s_chr)
-	 		ft_strdel(&((*head)->s_chr));
+		line ? ft_strdel(&line) : 0;
+		if (*hed && (*hed)->s_chr)
+			ft_strdel(&((*hed)->s_chr));
 		return (ctrl_c_d(term, mlt_line));
 	}
 	else if ((*term)->buff == ENTER)
 	{
-		if (*head && (*head)->s_chr)
-	 		ft_strdel(&((*head)->s_chr));
+		*hed && (*hed)->s_chr ? ft_strdel(&((*hed)->s_chr)) : 0;
 		ft_putchar('\n');
 		if (line)
 			return (line);
@@ -53,10 +49,9 @@ char	*bck_search_2(t_terminal **term, t_hist **head, char *line, int mlt_line)
 	}
 	else
 	{
-		if (line)
-			ft_strdel(&line);
-		if (*head && (*head)->s_chr)
-	 		ft_strdel(&((*head)->s_chr));
+		line ? ft_strdel(&line) : 0;
+		if (*hed && (*hed)->s_chr)
+			ft_strdel(&((*hed)->s_chr));
 		ft_putchar('\n');
 		return (ft_strdup(""));
 	}
@@ -84,8 +79,7 @@ char	*bck_search(t_terminal **term, t_hist **head, int mult_line)
 		read(0, &(*term)->buff, 4);
 		if (ft_isprint((*term)->buff))
 		{
-			if (line)
-				ft_strdel(&line);
+			line ? ft_strdel(&line) : 0;
 			line = print_search(*term, head, &indice);
 		}
 		else if ((*term)->buff == DEL)
@@ -98,8 +92,7 @@ char	*bck_search(t_terminal **term, t_hist **head, int mult_line)
 		else
 			return (bck_search_2(term, head, line, mult_line));
 	}
-	if (*head && (*head)->s_chr)
-		ft_strdel(&((*head)->s_chr));
+	*head && (*head)->s_chr ? ft_strdel(&((*head)->s_chr)) : 0;
 	return (ft_strdup(""));
 }
 
@@ -113,8 +106,8 @@ char	*ctrl_r(t_terminal *term, t_hist **head, int mult_line)
 	ft_putstr("bck-i-search: ");
 	tmp = bck_search(&term, head, mult_line);
 	if (term != NULL)
-	 	free_term(&term);
+		free_term(&term);
 	if (*head && (*head)->s_chr)
-	 	ft_strdel(&((*head)->s_chr));
+		ft_strdel(&((*head)->s_chr));
 	return (tmp);
 }

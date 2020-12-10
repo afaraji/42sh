@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   back_search_2.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sazouaka <sazouaka@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/20 16:49:31 by sazouaka          #+#    #+#             */
-/*   Updated: 2020/11/20 16:49:33 by sazouaka         ###   ########.fr       */
+/*   Updated: 2020/12/09 20:55:31 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,11 +88,9 @@ void	display_result(t_terminal *term, char *s, t_hist **head)
 		go_right(term->line);
 		i--;
 	}
-	if (*head && (*head)->s_chr)
-		ft_strdel(&((*head)->s_chr));
+	*head && (*head)->s_chr ? ft_strdel(&((*head)->s_chr)) : 0;
 	(*head)->s_chr = ft_strdup(term->line->str);
-	if (term->line->str)
-		ft_strdel(&(term->line->str));
+	term->line->str ? ft_strdel(&(term->line->str)) : 0;
 	term->line->str = ft_strdup(s);
 	term->line->curs = 0;
 	display_line(term->line);

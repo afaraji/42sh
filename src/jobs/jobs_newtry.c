@@ -261,8 +261,8 @@ t_process	*get_process(t_simple_cmd *cmd)
 	t_process	*p;
 
 	p = (t_process *)malloc(sizeof(t_process));
-	p->argv = get_arg_var_sub(cmd);
-	p->env = env_to_tab(g_var.var, 0);
+	p->argv = NULL; //get_arg_var_sub(cmd);
+	p->env = NULL; //env_to_tab(g_var.var, 0);
 	p->pid = 0;
 	p->completed = 0;
 	p->stopped = 0;
@@ -304,6 +304,25 @@ t_job	*get_job(t_and_or *cmd)
 	job->cmd = cmd;
 	job->command = ast_to_str(cmd->ast);
 	// job->command = and_or_to_str(cmd);
+	job->first_process = get_first_proc(cmd->ast);
+	job->pgid = 0;
+	job->notified = 0;
+	job->index = 0;
+	job->fd_in = STDIN;
+	job->fd_out = STDOUT;
+	job->fd_err = STDERR;
+	job->next = NULL;
+	return (job);
+}
+
+t_job	*get_job_list(t_and_or *cmd)
+{
+	t_job	*job;
+
+	job = (t_job *)malloc(sizeof(t_job));
+	job->cmd = cmd;
+	// job->command = ast_to_str(cmd->ast);
+	job->command = and_or_to_str(cmd);
 	job->first_process = get_first_proc(cmd->ast);
 	job->pgid = 0;
 	job->notified = 0;
@@ -648,7 +667,7 @@ int		put_job_in_background (t_job *j, int cont)
 			system_calls ("kill (SIGCONT)", 1, 1);
 	}
 	else
-		ft_print(STDOUT, "[%d] %s\n", j->index, j->command);
+		ft_print(STDOUT, "[%d] %d\n", j->index, j->pgid);
 	return (0);
 }
 
@@ -712,6 +731,8 @@ void	launch_process (t_process *p, t_job *j, int foreground, int io[2])//need no
 	}
 	if (do_simple_cmd(p->cmd))
 		exit(1);
+	p->argv = get_arg_var_sub(p->cmd);
+	p->env = env_to_tab(g_var.var, 0);
 	if (is_builtin(p->argv[0]))
 		exit(builtins(p->argv[0], p->argv, p->env));
 	if (!(cmd_path = get_cmdpath(p->argv[0])))
@@ -782,6 +803,35 @@ int		launch_job(t_job *j, int foreground)//need norm
 		return (put_job_in_background (j, 0));
 }
 
+void	grouped_job(t_and_or *cmd)
+{
+	int		pid;
+	t_job	*job;
+
+	system_calls("fork", (pid = fork ()), -1);
+	if (pid == 0)
+	{
+		pid = getpid();
+		setpgid(pid, pid);
+		signal (SIGINT, SIG_DFL);
+		signal (SIGQUIT, SIG_DFL);
+		signal (SIGTSTP, SIG_DFL);
+		signal (SIGTTIN, SIG_DFL);
+		signal (SIGTTOU, SIG_DFL);
+		signal (SIGCHLD, SIG_DFL);
+		exit (execute(cmd, pid));
+	}
+	else
+	{
+		setpgid(pid, pid);
+		job = get_job_list(cmd);
+		job->pgid = pid;
+		job->first_process->pid = pid;
+		add_job(job);
+		put_job_in_background(job, 0);
+	}
+}
+
 int		job_control(t_and_or *cmd, int bg)
 {
 	t_job		*job;
@@ -791,6 +841,11 @@ int		job_control(t_and_or *cmd, int bg)
 	if (tty == NULL)
 		tty = fopen("/dev/ttys003", "w");
 	ret = 0;
+	if (bg && cmd->next)
+	{
+		grouped_job(cmd);
+		return (ret);
+	}
 	while (cmd)
 	{
 		dp = cmd->dependent;
@@ -798,8 +853,7 @@ int		job_control(t_and_or *cmd, int bg)
 		{
 			job = get_job(cmd);
 			ret = launch_job(job, !bg);
-			exit_status(ret<<8);
-			//free_job; should free when exit;
+			exit_status(ret << 8);
 		}
 		cmd = cmd->next;
 	}
