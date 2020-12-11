@@ -82,5 +82,7 @@ void			replace_node(t_list_token **dst, t_list_token **src);
 char			*fc_history_remove(void);
 void			fc_history_add(char *s, int l);
 void			*ft_malloc(size_t	size);
+int				is_char_in_str(char c, char *s);
+char			**strsplit_str(char const *s, char *c);
 
 #endif

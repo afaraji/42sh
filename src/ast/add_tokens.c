@@ -60,9 +60,9 @@ t_list_token	*add_dquote(int *index, char *str)
 	node->is_ok = (str[i] == '"') ? 1 : 0;
 	node->type = DQUOTE;
 	node->data = (ft_strsub(str, *index + 1, i - *index - 1));
-	if (is_dollar(node->data) >= 0)
-		replace_2p(&(node->data));
-	node->data = delete_escape(node->data);
+	// if (is_dollar(node->data) >= 0)
+	// 	replace_2p(&(node->data));
+	// node->data = delete_escape(node->data);
 	node->next = NULL;
 	node->prec = NULL;
 	if (i + 1 < (int)ft_strlen(str))
@@ -104,8 +104,10 @@ t_list_token	*add_escape(int *index, char *str)
 		node->data = ft_strdup("\n");
 		node->type = ESCAPE;
 	}
-	else
+	else if (is_char_in_str(str[*index + 1], " |&;()<>\\"))
 		node->data = ft_strsub(str, *index + 1, 1);
+	else
+		node->data = ft_strsub(str, *index, 2);
 	node->next = NULL;
 	node->prec = NULL;
 	*index += (str[*index + 1] == '\0') ? 1 : 2;

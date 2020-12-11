@@ -84,11 +84,34 @@ void			join_nodes(t_list_token *dst, t_list_token *todel)
 	free_token_node(&todel);
 }
 
+void			re_quoting(t_list_token *list)
+{
+	char			*tmp;
+	char			*delimit;
+	t_list_token	*node;
+
+	node = list;
+	while (node)
+	{
+		if (node->type == QUOTE || node->type == DQUOTE)
+		{
+			tmp = node->data;
+			delimit = (node->type == DQUOTE) ? ft_strdup("\"") : ft_strdup("'");
+			node->data = ft_4strjoin(delimit, tmp, delimit, "");
+			node->type = WORD;
+			ft_strdel(&delimit);
+			ft_strdel(&tmp);
+		}
+		node = node->next;
+	}
+}
+
 void			join_words(t_list_token *token)
 {
 	t_list_token	*node;
 	t_list_token	*tmp;
 
+	re_quoting(token);
 	node = token;
 	while (node->next)
 	{
