@@ -21,13 +21,14 @@
 int		get_cmd(t_terminal *term, t_hist **his_head, int mult_line)
 {
 	char	*tmp;
+
 	term->line->str = join_line(term->line->str, term->buff, term->line->curs);
 	display_line(term->line);
 	go_right(term->line);
 	if (term->buff == ENTER)
 	{
 		tmp = ft_strtrim(term->line->str);
-		if (ft_strcmp(tmp, "") != 0	|| (mult_line != 0 && mult_line != -1))
+		if (ft_strcmp(tmp, "") != 0 || (mult_line != 0 && mult_line != -1))
 			add_cmd_to_his_list(term->line->str, his_head, mult_line);
 		ft_strdel(&tmp);
 	}

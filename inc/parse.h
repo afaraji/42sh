@@ -83,6 +83,7 @@ char			*fc_history_remove(void);
 void			fc_history_add(char *s, int l);
 void			*ft_malloc(size_t	size);
 int				is_char_in_str(char c, char *s);
+int				list_count(t_l *list);
 char			**strsplit_str(char const *s, char *c);
 
 #endif

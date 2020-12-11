@@ -82,11 +82,8 @@ char	*bck_search(t_terminal **term, t_hist **head, int mult_line)
 			line ? ft_strdel(&line) : 0;
 			line = print_search(*term, head, &indice);
 		}
-		else if ((*term)->buff == DEL)
-		{
-			indice = 0;
+		else if ((*term)->buff == DEL && ((indice = 0)) == 0)
 			del_char((*term)->line);
-		}
 		else if ((*term)->buff == CTRL_R)
 			back_search_1(*term, head, &line, &indice);
 		else

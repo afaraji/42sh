@@ -13,7 +13,7 @@
 NAME = 42sh
 
 SRC_SHL = ./src/main.c ./src/list_to_tab.c ./src/my_printf.c \
-	./src/verify_type.c ./src/ft_replaceword.c
+	./src/verify_type.c ./src/ft_replaceword.c ./src/list_to_tab_1.c
 
 FILE_AST = add_redirect.c add_tokens.c alias.c alias_ast.c ast.c dollar_sub.c\
 	get_pipe_sec.c get_splited_and_or.c get_suffix.c here_doc.c lexer.c		\
@@ -25,7 +25,7 @@ FILE_AUTOCMPLT = auto_complete.c auto_complete_2.c cmd_completion_1.c		\
 	print_completion.c
 
 FILE_BUILTINS = builtins.c change_pwd.c export.c export_print.c ft_cd_1.c 	\
-	ft_cd_2.c ft_cd_old.c  ft_echo.c  setenv.c  unalias.c unsetenv.c		\
+	ft_cd_2.c ft_cd_old.c  ft_echo.c  setenv.c setenv_1.c  unalias.c unsetenv.c		\
 	hash.c test.c test_functions.c ft_type.c ft_fc.c ft_fc_1.c ft_fc_2.c 	\
 	ft_fc_3.c ft_fc_4.c ch_prnt_dir.c ft_strshave.c
 
