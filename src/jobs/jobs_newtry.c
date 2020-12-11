@@ -260,7 +260,7 @@ t_process	*get_process(t_simple_cmd *cmd)
 {
 	t_process	*p;
 
-	p = (t_process *)malloc(sizeof(t_process));
+	p = (t_process *)ft_malloc(sizeof(t_process));
 	p->argv = get_arg_var_sub(cmd);
 	p->env = NULL; //env_to_tab(g_var.var, 0);
 	p->pid = 0;
@@ -300,7 +300,7 @@ t_job	*get_job(t_and_or *cmd)
 {
 	t_job	*job;
 
-	job = (t_job *)malloc(sizeof(t_job));
+	job = (t_job *)ft_malloc(sizeof(t_job));
 	job->cmd = cmd;
 	job->command = ast_to_str(cmd->ast);
 	// job->command = and_or_to_str(cmd);
@@ -319,7 +319,7 @@ t_job	*get_job_list(t_and_or *cmd)
 {
 	t_job	*job;
 
-	job = (t_job *)malloc(sizeof(t_job));
+	job = (t_job *)ft_malloc(sizeof(t_job));
 	job->cmd = cmd;
 	// job->command = ast_to_str(cmd->ast);
 	job->command = and_or_to_str(cmd);

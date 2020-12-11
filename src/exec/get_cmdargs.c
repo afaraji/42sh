@@ -248,10 +248,12 @@ char	**get_arg_var_sub(t_simple_cmd *cmd)
 	t_l		*list;
 	char	**table;
 
-	list = get_args(cmd);
+	if ((list = get_args(cmd)) == NULL)
+		return (NULL);
 	if (param_expand(list) || cmd_sub(list))
 		return (NULL);
-	table = list_to_tab(list);
+	if ((table = list_to_tab(list)) == NULL)
+		return (NULL);
 	// table = dollar_subtutution(table);
 	table = expand_pattern(table);
 	// table = quote_removal(table);
