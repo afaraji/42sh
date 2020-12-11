@@ -6,7 +6,7 @@
 /*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/28 01:34:25 by arochdi           #+#    #+#             */
-/*   Updated: 2020/12/10 17:24:54 by awali-al         ###   ########.fr       */
+/*   Updated: 2020/12/11 18:24:21 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,6 @@ int				expans_para(char **word);
 int				expans_parameter(char **argument, int start, int end);
 long long int	get_first_operand(char **str, int *err);
 int				expans_arith(char **operation);
-void			dollar_expansion(char **words);
 int				dollar_replace(char **argument, int i, int end);
 int				tilde_to_replace(char **argument, int i, int end);
 int				check_parenth_close(char **argument, int *end,
@@ -62,7 +61,6 @@ int				ft_strrstr(char *haystack, char *needle,
 int				next_sta(char *str);
 int				find_and_replace(char **trim, char *val, int *i);
 void			trim_replace(char **trim, char *val, int *i);
-void			simple_dollar(char **word);
 int				ques_dollar(char **argument);
 int				ft_strstri(const char *haystack, const char *needle);
 void			before_and_not_aft(char **trim, char *val, int i);
@@ -71,6 +69,8 @@ int				before_and_aft(char **trim, char *val, int i);
 void			trim_end_replace(char **trim, char *val, int *i);
 int				only_after(char **trim, char *val, int *i);
 int				ilegal_do(char *word, char c);
-int				norming_shiiiiiiiit(char **argument, char *word, int start);
+int				norming_shiiiiiiiit(char **argument, char **word, int start);
+void			nor_s(char **operate, char **word, int check);
+int				ft_strchri(const char *s, int c);
 
 #endif

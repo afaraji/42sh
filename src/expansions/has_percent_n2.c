@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   has_percent_n2.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: arochdi <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/09 14:06:10 by arochdi           #+#    #+#             */
-/*   Updated: 2020/12/09 14:06:11 by arochdi          ###   ########.fr       */
+/*   Updated: 2020/12/11 17:53:18 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,27 @@
 #include "../../inc/ft_free.h"
 #include "../../inc/readline.h"
 #include "../../inc/expansion.h"
+
+void	nor_s(char **operate, char **word, int check)
+{
+	char	*tmp;
+
+	tmp = ft_strtrim(operate[1] + 1);
+	if (operate[1][0] == '+')
+	{
+		ft_strdel(word);
+		if (check == 1)
+			*word = ft_strdup(tmp);
+		else
+			*word = ft_strdup("");
+	}
+	else if (operate[1][0] == '-' && check != 1)
+	{
+		ft_strdel(word);
+		*word = ft_strdup(tmp);
+	}
+	tmp ? ft_strdel(&tmp) : 0;
+}
 
 int		before_and_aft(char **trim, char *val, int i)
 {
@@ -39,12 +60,10 @@ int		before_and_aft(char **trim, char *val, int i)
 			ft_strdel(trim);
 			*trim = ft_strndup(val + st, end + 2);
 		}
-		if (temp)
-			ft_strdel(&temp);
+		temp ? ft_strdel(&temp) : 0;
 		return (0);
 	}
-	if (temp)
-		ft_strdel(&temp);
+	temp ? ft_strdel(&temp) : 0;
 	return (second_case_baf(trim, val, i, ns));
 }
 
@@ -56,11 +75,10 @@ int		only_after(char **trim, char *val, int *i)
 	tmp = ft_strdup(*trim);
 	tmp2 = ft_strnew(1);
 	tmp2 = ft_strncpy(tmp2, val, 1);
-	if (trim)
-		ft_strdel(trim);
-	if (*trim)
-		free(*trim);
-	*trim = ft_strdup(ft_strjoin_free(tmp2, tmp, 3));
+	*trim ? ft_strdel(trim) : 0;
+	*trim = ft_strjoin(tmp2, tmp);
+	tmp ? ft_strdel(&tmp) : 0;
+	tmp2 ? ft_strdel(&tmp2) : 0;
 	(*i)--;
 	return (1);
 }

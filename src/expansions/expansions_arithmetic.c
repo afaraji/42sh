@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expansions_arithmetic.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: arochdi <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/03/10 02:26:28 by arochdi           #+#    #+#             */
-/*   Updated: 2020/11/28 01:46:03 by arochdi          ###   ########.fr       */
+/*   Updated: 2020/12/11 02:25:43 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,8 +125,12 @@ int						expans_arith(char **operation)
 		ft_move_space(operation);
 		result = ft_iitoa(get_first_operand(operation, &err));
 		if (err)
+		{
+			result ? ft_strdel(&result) : 0;
 			return (1);
+		}
 		*operation = ft_strdup(result);
+		result ? ft_strdel(&result) : 0;
 	}
 	return (0);
 }

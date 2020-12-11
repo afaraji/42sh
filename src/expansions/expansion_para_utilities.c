@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expansion_para_utilities.c                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: arochdi <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/03/11 15:50:52 by arochdi           #+#    #+#             */
-/*   Updated: 2020/03/11 15:50:56 by arochdi          ###   ########.fr       */
+/*   Updated: 2020/12/11 02:50:56 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,10 +43,10 @@ int		hash_param(char **word)
 
 	tmp = ft_strdup((*word) + 1);
 	tmp_a = ft_strdup(var_get_value(tmp, 2));
-	ft_strdel(word);
+	*word ? ft_strdel(word) : 0;
 	*word = ft_itoa(ft_strlen(tmp_a));
-	free(tmp_a);
-	free(tmp);
+	tmp_a ? ft_strdel(&tmp_a) : 0;
+	tmp ? ft_strdel(&tmp) : 0;
 	return (0);
 }
 

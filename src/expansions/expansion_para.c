@@ -6,7 +6,7 @@
 /*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/18 16:31:12 by arochdi           #+#    #+#             */
-/*   Updated: 2020/12/10 20:37:11 by awali-al         ###   ########.fr       */
+/*   Updated: 2020/12/11 18:07:23 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,19 +21,8 @@
 
 int		operation(char **operate, char **word, int check)
 {
-	if (operate[1][0] == '+')
-	{
-		ft_strdel(word);
-		if (check == 1)
-			*word = ft_strdup(ft_strtrim(operate[1] + 1));
-		else
-			*word = ft_strdup("");
-	}
-	else if (operate[1][0] == '-' && check != 1)
-	{
-		ft_strdel(word);
-		*word = ft_strdup(ft_strtrim(operate[1] + 1));
-	}
+	if (operate[1][0] == '+' || (operate[1][0] == '-' && check != 1))
+		nor_s(operate, word, check);
 	else if (operate[1][0] == '?' && check != 1)
 		return (ft_print(STDOUT, "42sh: %s: %s\n", operate[0], operate[1] + 1));
 	else if (!(operate[1][0] == '+' || operate[1][0] == '-' ||
@@ -78,6 +67,7 @@ int		normal_case(char **word)
 
 int		sep_count(char **word)
 {
+	char	*tmp;
 	int		separator_count;
 	int		i;
 
@@ -89,10 +79,14 @@ int		sep_count(char **word)
 			separator_count++;
 		else if ((*word)[i] == ':' && (*word)[i + 1] == '=')
 		{
-			if (dollared(ft_strsub((*word), 0, i)))
+			tmp = ft_strsub((*word), 0, i);
+			if (dollared(tmp))
+			{
+				tmp ? ft_strdel(&tmp) : 0;
 				return (0);
-			if (dollared((*word) + i + 2))
-				ques_dollar(word);
+			}
+			tmp ? ft_strdel(&tmp) : 0;
+			dollared((*word) + i + 2) ? ques_dollar(word) : 0;
 			set_local_variable(word, i + 1);
 			return (-1);
 		}
@@ -133,21 +127,21 @@ int		expans_parameter(char **argument, int start, int end)
 	word = (*argument)[start + 2] == '?' &&
 		(!ft_isalnum((*argument)[start + 3]) || (*argument)[start + 3] != '_') ?
 		ft_strdup("?") : ft_strndup(*argument + start + 2, end - 2);
-	if (norming_shiiiiiiiit(argument, word, start))
+	if (norming_shiiiiiiiit(argument, &word, start))
 	{
-		ft_strdel(&word);
+		word ? ft_strdel(&word) : 0;
 		return (-1);
 	}
 	if (!expans_para(&word))
 	{
 		clean_shities(&word);
-		if (ft_strlen(word))
-			r = ft_strlen(word) - 1;
+		r = ft_strlen(word) ? ft_strlen(word) - 1 : 0;
 		ft_expans_replace(argument, word, start, end + 1 + start);
+		word ? ft_strdel(&word) : 0;
 	}
 	else
 	{
-		ft_strdel(&word);
+		word ? ft_strdel(&word) : 0;
 		return (-1);
 	}
 	return (r);

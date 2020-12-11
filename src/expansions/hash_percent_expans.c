@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   hash_percent_expans.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: arochdi <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/03/11 15:47:47 by arochdi           #+#    #+#             */
-/*   Updated: 2020/03/11 15:47:49 by arochdi          ###   ########.fr       */
+/*   Updated: 2020/12/11 17:55:43 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ void	triming_end_helper(char **word, char **trim,
 	i = -1;
 	if (ft_strlen(*word_value))
 		trim_end_replace(trim, *word_value, &i);
-	ft_strdel(&key);
+	key ? ft_strdel(&key) : 0;
 }
 
 void	triming_end(char **word, char *trim, int percent_pos)
@@ -46,17 +46,19 @@ void	triming_end(char **word, char *trim, int percent_pos)
 	{
 		if (word_value[i] != trim[j])
 		{
-			ft_strdel(word);
+			*word ? ft_strdel(word) : 0;
 			*word = ft_strdup(word_value);
-			ft_strdel(&word_value);
+			word_value ? ft_strdel(&word_value) : 0;
 			return ;
 		}
 		i--;
 		j--;
 	}
-	ft_strdel(word);
+	*word ? ft_strdel(word) : 0;
 	*word = (ft_strlen(word_value)) ? ft_strndup(word_value, i + 1) :
 			ft_strdup("");
+	ft_strdel(&word_value);
+	ft_strdel(&trim);
 }
 
 void	triming_start(char **word, char *trim, int hash_pos)
@@ -77,14 +79,15 @@ void	triming_start(char **word, char *trim, int hash_pos)
 		{
 			ft_strdel(word);
 			*word = ft_strdup(word_value);
-			ft_strdel(&key);
+			key ? ft_strdel(&key) : 0;
 			return ;
 		}
 	}
-	ft_strdel(word);
+	*word ? ft_strdel(word) : 0;
 	*word = (ft_strlen(word_value)) ? ft_strdup(word_value + i) :
 			ft_strdup("");
-	ft_strdel(&key);
+	key ? ft_strdel(&key) : 0;
+	trim ? ft_strdel(&trim) : 0;
 }
 
 int		percent_para(char **word)
@@ -95,7 +98,6 @@ int		percent_para(char **word)
 	percent_pos = 0;
 	trim = get_trim_str(*word, &percent_pos, '%');
 	triming_end(word, trim, percent_pos);
-	ft_strdel(&trim);
 	return (0);
 }
 
@@ -110,6 +112,5 @@ int		hash_separator_para(char **word)
 		dollar_replace(&trim, 0, ft_strlen(trim));
 	clean_shities(word);
 	triming_start(word, trim, hash_pos);
-	ft_strdel(&trim);
 	return (0);
 }

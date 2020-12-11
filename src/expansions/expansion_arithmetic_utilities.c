@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expansion_arithmetic_utilities.c                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: arochdi <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/03/10 02:38:10 by arochdi           #+#    #+#             */
-/*   Updated: 2020/11/28 01:45:29 by arochdi          ###   ########.fr       */
+/*   Updated: 2020/12/11 02:21:03 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,9 +46,9 @@ void		ft_move_space(char **str)
 		if (!((*str)[i] == ' ' || (*str)[i] == '\t' || (*str)[i] == '\n'))
 			swaped[++l] = (*str)[i];
 	swaped[l] = 0;
-	ft_strdel(str);
+	*str ? ft_strdel(str) : 0;
 	*str = ft_strdup(swaped);
-	ft_strdel(&swaped);
+	swaped ? ft_strdel(&swaped) : 0;
 }
 
 char		*ft_iitoa(long long int n)
@@ -88,8 +88,12 @@ int			expans_arithmetic(char **argument, int start, int end)
 	{
 		r = ft_strlen(word) - 1;
 		ft_expans_replace(argument, word, start, end + 1);
+		word ? ft_strdel(&word) : 0;
 	}
 	else
+	{
+		word ? ft_strdel(&word) : 0;
 		return (-1);
+	}
 	return (r);
 }
