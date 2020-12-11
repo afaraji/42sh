@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   has_percent_n.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: arochdi <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/09 12:53:52 by arochdi           #+#    #+#             */
-/*   Updated: 2020/12/09 12:53:54 by arochdi          ###   ########.fr       */
+/*   Updated: 2020/12/11 02:58:23 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,8 +55,7 @@ void	before_and_not_aft(char **trim, char *val, int i)
 			*trim = ft_strdup(val + st);
 		}
 	}
-	if (temp)
-		ft_strdel(&temp);
+	temp ? ft_strdel(&temp) : 0;
 }
 
 int		ft_strchri(const char *s, int c)
@@ -91,21 +90,18 @@ int		second_case_baf(char **trim, char *val, int i, int ns)
 	temp1 = ft_strndup(*trim, i);
 	temp2 = ft_strdup(*trim + i + ns);
 	before_and_aft(&temp1, val, i);
-	temp3 = ft_strnew(0);
 	if ((find = ft_strchri(temp1, temp2[0])))
 	{
-		ft_strdel(&temp3);
 		temp3 = ft_strndup(temp1, find);
-		if (trim)
-			ft_strdel(trim);
-		if (*trim)
-			free(*trim);
-		*trim = ft_strdup(ft_strjoin_free(temp3, temp2, 3));
+		temp1 ? ft_strdel(&temp1) : 0;
+		*trim ? ft_strdel(trim) : 0;
+		*trim = ft_strjoin(temp3, temp2);
+		temp2 ? ft_strdel(&temp2) : 0;
+		temp3 ? ft_strdel(&temp3) : 0;
 		return (1);
 	}
-	ft_strdel(&temp1);
-	ft_strdel(&temp2);
-	ft_strdel(&temp3);
+	temp1 ? ft_strdel(&temp1) : 0;
+	temp2 ? ft_strdel(&temp2) : 0;
 	return (0);
 }
 

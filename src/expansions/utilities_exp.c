@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utilities_exp.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: arochdi <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/28 02:05:18 by arochdi           #+#    #+#             */
-/*   Updated: 2020/11/28 02:05:53 by arochdi          ###   ########.fr       */
+/*   Updated: 2020/12/11 17:21:28 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,8 @@ char			*var_get_value(char *var, int typ)
 	env = env_to_tab(g_var.var, typ);
 	while (env[++i])
 	{
-		if (!ft_strncmp(var, env[i], ft_strlen(var)))
+		if (!ft_strncmp(var, env[i], ft_strlen(var))
+			&& env[i][ft_strlen(var)] == '=')
 		{
 			tmp = (env[i] + ft_strlen(var) + 1);
 			free_tab(env);

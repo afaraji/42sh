@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   hash_percent_utilities.c                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: arochdi <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/06 14:02:24 by arochdi           #+#    #+#             */
-/*   Updated: 2020/12/06 14:02:25 by arochdi          ###   ########.fr       */
+/*   Updated: 2020/12/11 17:53:23 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,12 +72,14 @@ int		find_and_replace(char **trim, char *val, int *i)
 	tmp2 = ft_strnew(0);
 	if (ft_strrstr(val, tmp, l, *i))
 	{
-		ft_strdel(&tmp2);
+		tmp2 ? ft_strdel(&tmp2) : 0;
 		tmp2 = ft_strndup(val, ft_strrstr(val, tmp, l, *i));
 	}
-	ft_strdel(trim);
-	*trim = ft_strdup(ft_strjoin_free(tmp2, s, 2));
-	ft_strdel(&tmp);
+	*trim ? ft_strdel(trim) : 0;
+	*trim = ft_strjoin(tmp2, s);
+	tmp2 ? ft_strdel(&tmp2) : 0;
+	s ? ft_strdel(&s) : 0;
+	tmp ? ft_strdel(&tmp) : 0;
 	return (0);
 }
 
@@ -85,7 +87,7 @@ void	trim_replace(char **trim, char *val, int *i)
 {
 	if (ft_strequ(*trim, "*"))
 	{
-		ft_strdel(trim);
+		*trim ? ft_strdel(trim) : 0;
 		*trim = ft_strdup(val);
 		return ;
 	}
@@ -93,7 +95,7 @@ void	trim_replace(char **trim, char *val, int *i)
 	{
 		if ((*trim)[*i] == '*' && !(*trim)[*i + 1])
 		{
-			ft_strdel(trim);
+			*trim ? ft_strdel(trim) : 0;
 			*trim = ft_strdup(val);
 			return ;
 		}

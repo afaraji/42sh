@@ -6,7 +6,7 @@
 /*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/06 14:12:17 by arochdi           #+#    #+#             */
-/*   Updated: 2020/12/10 20:46:59 by awali-al         ###   ########.fr       */
+/*   Updated: 2020/12/11 18:23:15 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,12 +19,32 @@
 #include "../../inc/readline.h"
 #include "../../inc/expansion.h"
 
-int		norming_shiiiiiiiit(char **argument, char *word, int start)
+int		norming_shiiiiiiiit(char **arg, char **word, int start)
 {
-	if ((ft_strlen(ft_strtrim(word)) != ft_strlen(word)) ||
-		((*argument)[start + 2] == '?' &&
-		(ft_isalnum((*argument)[start + 3]) || (*argument)[start + 3] == '_')))
+	char	*tmp;
+	char	*tmp2;
+
+	tmp = ft_strtrim(*word);
+	if ((ft_strlen(tmp) != ft_strlen(*word)) || ((*arg)[start + 2] == '?' &&
+		(ft_isalnum((*arg)[start + 3]) || (*arg)[start + 3] == '_')))
+	{
+		tmp ? ft_strdel(&tmp) : 0;
 		return (1);
+	}
+	if (ft_strchri(tmp, '?'))
+	{
+		tmp2 = ft_strndup(tmp, ft_strchri(tmp, '?'));
+		if (!param_is_set(tmp2))
+		{
+			tmp ? ft_strdel(&tmp) : 0;
+			tmp2 ? ft_strdel(&tmp2) : 0;
+			return (1);
+		}
+		*word ? ft_strdel(word) : 0;
+		*word = ft_strdup(tmp2);
+		tmp2 ? ft_strdel(&tmp2) : 0;
+	}
+	tmp ? ft_strdel(&tmp) : 0;
 	return (0);
 }
 
@@ -38,16 +58,6 @@ void	ft_expans_replace(char **argument, char *to_change, int start, int end)
 	*argument = ft_strjoin(first, second);
 	first ? ft_strdel(&first) : 0;
 	second ? ft_strdel(&second) : 0;
-}
-
-void	simple_dollar(char **word)
-{
-	char	*temp;
-
-	temp = ft_strjoin("$", *word);
-	ft_strdel(word);
-	dollar_expansion(&temp);
-	*word = ft_strdup(temp);
 }
 
 int		ilegal_do(char *word, char c)
@@ -73,8 +83,11 @@ int		ques_dollar(char **argument)
 	if ((*argument)[0] == '+' || (*argument)[0] == '-' || (*argument)[0] == '%'
 		|| (*argument)[0] == '*' || (*argument)[0] == '|'
 		|| (*argument)[0] == '\\' || (*argument)[0] == '/')
+	{
+		tmp ? ft_strdel(&tmp) : 0;
 		return (1);
+	}
 	ft_strdel(argument);
-	*argument = ft_strdup(tmp);
+	*argument = tmp;
 	return (0);
 }

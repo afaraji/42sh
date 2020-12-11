@@ -6,7 +6,7 @@
 /*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/10 20:49:40 by awali-al          #+#    #+#             */
-/*   Updated: 2020/12/10 20:50:24 by awali-al         ###   ########.fr       */
+/*   Updated: 2020/12/11 18:23:21 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,36 +53,8 @@ static void	tilde_expansion(char **in)
 		if ((replace = tilde_replace(login)))
 		{
 			replace = ft_strjoin(replace, *in + i);
-			free(*in);
+			in ? ft_strdel(in) : 0;
 			*in = replace;
-		}
-	}
-}
-
-void		dollar_expansion(char **words)
-{
-	int		i;
-	int		temp;
-	char	*p;
-	char	delimiter;
-
-	i = -1;
-	while ((*words)[++i])
-	{
-		if ((*words)[i] == '$')
-		{
-			temp = i;
-			while (ft_isalnum((*words)[++temp]) || (*words)[temp] == '_')
-				continue ;
-			delimiter = (*words)[temp];
-			(*words)[temp] = 0;
-			p = var_get_value(*words + i + 1, 2);
-			(*words)[temp] = delimiter;
-			(*words)[i] = 0;
-			p = ft_strjoin(*words, p);
-			p = ft_strjoin_free(p, *words + temp, 1);
-			free(*words);
-			*words = p;
 		}
 	}
 }
@@ -90,17 +62,15 @@ void		dollar_expansion(char **words)
 int			dollar_replace(char **argument, int i, int end)
 {
 	char	*to_change;
-	char	*to_change1;
 	int		r;
 
-	to_change1 = ft_strndup(*argument + i, end);
-	to_change = str_dollar_sub(to_change1);
+	to_change = str_dollar_sub(ft_strndup(*argument + i, end));
 	if (!ft_strlen(to_change))
 		r = 0;
 	else
 		r = i + ft_strlen(to_change) - 1;
 	ft_expans_replace(argument, to_change, i, end);
-	ft_strdel(&to_change);
+	to_change ? ft_strdel(&to_change) : 0;
 	return (r);
 }
 
@@ -116,5 +86,6 @@ int			tilde_to_replace(char **argument, int i, int end)
 		r = i + ft_strlen(to_change) - 1;
 	tilde_expansion(&to_change);
 	ft_expans_replace(argument, to_change, i, end);
+	to_change ? ft_strdel(&to_change) : 0;
 	return (r);
 }
