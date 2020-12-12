@@ -218,7 +218,7 @@ int		param_expand(t_l *list)
 	{
 		if (expansions_dispatcher(&(node->data)))
 		{
-			// error msg ?
+			printf("error at expansions [%s]\n", node->data);
 			return (1);
 		}
 		node = node->next;
@@ -250,8 +250,17 @@ char	**get_arg_var_sub(t_simple_cmd *cmd)
 
 	if ((list = get_args(cmd)) == NULL)
 		return (NULL);
+	FILE *tot;
+	tot = fopen("/dev/ttys006", "w");
+	fprintf(tot, "\033[H\033[2J");
+	for (t_l *p = list; p ; p = p->next)
+		fprintf(tot, "-1-->[%s]<---\n", p->data);
+	fprintf(tot, "------------------------------\n");
 	if (param_expand(list) || cmd_sub(list))
 		return (NULL);
+	for (t_l *p = list; p ; p = p->next)
+		fprintf(tot, "-2-->[%s]<---\n", p->data);
+	fprintf(tot, "------------------------------\n");
 	if ((table = list_to_tab(list)) == NULL)
 		return (NULL);
 	// table = dollar_subtutution(table);
@@ -260,11 +269,7 @@ char	**get_arg_var_sub(t_simple_cmd *cmd)
 	return (table);
 }
 
-	// tot = fopen("/dev/ttys001", "w");
-	// fprintf(tot, "-------------start---------------\n");
-	// for (t_l *p = list; p ; p = p->next)
-	// 	fprintf(tot, "--->[%s]<---\n", p->data);
-	// fprintf(tot, "-----------end-----------------\n");
+
 
 /*
 ** Shell Parameter Expansion

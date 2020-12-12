@@ -18,6 +18,40 @@
 #include "../../inc/ft_free.h"
 #include "../../inc/readline.h"
 
+char			*free_remove_quot(char *s)
+{
+	int		i;
+	int		j;
+	char	*str;
+	char	*tmp;
+
+	i = 0;
+	str = ft_strdup(s);
+	while (s[i])
+	{
+		if (s[i] == QUOTE || s[i] == DQUOTE)
+		{
+			j = i + 1;
+			while (s[j] && s[j] != s[i])
+				j++;
+			if (s[j] != s[i])
+			{
+				printf("error no closing QUOT:{%c}\n", s[i]);
+				return (s);
+			}
+			s[i] = '\0';
+			s[j] = '\0';
+			tmp = ft_4strjoin(str, &s[i + 1], &s[j + 1], "");
+			ft_strdel(&str);
+			str = tmp;
+			i = j + 1;
+		}
+		i++;
+	}
+	ft_strdel(&s);
+	return (str);
+}
+
 t_variable		*ass_word_add(t_list_token **cmd, int i)
 {
 	t_variable	*var;
@@ -34,6 +68,7 @@ t_variable		*ass_word_add(t_list_token **cmd, int i)
 		return (NULL);
 	var->key = tmp;
 	var->value = ft_strdup(&((*cmd)->data[i + 1]));
+	// var->value = free_remove_quot(var->value);
 	var->env = 1;
 	return (var);
 }

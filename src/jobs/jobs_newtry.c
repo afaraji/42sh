@@ -750,7 +750,7 @@ int		launch_job(t_job *j, int foreground)//need norm
 	int			infile;
 	int			outfile;
 
-	if ((infile = exec_no_fork(j->cmd->ast, !foreground)) != -42)
+	if ((infile = exec_no_fork(j->cmd->ast, j->first_process->argv, !foreground)) != -42)
 	{
 		free_job(&j);
 		return (infile);

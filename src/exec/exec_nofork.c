@@ -111,21 +111,19 @@ int			exec_no_fork_builtin(t_simple_cmd *cmd, char **av)
 	return (status);
 }
 
-int			exec_no_fork(t_pipe_seq *cmd, int bg)
+int			exec_no_fork(t_pipe_seq *cmd, char **av, int bg)
 {
-	char		**av;
 	int			status;
 
 	if (cmd->right == NULL && !bg)
 	{
-		av = get_arg_var_sub(cmd->left);
 		if (av && is_builtin(av[0]))
 		{
 			status = exec_no_fork_builtin(cmd->left, av);
-			free_tab(av);
+			// free_tab(av);
 			return (status);
 		}
-		free_tab(av);
+		// free_tab(av);
 		if (!(cmd->left->name) && !(cmd->left->word))
 		{
 			reset_in_out(SETDFL);
