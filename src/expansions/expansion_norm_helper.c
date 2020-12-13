@@ -6,7 +6,7 @@
 /*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/06 14:12:17 by arochdi           #+#    #+#             */
-/*   Updated: 2020/12/13 19:06:10 by awali-al         ###   ########.fr       */
+/*   Updated: 2020/12/13 20:08:31 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 
 int		exp_err(char *err)
 {
-	ft_print(STDOUT,"%s\n", err);
+	ft_print(STDOUT, "%s\n", err);
 	return (1);
 }
 

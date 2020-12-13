@@ -6,7 +6,7 @@
 /*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/18 16:31:12 by arochdi           #+#    #+#             */
-/*   Updated: 2020/12/13 19:04:12 by awali-al         ###   ########.fr       */
+/*   Updated: 2020/12/13 20:17:51 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,20 +19,20 @@
 #include "../../inc/readline.h"
 #include "../../inc/expansion.h"
 
-int		operation(char **operate, char **word, int check)
+int		operation(char **oprate, char **word, int check)
 {
-	if (operate[1][0] == '+' || (operate[1][0] == '-' && check != 1))
-		nor_s(operate, word, check);
-	else if (operate[1][0] == '?' && check != 1)
-		return (ft_print(STDOUT, "Shell: %s: %s\n", operate[0], operate[1] + 1));
-	else if (!(operate[1][0] == '+' || operate[1][0] == '-' ||
-			operate[1][0] == '?' || ft_isalnum(operate[1][0]) ||
-			ft_isspace(operate[1][0])))
+	if (oprate[1][0] == '+' || (oprate[1][0] == '-' && check != 1))
+		nor_s(oprate, word, check);
+	else if (oprate[1][0] == '?' && check != 1)
+		return (ft_print(STDOUT, "Shell: %s: %s\n", oprate[0], oprate[1] + 1));
+	else if (!(oprate[1][0] == '+' || oprate[1][0] == '-' ||
+			oprate[1][0] == '?' || ft_isalnum(oprate[1][0]) ||
+			ft_isspace(oprate[1][0])))
 		return (exp_err("Shell: Bad substitution"));
 	else if (check == 1)
 	{
 		ft_strdel(word);
-		*word = ft_strdup(var_get_value(operate[0], 2));
+		*word = ft_strdup(var_get_value(oprate[0], 2));
 	}
 	return (0);
 }
