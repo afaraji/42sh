@@ -6,7 +6,7 @@
 /*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/06 14:12:17 by arochdi           #+#    #+#             */
-/*   Updated: 2020/12/11 18:23:15 by awali-al         ###   ########.fr       */
+/*   Updated: 2020/12/13 17:29:50 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ int		norming_shiiiiiiiit(char **arg, char **word, int start)
 		tmp ? ft_strdel(&tmp) : 0;
 		return (1);
 	}
-	if (ft_strchri(tmp, '?'))
+	if (ft_strchri(tmp, '?') > 0)
 	{
 		tmp2 = ft_strndup(tmp, ft_strchri(tmp, '?'));
 		if (!param_is_set(tmp2))
