@@ -6,7 +6,7 @@
 /*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/28 01:34:25 by arochdi           #+#    #+#             */
-/*   Updated: 2020/12/11 18:24:21 by awali-al         ###   ########.fr       */
+/*   Updated: 2020/12/13 18:07:03 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,5 +72,6 @@ int				ilegal_do(char *word, char c);
 int				norming_shiiiiiiiit(char **argument, char **word, int start);
 void			nor_s(char **operate, char **word, int check);
 int				ft_strchri(const char *s, int c);
+int				exp_err(char *err);
 
 #endif

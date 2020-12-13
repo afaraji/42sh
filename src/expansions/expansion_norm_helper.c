@@ -6,7 +6,7 @@
 /*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/06 14:12:17 by arochdi           #+#    #+#             */
-/*   Updated: 2020/12/13 17:29:50 by awali-al         ###   ########.fr       */
+/*   Updated: 2020/12/13 18:16:54 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,12 @@
 #include "../../inc/readline.h"
 #include "../../inc/expansion.h"
 
+int		exp_err(char *err)
+{
+	ft_print(STDOUT,"%s\n", err);
+	return (1);
+}
+
 int		norming_shiiiiiiiit(char **arg, char **word, int start)
 {
 	char	*tmp;
@@ -29,16 +35,16 @@ int		norming_shiiiiiiiit(char **arg, char **word, int start)
 		(ft_isalnum((*arg)[start + 3]) || (*arg)[start + 3] == '_')))
 	{
 		tmp ? ft_strdel(&tmp) : 0;
-		return (1);
+		return (exp_err("Shell: Bad substitution"));
 	}
-	if (ft_strchri(tmp, '?') > 0)
+	if (ft_strchri(tmp, '?') > 0 && ft_strstri(tmp, ":?") < 0)
 	{
 		tmp2 = ft_strndup(tmp, ft_strchri(tmp, '?'));
 		if (!param_is_set(tmp2))
 		{
 			tmp ? ft_strdel(&tmp) : 0;
 			tmp2 ? ft_strdel(&tmp2) : 0;
-			return (1);
+			return (exp_err("Shell : parameter is null or not set"));
 		}
 		*word ? ft_strdel(word) : 0;
 		*word = ft_strdup(tmp2);
@@ -85,7 +91,7 @@ int		ques_dollar(char **argument)
 		|| (*argument)[0] == '\\' || (*argument)[0] == '/')
 	{
 		tmp ? ft_strdel(&tmp) : 0;
-		return (1);
+		return (exp_err("Shell: Bad substitution"));
 	}
 	ft_strdel(argument);
 	*argument = tmp;

@@ -6,7 +6,7 @@
 /*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/18 16:31:12 by arochdi           #+#    #+#             */
-/*   Updated: 2020/12/11 18:07:23 by awali-al         ###   ########.fr       */
+/*   Updated: 2020/12/13 18:13:08 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,11 +24,11 @@ int		operation(char **operate, char **word, int check)
 	if (operate[1][0] == '+' || (operate[1][0] == '-' && check != 1))
 		nor_s(operate, word, check);
 	else if (operate[1][0] == '?' && check != 1)
-		return (ft_print(STDOUT, "42sh: %s: %s\n", operate[0], operate[1] + 1));
+		return (ft_print(STDOUT, "Shell: %s: %s\n", operate[0], operate[1] + 1));
 	else if (!(operate[1][0] == '+' || operate[1][0] == '-' ||
 			operate[1][0] == '?' || ft_isalnum(operate[1][0]) ||
 			ft_isspace(operate[1][0])))
-		return (1);
+		return (exp_err("Shell: Bad substitution"));
 	else if (check == 1)
 	{
 		ft_strdel(word);
@@ -57,7 +57,7 @@ int		normal_case(char **word)
 	}
 	check = param_is_set(operate[0]);
 	if (dollared(operate[0]))
-		return (1);
+		return (exp_err("Shell: Bad substitution"));
 	if (operate[1] && dollared(operate[1]))
 		ques_dollar(&(operate[1]));
 	ret = operate[1] ? operation(operate, word, check) : 1;
@@ -110,9 +110,9 @@ int		expans_para(char **word)
 			(ft_strchr(*word, '#') || ft_strstr(*word, "##")))
 		return (hash_separator_para(word));
 	else if (sep > 1)
-		return (1);
+		return (exp_err("Shell: Bad substitution"));
 	else if (sep == 0 && (dollared(*word) && !ilegal_do(*word, '$')))
-		return (1);
+		return (exp_err("Shell: Bad substitution"));
 	else if (sep == 0 && (*word)[0] != '#' && !ft_strchr(*word, '#'))
 		return (ques_dollar(word));
 	return (0);
