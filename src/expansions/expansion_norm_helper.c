@@ -61,6 +61,7 @@ void	ft_expans_replace(char **argument, char *to_change, int start, int end)
 
 	first = ft_strndup(*argument, start);
 	second = ft_strjoin(to_change, *argument + end);
+	ft_strdel(argument);// u should free argument before replace in it. verify this and keep it if it doesn't cause sigfault
 	*argument = ft_strjoin(first, second);
 	first ? ft_strdel(&first) : 0;
 	second ? ft_strdel(&second) : 0;
