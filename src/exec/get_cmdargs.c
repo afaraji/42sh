@@ -235,7 +235,6 @@ t_l		*var_sub(t_l *head)
 	int		i;
 
 	next_node = head->next;
-	// head->data = str_dollar_sub(head->data);
 	if (expansions_dispatcher(&(head->data)))
 	{
 		// free_l(head);
@@ -274,7 +273,7 @@ int		param_expand(t_l *list)
 	{
 
 		node = var_sub(node);
-		if (node == NULL)
+		if (g_var.errno)
 		{
 			free_l(list);
 			return (1);

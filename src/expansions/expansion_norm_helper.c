@@ -21,7 +21,7 @@
 
 int		exp_err(char *err)
 {
-	ft_print(STDOUT, "%s\n", err);
+	ft_print(STDERR, "%s\n", err);
 	return (1);
 }
 
