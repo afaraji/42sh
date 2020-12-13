@@ -33,10 +33,7 @@ char			*free_remove_quot(char *s)
 			while (s[j] && s[j] != s[i])
 				j++;
 			if (s[j] != s[i])
-			{
-				printf("error no closing QUOT:{%c}\n", s[i] == QUOTE ? '\'' : '"');
 				return (s);
-			}
 			s[i] = '\0';
 			s[j] = '\0';
 			tmp = ft_4strjoin(s, &s[i + 1], &s[j + 1], "");

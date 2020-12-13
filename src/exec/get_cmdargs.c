@@ -212,6 +212,7 @@ t_l		*var_sub(t_l *head)
 		node = node->next;
 		i++;
 	}
+	free_tab(t);
 	node->next = next_node;
 	return (head);
 }
@@ -238,15 +239,11 @@ int		param_expand(t_l *list)
 char	**quote_removal(char **av)
 {
 	int	i;
-	int	j;
 
 	i = 0;
 	while (av[i])
 	{
-		j = 0;
-		while (av[i][j] && (av[i][j] != '"' || (j > 1 && av[i][j - 1] != '\\')))
-			j++;
-		if (av[i][j] == '"')
+		av[i] = free_remove_quot(av[i]);
 		i++;
 	}
 	return (av);
@@ -273,7 +270,7 @@ char	**get_arg_var_sub(t_simple_cmd *cmd)
 	if ((table = list_to_tab(list)) == NULL)
 		return (NULL);
 	table = expand_pattern(table);
-	// table = quote_removal(table);
+	table = quote_removal(table);
 	return (table);
 }
 

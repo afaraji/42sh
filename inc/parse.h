@@ -85,5 +85,6 @@ void			*ft_malloc(size_t	size);
 int				is_char_in_str(char c, char *s);
 int				list_count(t_l *list);
 char			**strsplit_str(char const *s, char *c);
+char			*free_remove_quot(char *s);
 
 #endif
