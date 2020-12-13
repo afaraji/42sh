@@ -869,7 +869,7 @@ int		get_opt(char **av, int *index)
 
 	i = 1;
 	opt = 0;
-	while (av[i] && (av[i][0] == '-' && av[i][1]))
+	while (av[i] && (av[i][0] == '-' && av[i][1] && av[i][1] != '-'))
 	{
 		j = 1;
 		while (av[i][j])
@@ -998,7 +998,7 @@ int		ft_fg(char **av)
 		j = get_pid_n_plus_min('+', NULL);
 	if (j == NULL)
 		return (1);
-	printf("%s\n", j->command);
+	ft_print(STDOUT, "%s\n", j->command);
 	return (put_job_in_foreground(j, 1));
 }
 
@@ -1061,3 +1061,6 @@ int		ft_jobs(char **av)
 
 // norm functions with "need norm" tag
 // fix builtins arg management
+// add ft_jobs options..
+// test leaks && sigfaults cases in get_cmdargs
+// norm everytyhing

@@ -286,13 +286,17 @@ int		param_expand(t_l *list)
 
 char	**quote_removal(char **av)
 {
-	int	i;
+	int		i;
+	char	*tmp;
 
 	i = 0;
 	while (av[i])
 	{
 		// printf("---{%s}---\n", av[i]);
 		av[i] = free_remove_quot(av[i]);
+		tmp = ft_replaceword(av[i], "\\", "");
+		free(av[i]);
+		av[i] = tmp;
 		i++;
 	}
 	return (av);
@@ -322,18 +326,6 @@ char	**get_arg_var_sub(t_simple_cmd *cmd)
 	table = quote_removal(table);
 	return (table);
 }
-
-	// tot = fopen("/dev/ttys001", "w");
-	// fprintf(tot, "-------------start---------------\n");
-	// for (t_l *p = list; p ; p = p->next)
-	// 	fprintf(tot, "--->[%s]<---\n", p->data);
-	// fprintf(tot, "-----------end-----------------\n");
-
-/*********
- *
-
-
-***********/
 
 
 /*

@@ -101,7 +101,7 @@ t_list_token	*add_escape(int *index, char *str)
 		node->data = ft_strdup("\n");
 		node->type = ESCAPE;
 	}
-	else if (is_char_in_str(str[*index + 1], " |&;()<>\\"))
+	else if (is_char_in_str(str[*index + 1], "|&;()<>\\"))
 		node->data = ft_strsub(str, *index + 1, 1);
 	else
 		node->data = ft_strsub(str, *index, 2);
