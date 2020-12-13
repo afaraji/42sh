@@ -20,8 +20,8 @@
 # define SETDFL	1
 # define GETDFL	0
 # define SPACE	-1
-# define QUOTE	-2	// \376
-# define DQUOTE	-3	// \375
+# define QUOTE	-2
+# define DQUOTE	-3
 # define SMCLN	-4
 # define ANDLG	-5
 # define ORLG	-6
@@ -35,7 +35,8 @@
 # define SMLAND	-24
 # define GRTAND	-25
 # define WORD	-42
-# define BUILTINS	"echo|export|cd|set|setenv|unset|unsetenv|env|exit|alias|unalias|jobs|fg|bg|test|hash|fc|type"
+# define BUILTINS	"echo|export|cd|set|setenv|unset|unsetenv|env|exit|alias|"
+# define BUILTINS2	"unalias|jobs|fg|bg|test|hash|fc|type"
 # define RSRVDWORD	"case|do|done|elif|else|esac|fi|for|if|in|then|until|while"
 
 int				main_parse(char *line);

@@ -65,8 +65,11 @@ int		is_builtin(char *str)
 {
 	char	**b_in_list;
 	int		i;
+	char	*tmp;
 
-	b_in_list = ft_strsplit(BUILTINS, '|');
+	tmp = ft_strjoin(BUILTINS, BUILTINS2);
+	b_in_list = ft_strsplit(tmp, '|');
+	ft_strdel(&tmp);
 	if (!str || !ft_strcmp(str, ""))
 	{
 		free_tab(b_in_list);

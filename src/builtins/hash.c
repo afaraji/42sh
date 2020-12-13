@@ -42,12 +42,15 @@ static int	hash_clear(void)
 int			built_in(char *cmd)
 {
 	char	**builtins;
+	char	*tmp;
 	int		ret;
 	int		i;
 
 	i = 0;
 	ret = 0;
-	builtins = ft_strsplit(BUILTINS, '|');
+	tmp = ft_strjoin(BUILTINS, BUILTINS2);
+	builtins = ft_strsplit(tmp, '|');
+	ft_strdel(&tmp);
 	while (builtins[i] && !ret)
 	{
 		if (!ft_strcmp(cmd, builtins[i]))

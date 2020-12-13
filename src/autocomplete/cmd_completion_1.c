@@ -46,10 +46,13 @@ t_l				*search_builtin(char *str)
 	int		i;
 	t_l		*head;
 	char	**builtins_list;
+	char	*tmp;
 
 	i = 0;
 	head = NULL;
-	builtins_list = ft_strsplit(BUILTINS, '|');
+	tmp = ft_strjoin(BUILTINS, BUILTINS2);
+	builtins_list = ft_strsplit(tmp, '|');
+	ft_strdel(&tmp);
 	while (builtins_list[i])
 	{
 		if (!ft_strncmp(builtins_list[i], str, ft_strlen(str)))
