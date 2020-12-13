@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   add_tokens.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: afaraji <afaraji@student.1337.ma>          +#+  +:+       +#+        */
+/*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/03 17:24:05 by afaraji           #+#    #+#             */
-/*   Updated: 2020/11/03 17:24:11 by afaraji          ###   ########.fr       */
+/*   Updated: 2020/12/13 16:31:17 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,9 +60,6 @@ t_list_token	*add_dquote(int *index, char *str)
 	node->is_ok = (str[i] == '"') ? 1 : 0;
 	node->type = DQUOTE;
 	node->data = (ft_strsub(str, *index + 1, i - *index - 1));
-	// if (is_dollar(node->data) >= 0)
-	// 	replace_2p(&(node->data));
-	// node->data = delete_escape(node->data);
 	node->next = NULL;
 	node->prec = NULL;
 	if (i + 1 < (int)ft_strlen(str))
