@@ -6,7 +6,7 @@
 /*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/06 14:12:17 by arochdi           #+#    #+#             */
-/*   Updated: 2020/12/13 18:16:54 by awali-al         ###   ########.fr       */
+/*   Updated: 2020/12/13 19:06:10 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,9 @@ int		norming_shiiiiiiiit(char **arg, char **word, int start)
 	char	*tmp2;
 
 	tmp = ft_strtrim(*word);
-	if ((ft_strlen(tmp) != ft_strlen(*word)) || ((*arg)[start + 2] == '?' &&
+	if (((ft_strlen(tmp) != ft_strlen(*word)) || ((*arg)[start + 2] == '?' &&
 		(ft_isalnum((*arg)[start + 3]) || (*arg)[start + 3] == '_')))
+		|| !ft_strlen(*word))
 	{
 		tmp ? ft_strdel(&tmp) : 0;
 		return (exp_err("Shell: Bad substitution"));
