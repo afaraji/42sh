@@ -20,8 +20,8 @@
 # define SETDFL	1
 # define GETDFL	0
 # define SPACE	-1
-# define QUOTE	-2
-# define DQUOTE	-3
+# define QUOTE	-2	// \376
+# define DQUOTE	-3	// \375
 # define SMCLN	-4
 # define ANDLG	-5
 # define ORLG	-6

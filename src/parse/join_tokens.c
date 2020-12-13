@@ -96,9 +96,8 @@ void			re_quoting(t_list_token *list)
 		if (node->type == QUOTE || node->type == DQUOTE)
 		{
 			tmp = node->data;
-			char s[2];s[0] = -2 ; s[1] = 0;
-			delimit = (node->type == DQUOTE) ? ft_strdup("\220") : ft_strdup("\201");
-			printf("000[%d]--[%d]\n", delimit[0], s[0]);
+			delimit = (node->type == DQUOTE) ? ft_strdup("\375") : ft_strdup("\376");
+			// delimit = (node->type == DQUOTE) ? ft_strdup("^^") : ft_strdup("^");
 			node->data = ft_4strjoin(delimit, tmp, delimit, "");
 			node->type = WORD;
 			ft_strdel(&delimit);

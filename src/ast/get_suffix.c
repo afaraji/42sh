@@ -22,11 +22,9 @@ char			*free_remove_quot(char *s)
 {
 	int		i;
 	int		j;
-	char	*str;
 	char	*tmp;
 
 	i = 0;
-	str = ft_strdup(s);
 	while (s[i])
 	{
 		if (s[i] == QUOTE || s[i] == DQUOTE)
@@ -36,20 +34,19 @@ char			*free_remove_quot(char *s)
 				j++;
 			if (s[j] != s[i])
 			{
-				printf("error no closing QUOT:{%c}\n", s[i]);
+				printf("error no closing QUOT:{%c}\n", s[i] == QUOTE ? '\'' : '"');
 				return (s);
 			}
 			s[i] = '\0';
 			s[j] = '\0';
-			tmp = ft_4strjoin(str, &s[i + 1], &s[j + 1], "");
-			ft_strdel(&str);
-			str = tmp;
-			i = j + 1;
+			tmp = ft_4strjoin(s, &s[i + 1], &s[j + 1], "");
+			ft_strdel(&s);
+			s = tmp;
+			i = 2;
 		}
 		i++;
 	}
-	ft_strdel(&s);
-	return (str);
+	return (s);
 }
 
 t_variable		*ass_word_add(t_list_token **cmd, int i)
@@ -68,7 +65,7 @@ t_variable		*ass_word_add(t_list_token **cmd, int i)
 		return (NULL);
 	var->key = tmp;
 	var->value = ft_strdup(&((*cmd)->data[i + 1]));
-	// var->value = free_remove_quot(var->value);
+	var->value = free_remove_quot(var->value);
 	var->env = 1;
 	return (var);
 }

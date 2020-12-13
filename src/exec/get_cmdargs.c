@@ -86,35 +86,6 @@ int		is_builtin(char *str)
 	return (0);
 }
 
-t_l		*var_sub(t_l *head)
-{
-	t_l		*node;
-	t_l		*next_node;
-	char	**t;
-	int		i;
-
-	next_node = head->next;
-	head->data = str_dollar_sub(head->data);
-	t = ft_strsplit(head->data, ' ');
-	ft_strdel(&(head->data));
-	i = 1;
-	if (!t || !t[0])
-	{
-		head->data = ft_strdup("");
-		return (head);
-	}
-	head->data = ft_strdup(t[0]);
-	node = head;
-	while (t[i])
-	{
-		node->next = fill_get_args(t[i]);
-		node = node->next;
-		i++;
-	}
-	node->next = next_node;
-	return (head);
-}
-
 char	*read_and_join(int fd)
 {
 	char	*tmp;
@@ -195,13 +166,13 @@ int		cmd_substitute(t_l *p)
 int		cmd_sub(t_l *list)
 {
 	t_l	*node;
-
+return (0);
 	node = list;
 	while (node)
 	{
 		if (ft_strstr(node->data, "$(") && cmd_substitute(node))
 		{
-			ft_print(STDERR, "shell: arithmetic error: ')' missing\n");
+			ft_print(STDERR, "shell: command sub error: ')' missing\n");
 			return (1);
 		}
 		node = node->next;
@@ -209,16 +180,54 @@ int		cmd_sub(t_l *list)
 	return (0);
 }
 
+t_l		*var_sub(t_l *head)
+{
+	t_l		*node;
+	t_l		*next_node;
+	char	**t;
+	int		i;
+
+	next_node = head->next;
+	// head->data = str_dollar_sub(head->data);
+	if (expansions_dispatcher(&(head->data)))
+	{
+		free_l(head);
+		g_var.errno = 11;
+		return (NULL);
+	}
+	// t = ft_strsplit(head->data, ' ');
+	t = strsplit_str(head->data, " \n\t");
+	ft_strdel(&(head->data));
+	i = 1;
+	if (!t || !t[0])
+	{
+		head->data = ft_strdup("");
+		return (head);
+	}
+	head->data = ft_strdup(t[0]);
+	node = head;
+	while (t[i])
+	{
+		node->next = fill_get_args(t[i]);
+		node = node->next;
+		i++;
+	}
+	node->next = next_node;
+	return (head);
+}
+
 int		param_expand(t_l *list)
 {
-	t_l	*node;
+	t_l		*node;
 
 	node = list;
 	while (node)
 	{
-		if (expansions_dispatcher(&(node->data)))
+
+		node = var_sub(node);
+		if (node == NULL)
 		{
-			printf("error at expansions [%s]\n", node->data);
+			free_l(list);
 			return (1);
 		}
 		node = node->next;
@@ -250,25 +259,35 @@ char	**get_arg_var_sub(t_simple_cmd *cmd)
 
 	if ((list = get_args(cmd)) == NULL)
 		return (NULL);
-	FILE *tot;
-	tot = fopen("/dev/ttys006", "w");
-	fprintf(tot, "\033[H\033[2J");
-	for (t_l *p = list; p ; p = p->next)
-		fprintf(tot, "-1-->[%s]<---\n", p->data);
-	fprintf(tot, "------------------------------\n");
+	// FILE *tot;
+	// tot = fopen("/dev/ttys003", "w");
+	// fprintf(tot, "\033[H\033[2J");
+	// for (t_l *p = list; p ; p = p->next)
+	// 	fprintf(tot, "-1-->[%s]<---\n", p->data);
+	// fprintf(tot, "------------------------------\n");
 	if (param_expand(list) || cmd_sub(list))
 		return (NULL);
-	for (t_l *p = list; p ; p = p->next)
-		fprintf(tot, "-2-->[%s]<---\n", p->data);
-	fprintf(tot, "------------------------------\n");
+	// for (t_l *p = list; p ; p = p->next)
+	// 	fprintf(tot, "-2-->[%s]<---\n", p->data);
+	// fprintf(tot, "------------------------------\n");
 	if ((table = list_to_tab(list)) == NULL)
 		return (NULL);
-	// table = dollar_subtutution(table);
 	table = expand_pattern(table);
 	// table = quote_removal(table);
 	return (table);
 }
 
+	// tot = fopen("/dev/ttys001", "w");
+	// fprintf(tot, "-------------start---------------\n");
+	// for (t_l *p = list; p ; p = p->next)
+	// 	fprintf(tot, "--->[%s]<---\n", p->data);
+	// fprintf(tot, "-----------end-----------------\n");
+
+/*********
+ *
+
+
+***********/
 
 
 /*
