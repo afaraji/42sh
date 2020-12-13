@@ -183,6 +183,50 @@ return (0);
 	return (0);
 }
 
+void	push_to_list(t_l **head, char *s)
+{
+	t_l		*node;
+
+	if (*head == NULL)
+	{
+		*head = fill_get_args(s);
+		return ;
+	}
+	node = *head;
+	while (node->next)
+		node = node->next;
+	node->next = fill_get_args(s);
+}
+
+char	**split_expanssion(char *s)
+{
+	t_l		*list;
+	int		i;
+	int		quoted;
+	int		j;
+
+	i = 0;
+	j = 0;
+	quoted = 0;
+	list = NULL;
+	while (s[i])
+	{
+		if (s[i] == QUOTE || s[i] == DQUOTE)
+			quoted = (quoted == 0) ? 1 : 0;
+		else if (quoted == 0 && (s[i] == ' ' || s[i] == '\n' || s[i] == '\t')
+												&& (i == 0 || s[i - 1] != '\\'))
+		{
+			push_to_list(&list, ft_strsub(s, 0, i));
+			s = s + i + 1;
+			i = -1;
+		}
+		i++;
+	}
+	if (list == NULL)
+		list = fill_get_args(s);
+	return (list_to_tab(list));
+}
+
 t_l		*var_sub(t_l *head)
 {
 	t_l		*node;
@@ -194,17 +238,18 @@ t_l		*var_sub(t_l *head)
 	// head->data = str_dollar_sub(head->data);
 	if (expansions_dispatcher(&(head->data)))
 	{
-		free_l(head);
+		// free_l(head);
 		g_var.errno = 11;
-		return (NULL);
+		return (head);
 	}
-	// t = ft_strsplit(head->data, ' ');
-	t = strsplit_str(head->data, " \n\t");
+	t = split_expanssion(head->data);
+	// printf("+++{%s}++++\n", head->data);
 	ft_strdel(&(head->data));
 	i = 1;
 	if (!t || !t[0])
 	{
 		head->data = ft_strdup("");
+		head->next = next_node;
 		return (head);
 	}
 	head->data = ft_strdup(t[0]);
@@ -246,6 +291,7 @@ char	**quote_removal(char **av)
 	i = 0;
 	while (av[i])
 	{
+		// printf("---{%s}---\n", av[i]);
 		av[i] = free_remove_quot(av[i]);
 		i++;
 	}
@@ -260,7 +306,7 @@ char	**get_arg_var_sub(t_simple_cmd *cmd)
 	if ((list = get_args(cmd)) == NULL)
 		return (NULL);
 	// FILE *tot;
-	// tot = fopen("/dev/ttys003", "w");
+	// tot = fopen("/dev/ttys006", "w");
 	// fprintf(tot, "\033[H\033[2J");
 	// for (t_l *p = list; p ; p = p->next)
 	// 	fprintf(tot, "-1-->[%s]<---\n", p->data);
