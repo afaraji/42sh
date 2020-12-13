@@ -6,7 +6,7 @@
 /*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/02 02:39:55 by awali-al          #+#    #+#             */
-/*   Updated: 2020/12/09 20:45:44 by awali-al         ###   ########.fr       */
+/*   Updated: 2020/12/13 16:12:13 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,12 +50,12 @@ static char	*path_check(char *cmd)
 		while (table[i] && !ret)
 		{
 			fd = opendir(table[i]);
-			while ((file = readdir(fd)) && !ret)
+			while (fd && (file = readdir(fd)) && !ret)
 			{
 				if (file && !ft_strcmp(file->d_name, cmd))
 					ret = ft_strstich(table[i], '/', cmd);
 			}
-			closedir(fd);
+			fd ? closedir(fd) : 0;
 			i++;
 		}
 	table ? ft_str2del(table) : 0;

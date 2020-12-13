@@ -6,7 +6,7 @@
 /*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/05 02:09:44 by awali-al          #+#    #+#             */
-/*   Updated: 2020/12/10 17:17:27 by awali-al         ###   ########.fr       */
+/*   Updated: 2020/12/13 16:04:39 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,8 @@ char		*get_real_path(char *path)
 		}
 		if (ft_strstr(tmp, "..") == tmp)
 			tmp = up_a_parent(&ret, tmp);
-		if (tmp[0] != '.' && tmp[0] != '/')
+		if ((tmp[0] != '.' && tmp[0] != '/') ||
+				(tmp[0] == '.' && tmp[1] != '.' && tmp[1] != '/'))
 			tmp = new_path(&ret, tmp);
 		tmp++;
 	}
