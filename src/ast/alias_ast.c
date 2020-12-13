@@ -6,7 +6,7 @@
 /*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/05 17:45:55 by afaraji           #+#    #+#             */
-/*   Updated: 2020/12/10 19:00:49 by awali-al         ###   ########.fr       */
+/*   Updated: 2020/12/13 16:27:35 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,8 +69,6 @@ int		alias_infinit_loop(char *str, char *sub, t_alias *aliases)
 	return ((lol) ? 1 : 0);
 }
 
-
-
 int		alias_sub(t_list_token *word, t_alias *aliases)
 {
 	t_alias			*node;
@@ -92,7 +90,7 @@ int		alias_sub(t_list_token *word, t_alias *aliases)
 					if (tmp && tmp->type == WORD)
 						alias_sub(tmp, aliases);
 				}
-				return ((word->data = ft_strdup(node->sub)) ? 1: 1);
+				return ((word->data = ft_strdup(node->sub)) ? 1 : 1);
 			}
 		}
 		node = node->next;
