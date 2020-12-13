@@ -6,7 +6,7 @@
 /*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/10 10:20:41 by ozaazaa           #+#    #+#             */
-/*   Updated: 2020/12/10 17:43:57 by awali-al         ###   ########.fr       */
+/*   Updated: 2020/12/13 16:21:00 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,6 @@ typedef struct		s_range_match
 	char			characters[PRINTABLE_CHARS_BUFFER];
 	int				buffer_size;
 }					t_range_match;
-
-
 
 int					evaluate_current_situation(t_list_node *range,
 		char *to_match, int match_index);
