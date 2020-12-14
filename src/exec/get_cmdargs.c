@@ -190,12 +190,14 @@ void	push_to_list(t_l **head, char *s)
 	if (*head == NULL)
 	{
 		*head = fill_get_args(s);
+		ft_strdel(&s);
 		return ;
 	}
 	node = *head;
 	while (node->next)
 		node = node->next;
 	node->next = fill_get_args(s);
+	ft_strdel(&s);
 }
 
 char	**split_expanssion(char *s)
@@ -222,8 +224,7 @@ char	**split_expanssion(char *s)
 		}
 		i++;
 	}
-	if (list == NULL)
-		list = fill_get_args(s);
+	push_to_list(&list, ft_strsub(s, 0, i));
 	return (list_to_tab(list));
 }
 

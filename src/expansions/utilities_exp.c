@@ -30,7 +30,7 @@ char			*var_get_value(char *key, int typ)
 			return (var->value);
 		var = var->next;
 	}
-	return (NULL);
+	return ("");
 }
 
 static void		ft_strdel_dispatcher(char *s1, char *s2, char p)
