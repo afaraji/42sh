@@ -113,7 +113,8 @@ int		expans_para(char **word)
 		return (hash_separator_para(word));
 	else if (sep > 1)
 		return (exp_err("Shell: Bad substitution"));
-	else if (sep == 0 && (dollared(*word) && !ilegal_do(*word, '$')))
+	else if (sep == 0 && ((dollared(*word) && !ilegal_do(*word, '$'))
+			|| legal_do(*word)))
 		return (exp_err("Shell: Bad substitution"));
 	else if (sep == 0 && (*word)[0] != '#' && !ft_strchr(*word, '#'))
 		return (ques_dollar(word));
@@ -134,7 +135,7 @@ int		expans_parameter(char **argument, int start, int end)
 		word ? ft_strdel(&word) : 0;
 		return (-1);
 	}
-	if (!expans_para(&word))
+	if (!expans_para(&word) && exp_qt(&word))
 	{
 		clean_shities(&word);
 		r = ft_strlen(word) ? ft_strlen(word) - 1 : 0;

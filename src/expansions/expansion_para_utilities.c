@@ -24,15 +24,12 @@ void	clean_shities(char **word)
 	}
 }
 
-void	replace_2p(char **word)
+void	replace_2p(char **word, int *i, int delimiter)
 {
-	int		i;
-
-	i = -1;
-	while ((*word)[++i])
+	while ((*word)[++(*i)] && (*word)[(*i)] != delimiter)
 	{
-		if ((*word)[i] == PP)
-			(*word)[i] = PPR;
+		if ((*word)[(*i)] == PP)
+			(*word)[(*i)] = PPR;
 	}
 }
 

@@ -54,7 +54,7 @@ int				logical_do_op(long long int first_operand,
 							long long int second_operand, char operator);
 int				dollared(char *word);
 void			clean_shities(char **word);
-void			replace_2p(char **word);
+void			replace_2p(char **word, int	*i, int delimiter);
 int				expansions(t_list_token *cmd_token);
 int				ft_strrstr(char *haystack, char *needle,
 							size_t len, int lim);
@@ -74,5 +74,7 @@ void			nor_s(char **operate, char **word, int check);
 int				ft_strchri(const char *s, int c);
 int				exp_err(char *err);
 int				operate_leg(char *oprate);
+int				exp_qt(char **word);
+int				legal_do(char *word);
 
 #endif

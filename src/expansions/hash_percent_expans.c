@@ -95,8 +95,13 @@ int		percent_para(char **word)
 	char	*trim;
 	int		percent_pos;
 
+	clean_shities(word);
 	percent_pos = 0;
 	trim = get_trim_str(*word, &percent_pos, '%');
+	if (dollared(trim))
+		dollar_replace(&trim, 0, ft_strlen(trim));
+	clean_shities(word);
+	trim = free_remove_quot(trim);
 	triming_end(word, trim, percent_pos);
 	return (0);
 }
@@ -106,11 +111,11 @@ int		hash_separator_para(char **word)
 	char	*trim;
 	int		hash_pos;
 
+	clean_shities(word);
 	hash_pos = 0;
 	trim = get_trim_str(*word, &hash_pos, '#');
 	if (dollared(trim))
 		dollar_replace(&trim, 0, ft_strlen(trim));
-	clean_shities(word);
 	triming_start(word, trim, hash_pos);
 	return (0);
 }

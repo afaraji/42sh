@@ -32,7 +32,7 @@ int		norming_shiiiiiiiit(char **arg, char **word, int start)
 
 	if (((ft_strlen((tmp = ft_strtrim(*word))) != ft_strlen(*word)) ||
 		((*arg)[start + 2] == '?' && (ft_isalnum((*arg)[start + 3]) ||
-		(*arg)[start + 3] == '_'))) || !ft_strlen(*word) || (*arg)[start + 2] == '-')
+		(*arg)[start + 3] == '_'))) || !ft_strlen(*word))
 	{
 		tmp ? ft_strdel(&tmp) : 0;
 		return (exp_err("Shell: Bad substitution"));
@@ -87,6 +87,7 @@ int		ques_dollar(char **argument)
 	char	*tmp;
 
 	tmp = str_dollar_sub(ft_strjoin("$", *argument));
+	tmp = free_remove_quot(tmp);
 	if ((*argument)[0] == '+' || (*argument)[0] == '-' || (*argument)[0] == '%'
 		|| (*argument)[0] == '*' || (*argument)[0] == '|'
 		|| (*argument)[0] == '\\' || (*argument)[0] == '/'
