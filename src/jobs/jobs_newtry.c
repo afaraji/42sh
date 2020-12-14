@@ -72,6 +72,9 @@ char	*ft_getsigstr13_31(int sig)
 }
 char	*ft_strsignal(int sig)
 {
+	if (sig == 16 || sig == 19 || sig == 20 || sig == 23 || sig == 28 ||
+																	sig == 29)
+		return (NULL);
 	if (sig <= 12)
 		return (ft_getsigstr1_12(sig));
 	return (ft_getsigstr13_31(sig));
@@ -838,7 +841,7 @@ int		job_control(t_and_or *cmd, int bg)
 	int 		dp;
 	int 		ret;
 
-	if (tty == NULL)
+	if (tty == NULL)// to be deleted
 		tty = fopen("/dev/ttys003", "w");
 	ret = 0;
 	if (bg && cmd->next)
@@ -942,33 +945,42 @@ t_job	*get_pid_n_plus_min(char c, char *s)
 	return (NULL);
 }
 
-int		ft_bg(char **av)//need norm
+t_job	*selected_job(char *s)
 {
+	t_job	*j;
+
+	if (s[0] == '%')
+	{
+		if (s[1] == '+' || s[1] == '%')
+			j = get_pid_n_plus_min('+', NULL);
+		else if (s[1] == '-')
+			j = get_pid_n_plus_min('-', NULL);
+		else if (is_all_digits(&s[1]))
+			j = get_pid_n_plus_min(-1, &(s[1]));
+		else
+			j = get_pid_str(&s[1]);
+	}
+	else
+		j = get_pid_str(s);
+	return (j);
+}
+
+int		ft_bg(char **av)
+{
+	char	c;
 	t_job	*j;
 
 	j = NULL;
 	if (av[1])
 	{
-		if (av[1][0] == '%')
-		{
-			if (av[1][1] == '+' || av[1][1] == '%')
-				j = get_pid_n_plus_min('+', NULL);
-			else if (av[1][1] == '-')
-				j = get_pid_n_plus_min('-', NULL);
-			else if (is_all_digits(&av[1][1]))
-				j = get_pid_n_plus_min(-1, &(av[1][1]));
-			else
-				j = get_pid_str(&av[1][1]);
-		}
-		else
-			j = get_pid_str(av[1]);
+		j = selected_job(av[1]);
 	}
 	else
 		j = get_pid_n_plus_min('+', NULL);
 	if (j == 0)
 		return (1);
-	char	c;
-	c = (j->pgid == g_current_job) ? '+' : ((j->pgid == g_previous_job) ? '-' : ' ');
+	c = (j->pgid == g_current_job) ? '+' : ' ';
+	c = (j->pgid == g_previous_job) ? '-' : c;
 	printf("-1-> [%d]%c  %s &\n", j->index, c, j->command);
 	return (put_job_in_background(j, 1));
 }
@@ -980,19 +992,7 @@ int		ft_fg(char **av)
 	j = NULL;
 	if (av[1])
 	{
-		if (av[1][0] == '%')
-		{
-			if (av[1][1] == '+' || av[1][1] == '%')
-				j = get_pid_n_plus_min('+', NULL);
-			else if (av[1][1] == '-')
-				j = get_pid_n_plus_min('-', NULL);
-			else if (is_all_digits(&av[1][1]))
-				j = get_pid_n_plus_min(-1, &(av[1][1]));
-			else
-				j = get_pid_str(&av[1][1]);
-		}
-		else
-			j = get_pid_str(av[1]);
+		j = selected_job(av[1]);
 	}
 	else
 		j = get_pid_n_plus_min('+', NULL);
@@ -1002,18 +1002,61 @@ int		ft_fg(char **av)
 	return (put_job_in_foreground(j, 1));
 }
 
+void	job_print(t_job *j, int l)
+{
+	char	c;
+	int		sig;
+
+	c = (j->pgid == g_current_job) ? '+' : ' ';
+	c = (j->pgid == g_previous_job) ? '-' : c;
+	sig = j->first_process->status;
+	sig = WIFEXITED(sig) ? WEXITSTATUS(sig) : sig;
+	sig = WIFSIGNALED(sig) ? WTERMSIG(sig) : sig;
+	sig = WIFSTOPPED(sig) ? WSTOPSIG(sig) : sig;
+	ft_print(STDOUT,"[%d]%c  ", j->index, c);
+	if (l)
+		ft_print(STDOUT,"%d %s: %d\t\t%s\n", j->pgid, ft_strsignal(sig), sig,
+																	j->command);
+	else
+	{
+		if (job_is_stopped_completed(j) == 0)
+			ft_print(STDOUT,"running\t\t%s\n", j->command);
+		else if (job_is_completed(j))
+			ft_print(STDOUT,"done\t\t%s\n", j->command);
+		else if (job_is_stopped_completed(j))
+			ft_print(STDOUT,"stopped\t\t%s\n", j->command);
+	}
+}
+
+int		ft_jobs_av(char **av)
+{
+	t_job	*j;
+	int		i;
+	int		ret;
+
+	i = 0;
+	ret = 0;
+	while (av[i])
+	{
+		if ((j = selected_job(av[i])) == NULL)
+		{
+			i++;
+			ret = 1;
+			continue ;
+		}
+		job_print(j, 0);
+		i++;
+	}
+	return (ret);
+}
+
 int		ft_jobs_(char **av)
 {
-	int		i;
 	t_job	*j;
 	char	c;
 
-	i = 0;
-	while (av && av[i])
-	{
-		// impliment here jobs argvs
-		i++;
-	}
+	if (av && av[0])
+		return (ft_jobs_av(av));
 	j = g_var.job;
 	while (j)
 	{
@@ -1031,6 +1074,35 @@ int		ft_jobs_(char **av)
 	return (0);
 }
 
+int		ft_jobs_opt(char **av, int opt)
+{
+	int		i;
+	int		ret;
+	t_job	*j;
+
+	i = 0;
+	ret = 0;
+	if (av && av[0])
+	{
+		while (av[i])
+		{
+			if((j = selected_job(av[i])))
+				(opt == 1) ? job_print(j, 1) : ft_print(1, "%d\n", j->pgid);
+			else
+				ret = 1;
+			i++;
+		}
+		return (ret);
+	}
+	j = g_var.job;
+	while (j)
+	{
+		(opt == 1) ? job_print(j, 1) : ft_print(STDOUT, "%d\n", j->pgid);
+		j = j->next;
+	}
+	return (0);
+}
+
 int		ft_jobs(char **av)
 {
 	int		i;
@@ -1042,21 +1114,13 @@ int		ft_jobs(char **av)
 		ft_print(STDERR, "shell: jobs: -");
 		ft_putchar_fd(-opt, STDERR);
 		ft_print(STDERR, ": invalid option.\n");
-		return (2);
+		return (1);
 	}
-	if (opt == 1)//l
+	if (opt == 1 || opt == 2)
 	{
-		ft_jobs_(&av[i]);
+		return (ft_jobs_opt(&av[i], opt));
 	}
-	else if (opt == 2)//p
-	{
-		ft_jobs_(&av[i]);
-	}
-	else
-	{
-		ft_jobs_(&av[i]);
-	}
-	return (0);
+	return (ft_jobs_(&av[i]));
 }
 
 // norm functions with "need norm" tag

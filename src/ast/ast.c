@@ -188,23 +188,23 @@ int		main_parse(char *line)
 	tokens = ft_tokenize(line);
 	ft_strdel(&line);
 // fprintf(ttyfd, "--1-->"); token_print(tokens);
-	// if (lexer(&tokens) || verify_tokens(tokens) || need_append(tokens) ||
-	// 														history_sub(tokens))
-	// {
-	// 	free_tokens(tokens);
-	// 	return (100);
-	// }
-	if (lexer(&tokens))
+	if (lexer(&tokens) || verify_tokens(tokens) || need_append(tokens) ||
+															history_sub(tokens))
+	{
+		free_tokens(tokens);
 		return (100);
-// fprintf(ttyfd, "--2-->"); token_print(tokens);
-	if (verify_tokens(tokens))
-		return (100);
-// fprintf(ttyfd, "--3-->"); token_print(tokens);
-	if (need_append(tokens))
-		return (100);
-// fprintf(ttyfd, "--4-->"); token_print(tokens);
-	if (history_sub(tokens))
-		return (100);
+	}
+// 	if (lexer(&tokens))
+// 		return (100);
+// // fprintf(ttyfd, "--2-->"); token_print(tokens);
+// 	if (verify_tokens(tokens))
+// 		return (100);
+// // fprintf(ttyfd, "--3-->"); token_print(tokens);
+// 	if (need_append(tokens))
+// 		return (100);
+// // fprintf(ttyfd, "--4-->"); token_print(tokens);
+// 	if (history_sub(tokens))
+// 		return (100);
 // fprintf(ttyfd, "--5-->"); token_print(tokens);
 
 	join_escape(tokens);
