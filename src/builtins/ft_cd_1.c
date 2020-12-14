@@ -51,7 +51,6 @@ int		ft_cd_1(char *flag, char **env)
 	char	*pwd;
 
 	pwd = NULL;
-	printf("I'm here\n");
 	pwd = !flag ? get_var_from_tab(env, "HOME") : ft_strdup(flag);
 	pwd = !pwd ? ft_strdup(var_get_value("HOME", 1)) : pwd;
 	oldpwd = get_pwd(env);

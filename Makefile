@@ -126,6 +126,8 @@ OBJ_EXPANSIONS = $(SRC_EXPANSION:.c=.o)
 
 OBJ_PATTERN = $(SRC_PATTERN:.c=.o)
 
+CC=gcc
+
 all : msg $(NAME)
 
 $(NAME) : $(OBJ_SHL) $(OBJ_AST) $(OBJ_AUTOCMPLT) $(OBJ_BUILTINS)			\

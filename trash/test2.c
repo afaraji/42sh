@@ -87,6 +87,8 @@ int		main(void)
 	char	*s;
 	int		i;
 
-	if_system_failure(wait(&i), -1);
+	extern const char *const	sys_errlist[];
+	for (i = 0; sys_errlist[i]; i++)
+		printf("-[%d]-->%s\n", i, sys_errlist[i]);
 	return (0);
 }

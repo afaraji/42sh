@@ -135,7 +135,7 @@ int		expans_parameter(char **argument, int start, int end)
 		word ? ft_strdel(&word) : 0;
 		return (-1);
 	}
-	if (!expans_para(&word) && exp_qt(&word))
+	if (exp_qt(&word) && !expans_para(&word))
 	{
 		clean_shities(&word);
 		r = ft_strlen(word) ? ft_strlen(word) - 1 : 0;

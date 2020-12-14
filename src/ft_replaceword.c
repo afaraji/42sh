@@ -18,7 +18,7 @@
 #include "../inc/ft_free.h"
 #include "../inc/readline.h"
 
-int		system_calls(char *func, int ret, int failure_value)
+int		system_calls(char *func, int ret, int failure_value)// we can t use sys_errlist
 {
 	extern const char *const	sys_errlist[];
 	extern int					errno;
@@ -52,7 +52,7 @@ int		word_count(char *s, char *old)
 	oldlen = ft_strlen(old);
 	while (s[i] != '\0')
 	{
-		if (strstr(&(s[i]), old) == &s[i])
+		if (ft_strstr(&(s[i]), old) == &s[i])
 		{
 			cnt++;
 			i += oldlen - 1;
@@ -78,7 +78,7 @@ char	*ft_replaceword(char *s, char *old, char *new)
 	i = 0;
 	while (*s)
 	{
-		if (strstr(s, old) == s)
+		if (ft_strstr(s, old) == s)
 		{
 			ft_strcpy(&result[i], new);
 			i += newlen;

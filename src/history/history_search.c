@@ -68,7 +68,7 @@ char	*history_search(char *str, t_hist **his_head)
 	if (ft_strcmp(str, "!") == 0)
 		cmd = history_search_num(-1);
 	else if ((is_all_digits(str) || (str[0] == '-' && is_all_digits(str + 1))))
-		cmd = history_search_num(atoi(str));
+		cmd = history_search_num(ft_atoi(str));
 	else
 		cmd = history_search_word(str);
 	return (cmd);

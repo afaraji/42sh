@@ -31,7 +31,7 @@ void	ft_signal(void)//not used yet
 		signal(SIGCHLD, SIG_DFL);
 		if (setpgid (g_var.shell_pid, g_var.shell_pid) < 0)
 		{
-			perror ("Couldn't put the shell in its own process group: ");
+			perror ("Couldn't put the shell in its own process group: ");//change it
 			exit (1);
 		}
 		system_calls("Tcsetpgrp: ", tcsetpgrp (STDIN, g_var.shell_pid), -1);
