@@ -6,7 +6,7 @@
 /*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/10 10:20:41 by ozaazaa           #+#    #+#             */
-/*   Updated: 2020/12/13 16:21:00 by awali-al         ###   ########.fr       */
+/*   Updated: 2020/12/14 19:04:50 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,6 @@ t_list_head			pattern_matching(char *expression);
 int					is_pattern(char *c);
 char				*unescaped_string(char *expression);
 void				swap(char **xp, char **yp);
-void				match_file_results_free(char *ex,t_list_head *ranges,
+void				match_file_results_free(char *ex, t_list_head *ranges,
 						t_list_head *past_results, t_list_head *cr);
 #endif
