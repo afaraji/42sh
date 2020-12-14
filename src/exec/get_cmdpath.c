@@ -108,23 +108,15 @@ char	*get_cmdpath_from_paths(char **paths, char *str)
 
 char	*get_cmdpath(char *str)
 {
-	// char	**paths;
 	char	*tmp;
 
 	if (!str)
 		return (NULL);
-	if (!access(str, F_OK) && verify_type(str) == 2)
+	if (!access(str, F_OK) && verify_type(str) == 2 && is_path(str))
 		return (ft_strdup(str));
 	if (is_path(str))
 		return (get_cmdpath_error(1, str));
 	if ((tmp = hash_chck(str)))
 		return (tmp);
-// 	if (tmp)
-// 		ft_strdel(&tmp);
-// 	if (!(paths = paths_from_env()))
-// 		return (get_cmdpath_error(2, str));
-// 	tmp = get_cmdpath_from_paths(paths, str);
-// 	if (tmp)
-// 		return (tmp);
 	return (get_cmdpath_error(2, str));
 }

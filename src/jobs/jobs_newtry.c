@@ -80,20 +80,6 @@ char	*ft_strsignal(int sig)
 	return (ft_getsigstr13_31(sig));
 }
 
-int		killed_by(int sig)//not used yet
-{
-	ft_print(2, "killed func: %s: [%d]\n", ft_strsignal(sig), sig);
-	return (sig);
-}
-
-int		stopped_by(int sig)//not used yet
-{
-	ft_print(2, "stopped func: %s: [%d]\n", ft_strsignal(sig), sig);
-	return (sig);
-}
-
-
-
 char	*io_redirect_to_str(t_io_redirect *io)
 {
 	char	*typ;
@@ -143,7 +129,8 @@ char	*args_to_str(t_cmd_suffix *suff, t_cmd_prefix *pref)
 		if (pref->io_redirect)
 			tmp2 = io_redirect_to_str(pref->io_redirect);
 		else if (pref->ass_word)
-			tmp2 = ft_4strjoin(pref->ass_word->key, "=", pref->ass_word->value, "");
+			tmp2 = ft_4strjoin(pref->ass_word->key, "=",
+													pref->ass_word->value, "");
 		tmp = ft_4strjoin(str, " ",tmp2, " ");
 		ft_strdel(&str);
 		ft_strdel(&tmp2);
@@ -217,33 +204,6 @@ char	*and_or_to_str(t_and_or *cmd)
 	return (str);
 }
 
-/******************************* jobs begin ***********************************/
-
-
-
-/*
-int		print_job(t_job *j, int foreground)
-{
-	char	**av;
-	t_process *p;
-	int k;
-
-	for (p = j->first_process, k = 0; p; k++, p = p->next)
-	{
-		printf("***[%d]***** P N:%d [%d|%d|%d|%d] ********\n", foreground, k, p->pid, p->completed, p->status, p->stopped);
-		av = p->argv;
-		printf("-------argv-------\n");
-		for (int i = 0; av && av[i]; i++)
-			printf("%d[%s]\n", i, av[i]);
-		av = p->env;
-		printf("-------env-------\n");
-		for (int i = 0; av && av[i]; i++)
-			printf("%d[%s]\n", i, av[i]);
-	}
-	return (0);
-}
-*/
-
 int			get_new_index(void)
 {
 	t_job	*node;
@@ -265,7 +225,7 @@ t_process	*get_process(t_simple_cmd *cmd)
 
 	p = (t_process *)ft_malloc(sizeof(t_process));
 	p->argv = get_arg_var_sub(cmd);
-	p->env = NULL; //env_to_tab(g_var.var, 0);
+	p->env = NULL;
 	p->pid = 0;
 	p->completed = 0;
 	p->stopped = 0;
@@ -306,7 +266,6 @@ t_job	*get_job(t_and_or *cmd)
 	job = (t_job *)ft_malloc(sizeof(t_job));
 	job->cmd = cmd;
 	job->command = ast_to_str(cmd->ast);
-	// job->command = and_or_to_str(cmd);
 	job->first_process = get_first_proc(cmd->ast);
 	job->pgid = 0;
 	job->notified = 0;
@@ -324,7 +283,6 @@ t_job	*get_job_list(t_and_or *cmd)
 
 	job = (t_job *)ft_malloc(sizeof(t_job));
 	job->cmd = cmd;
-	// job->command = ast_to_str(cmd->ast);
 	job->command = and_or_to_str(cmd);
 	job->first_process = get_first_proc(cmd->ast);
 	job->pgid = 0;
@@ -444,7 +402,8 @@ pid_t	find_last_bg_job(void)
 	tmp = 0;
 	while (j)
 	{
-		if (j->index != 0 && j->pgid != g_current_job && j->pgid != g_previous_job)
+		if (j->index != 0 && j->pgid != g_current_job &&
+													j->pgid != g_previous_job)
 			tmp = j->pgid;
 		j = j->next;
 	}
@@ -1125,6 +1084,4 @@ int		ft_jobs(char **av)
 
 // norm functions with "need norm" tag
 // fix builtins arg management
-// add ft_jobs options..
 // test leaks && sigfaults cases in get_cmdargs
-// norm everytyhing
