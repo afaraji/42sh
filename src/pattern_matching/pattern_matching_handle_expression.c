@@ -49,8 +49,7 @@ int		handle_first_time_expression(t_list_head *current_results,
 }
 
 int		handle_normal_expression(t_list_head *current_results,
-		t_list_head *ranges, t_list_head *past_results, char first_char,
-		int match_folders)
+		t_list_head *ranges, t_list_head *past_results, int *params)
 {
 	t_list_head	current_candidates;
 	char		*past;
@@ -61,18 +60,16 @@ int		handle_normal_expression(t_list_head *current_results,
 	past_results->iterator = past_results->first;
 	while ((past = ttslist_iter_content(past_results)))
 	{
-		current_candidates = get_file_names(past, (first_char == '.'));
+		current_candidates = get_file_names(past, (params[0] == '.'));
 		current_candidates.iterator = current_candidates.first;
 		while ((candidate = ttslist_iter_content(&current_candidates)))
 		{
 			empty = ft_strjoin(past, candidate);
-			if (!(match_folders && !is_dir(empty)))
-			{
+			if (!(params[1] && !is_dir(empty)))
 				if (match_strings_to_range(candidate, ranges->first, 0))
 					current_results->push(current_results, ft_strjoin_free(past,
 								ft_strjoin(candidate,
-									(match_folders ? "/" : "")), 2));
-			}
+									(params[1] ? "/" : "")), 2));
 			free(empty);
 		}
 	}

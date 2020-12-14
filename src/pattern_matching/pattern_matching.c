@@ -12,98 +12,40 @@
 
 #include "../../inc/pattern_matching.h"
 
-int		match_file_results(char *initial_expression, int start_index,
-		t_list_head *past_results, t_list_head *final_result)
+int			match_file_results(char *ie, int si,
+	t_list_head *pr, t_list_head *final_result)
 {
-	char		*expression;
-	int			match_folders;
-	t_list_head	current_results;
-	t_list_head ranges;
+	char		*ex;
+	int			mf;
+	t_list_head	cr;
+	t_list_head	rg;
 
-	ttslist_init(&current_results);
-	ttslist_init(&ranges);
-	if ((int)ft_strlen(initial_expression) <= start_index)
-		return (merge_ttslist(final_result, past_results));
-	expression = extract_expression(initial_expression,
-			start_index, &match_folders);
-	if (expression[0] == 0 && start_index != 0)
-		handle_empty_expression(past_results, &current_results);
+	ttslist_init(&cr);
+	ttslist_init(&rg);
+	if ((int)ft_strlen(ie) <= si)
+		return (merge_ttslist(final_result, pr));
+	ex = extract_expression(ie, si, &mf);
+	if (ex[0] == 0 && si != 0)
+		handle_empty_expression(pr, &cr);
 	else
 	{
-		ranges = get_pattern_to_match(expression, NULL, 0);
-		if (start_index == 0)
-			handle_first_time_expression(&current_results, &ranges,
-					match_folders, expression[0]);
+		rg = get_pattern_to_match(ex, NULL, 0,
+			ft_strlen(ex));
+		if (si == 0)
+			handle_first_time_expression(&cr, &rg, mf, ex[0]);
 		else
-			handle_normal_expression(&current_results, &ranges, past_results,
-					expression[start_index], match_folders);
+			handle_normal_expression(&cr, &rg, pr, (int[]){ex[si], mf});
 	}
-	match_file_results(initial_expression, start_index + ft_strlen(expression)
-			+ 1, &current_results, final_result);
-	free(expression);
-	ttslist_purge(&ranges, free);
-	ttslist_purge(past_results, free);
-	ttslist_purge(&current_results, free);
+	match_file_results(ie, si + ft_strlen(ex) + 1, &cr, final_result);
+	match_file_results_free(ex, &rg, pr, &cr);
 	return (1);
 }
 
-char	*unescaped_string(char *expression)
-{
-	int		escaped;
-	int		i;
-	int		result_index;
-	char	*result;
-
-	escaped = 0;
-	i = 0;
-	result_index = 0;
-	result = expression;
-	while (i < (int)ft_strlen(expression))
-	{
-		if (expression[i] == '\\' && !escaped)
-			escaped = 1;
-		else
-		{
-			result[result_index] = expression[i];
-			result_index++;
-		}
-		if (escaped > 1)
-			escaped = 0;
-		if (escaped > 0)
-			escaped++;
-		i++;
-	}
-	result[result_index] = '\0';
-	return (result);
-}
-
-t_list_head	pattern_matching(char *expression)
-{
-	t_list_head current_results;
-	t_list_head final_results;
-
-	ttslist_init(&current_results);
-	ttslist_init(&final_results);
-	match_file_results(expression, 0, &current_results, &final_results);
-	return (final_results);
-}
-
-
-
-int is_pattern(char *c)
-{
-	if (ft_strchr(c, '*') || ft_strchr(c, '?') || ft_strchr(c, '['))
-		return (1);
-	else
-	{
-		return (0);
-	}
-}
-
-void expand_element_to_list(t_list_head *main_list, t_list_head *expanded_list, t_list_node *expanded_element)
+void		expand_element_to_list(t_list_head *main_list,
+	t_list_head *expanded_list, t_list_node *expanded_element)
 {
 	t_list_node *first;
-	t_list_node	*last;
+	t_list_node *last;
 
 	if (expanded_list->size == 0)
 		return ;
@@ -124,10 +66,10 @@ void expand_element_to_list(t_list_head *main_list, t_list_head *expanded_list, 
 	free(expanded_element);
 }
 
-t_list_head tab_to_list(char **argv)
+t_list_head	tab_to_list(char **argv)
 {
-	int	i;
-	t_list_head my_list;
+	int			i;
+	t_list_head	my_list;
 
 	i = 0;
 	ttslist_init(&my_list);
@@ -138,17 +80,17 @@ t_list_head tab_to_list(char **argv)
 		i++;
 	}
 	free(argv);
-	return my_list;
+	return (my_list);
 }
 
-char** list_to_tab_oz(t_list_head *arg_list)
+char		**list_to_tab_oz(t_list_head *arg_list)
 {
-	char	**argv;
-	int		i;
+	char		**argv;
+	int			i;
 	t_list_node *current_arg;
 
 	i = 0;
-	argv = (char**)malloc(sizeof(char*) * (arg_list->size + 1));
+	argv = (char **)malloc(sizeof(char *) * (arg_list->size + 1));
 	arg_list->iterator = arg_list->first;
 	while ((current_arg = ttslist_iter(arg_list)))
 	{
@@ -156,19 +98,18 @@ char** list_to_tab_oz(t_list_head *arg_list)
 		i++;
 	}
 	argv[i] = NULL;
- 	return (argv);
+	return (argv);
 }
 
 char		**expand_pattern(char **argv)
 {
-	int	i;
-	t_list_head final_result;
-	char	**result;
+	int			i;
+	t_list_head	final_result;
+	char		**result;
+	t_list_head arg_list;
+	t_list_node *current_arg;
+
 	i = 0;
-
-	t_list_head	arg_list;
-	t_list_node	*current_arg;
-
 	arg_list = tab_to_list(argv);
 	arg_list.iterator = arg_list.first;
 	while ((current_arg = ttslist_iter(&arg_list)))
@@ -177,13 +118,9 @@ char		**expand_pattern(char **argv)
 		{
 			final_result = pattern_matching(current_arg->content);
 			if (final_result.size == 0)
-			{
 				current_arg->content = unescaped_string(current_arg->content);
-			}
 			else
-			{
 				expand_element_to_list(&arg_list, &final_result, current_arg);
-			}
 		}
 		i++;
 	}

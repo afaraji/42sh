@@ -50,7 +50,8 @@ t_range_match		parse_bracket_range(char *expression);
 t_range_match		parse_brackets(char *expression, int *index);
 int					handle_opening_bracket(char *expression, int i,
 		t_range_match *result);
-t_list_head			get_pattern_to_match(char *expression, int *index, int i);
+t_list_head			get_pattern_to_match(char *expression, int *index, int i,
+		int expression_size);
 char				*extract_expression(char *initial_expression,
 		int start_index, int *match_folders);
 int					is_dir(char *path);
@@ -61,14 +62,19 @@ void				handle_empty_expression(t_list_head *past_result,
 int					handle_first_time_expression(t_list_head *current_results,
 		t_list_head *ranges, int match_folders, char first_char);
 int					handle_normal_expression(t_list_head *current_results,
-		t_list_head *ranges, t_list_head *past_results, char first_char,
-		int match_folders);
+		t_list_head *ranges, t_list_head *past_results, int *params);
 int					match_file_results(char *initial_expression,
 		int start_index, t_list_head *past_results, t_list_head *final_result);
 char				*unescaped_string(char *expression);
 void				handle_star_mark(t_range_match *result);
 void				handle_interrogation_mark(t_range_match *result);
 char				**expand_pattern(char **argv);
-char**				list_to_tab_oz(t_list_head *arg_list);
+char				**list_to_tab_oz(t_list_head *arg_list);
 t_list_head			tab_to_list(char **argv);
+t_list_head			pattern_matching(char *expression);
+int					is_pattern(char *c);
+char				*unescaped_string(char *expression);
+void				swap(char **xp, char **yp);
+void				match_file_results_free(char *ex,t_list_head *ranges,
+						t_list_head *past_results, t_list_head *cr);
 #endif

@@ -12,7 +12,7 @@
 
 #include "../../inc/pattern_matching.h"
 
-int	is_quoted(char *str, int index)
+int			is_quoted(char *str, int index)
 {
 	int	flag;
 	int	i;
@@ -32,19 +32,25 @@ int	is_quoted(char *str, int index)
 	return (0);
 }
 
-t_list_head	get_pattern_to_match(char *expression, int *index, int i)
+int			get_pattern_to_match_init(t_list_head *ranges, int *index,
+				unsigned char *escaped)
+{
+	int	i;
+
+	i = index ? *index - 1 : -1;
+	*escaped = 0;
+	ttslist_init(ranges);
+	return (i);
+}
+
+t_list_head	get_pattern_to_match(char *expression, int *index, int i,
+					int expression_size)
 {
 	t_list_head		ranges;
 	t_range_match	*result;
-	int				expression_size;
 	unsigned char	escaped;
 
-	i = -1;
-	if (index)
-		i = *index - 1;
-	escaped = 0;
-	expression_size = ft_strlen(expression);
-	ttslist_init(&ranges);
+	i = get_pattern_to_match_init(&ranges, index, &escaped);
 	while (++i < expression_size)
 	{
 		result = ft_memalloc(sizeof(t_range_match));
