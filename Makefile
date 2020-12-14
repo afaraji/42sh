@@ -6,7 +6,7 @@
 #    By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/11/11 23:19:46 by afaraji           #+#    #+#              #
-#    Updated: 2020/12/08 14:06:04 by awali-al         ###   ########.fr        #
+#    Updated: 2020/12/14 19:03:14 by awali-al         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -64,7 +64,7 @@ FILE_PATTERN = pattern_matching.c pattern_matching_bracket_parser.c			\
 	pattern_matching_handle_range.c pattern_matching_handler.c 				\
 	pattern_matching_match.c pattern_matching_util.c ttslist_constructors.c	\
 	ttslist_delete.c ttslist_iterator.c ttslist_operations.c ttslist_purge.c\
-	ttslist_tools.c
+	ttslist_tools.c pattern_matching_util_2.c
 
 SRC_AST = $(foreach file,$(FILE_AST), ./src/ast/$(file))
 
