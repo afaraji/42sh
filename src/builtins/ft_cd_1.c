@@ -6,7 +6,7 @@
 /*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/03/01 17:43:17 by sazouaka          #+#    #+#             */
-/*   Updated: 2020/12/10 14:26:36 by awali-al         ###   ########.fr       */
+/*   Updated: 2020/12/14 12:51:27 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ int		ft_cd_1(char *flag, char **env)
 	char	*pwd;
 
 	pwd = NULL;
+	printf("I'm here\n");
 	pwd = !flag ? get_var_from_tab(env, "HOME") : ft_strdup(flag);
 	pwd = !pwd ? ft_strdup(var_get_value("HOME", 1)) : pwd;
 	oldpwd = get_pwd(env);
@@ -112,7 +113,7 @@ int		ft_cd(char *flag, char **env)
 	path = get_real_path(flag);
 	typ = verify_type(path);
 	if (typ == 1)
-		return (ft_cd_1(path, env));
+		return (ft_cd_3(path, env));
 	else if (typ == -1)
 		return (ft_cd_2(path));
 	else if (typ == 2)

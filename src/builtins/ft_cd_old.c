@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_cd_old.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sazouaka <sazouaka@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/03/01 17:48:13 by sazouaka          #+#    #+#             */
-/*   Updated: 2020/03/01 17:48:14 by sazouaka         ###   ########.fr       */
+/*   Updated: 2020/12/14 14:20:20 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,13 +17,14 @@
 #include "../../inc/exec.h"
 #include "../../inc/ft_free.h"
 #include "../../inc/readline.h"
+#include "../../inc/expansion.h"
 
 int	ft_cd_old(char **env)
 {
 	char	*cwd;
 	char	*tmp;
 
-	tmp = get_var_from_tab(env, "OLDPWD");
+	tmp = ft_strdup(var_get_value("OLDPWD", 1));
 	if (!tmp)
 		return (1);
 	cwd = get_pwd(env);
