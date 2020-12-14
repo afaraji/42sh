@@ -29,6 +29,8 @@ int		operation(char **oprate, char **word, int check)
 			oprate[1][0] == '?' || ft_isalnum(oprate[1][0]) ||
 			ft_isspace(oprate[1][0])))
 		return (exp_err("Shell: Bad substitution"));
+	else if (operate_leg(oprate[0]))
+		return (exp_err("Shell: Bad substitution"));
 	else if (check == 1)
 	{
 		ft_strdel(word);
@@ -47,7 +49,7 @@ int		normal_case(char **word)
 	if (operate[1] && (ft_isalnum(operate[1][0]) || operate[1][0] == '_'
 		|| operate[1][0] == '*' || operate[1][0] == '|'
 		|| operate[1][0] == '\\' || operate[1][0] == '/'
-		|| operate[1][0] == '$'))
+		|| operate[1][0] == '$') && !operate_leg(operate[0]))
 	{
 		ft_strdel(word);
 		ques_dollar(&(operate[0]));

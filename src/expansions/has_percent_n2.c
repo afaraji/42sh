@@ -19,6 +19,17 @@
 #include "../../inc/readline.h"
 #include "../../inc/expansion.h"
 
+int		operate_leg(char *oprate)
+{
+	int		l;
+
+	l = ft_strlen(oprate);
+	if (oprate[l - 1] == '+' || oprate[l - 1] == '-' ||
+			oprate[l - 1] == '?' || ft_isspace(oprate[l - 1]))
+		return (1);
+	return (0);
+}
+
 void	nor_s(char **operate, char **word, int check)
 {
 	char	*tmp;

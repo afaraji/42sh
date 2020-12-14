@@ -19,7 +19,7 @@
 #include "../../inc/readline.h"
 #include "../../inc/expansion.h"
 
-int		check_parenth_close(char **argument, int *end, int i, char c)
+int		check_parenth_close(char **arg, int *end, int i, char c)
 {
 	int		depth;
 	int		l;
@@ -27,16 +27,16 @@ int		check_parenth_close(char **argument, int *end, int i, char c)
 	l = c == '(' ? i - 2 : i - 1;
 	i = l;
 	depth = 0;
-	while ((*argument)[i] && (*argument)[i] != '$')
+	while ((*arg)[i] && (*arg)[i] != '$')
 	{
-		if ((*argument)[i] == c)
+		if ((*arg)[i] == c)
 			depth++;
 		i++;
 	}
 	i = l;
-	while ((*argument)[i] && depth != 0)
+	while ((*arg)[i] && depth != 0)
 	{
-		if ((*argument)[i] == ((c == '(') ? ')' : '}'))
+		if ((*arg)[i] == ((c == '(') ? ')' : '}') && (*arg)[i - 1] != '\\')
 			depth--;
 		i++;
 	}
@@ -45,7 +45,7 @@ int		check_parenth_close(char **argument, int *end, int i, char c)
 	else if ((*end = i - 1) && !depth && c != '(')
 		return (2);
 	else
-		return (-1);
+		return (-exp_err("Shell : syntax error"));
 }
 
 int		check_type(char **argument, int *end, int i)
@@ -93,9 +93,7 @@ int		expansions_dispatcher(char **argument)
 	while ((*argument)[++i])
 	{
 		c = -6;
-		if ((*argument)[i] == '~' && (*argument)[i + 1] != '$' && i == 0)
-			tilde_to_replace(argument, i, ft_strlen(*argument) + 1);
-		else if ((*argument)[i] == '~' && (*argument)[i + 1] == '$' && i == 0)
+		if ((*argument)[i] == '~' && (*argument)[i + 1] == '$' && i == 0)
 			i = (*argument)[i + 2] ? i : i + 1;
 		else if ((*argument)[i] == '$' && (*argument)[i + 1] != '$')
 			c = check_type(argument, &end, i);

@@ -73,5 +73,6 @@ int				norming_shiiiiiiiit(char **argument, char **word, int start);
 void			nor_s(char **operate, char **word, int check);
 int				ft_strchri(const char *s, int c);
 int				exp_err(char *err);
+int				operate_leg(char *oprate);
 
 #endif
