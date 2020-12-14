@@ -287,15 +287,19 @@ char	**quote_removal(char **av)
 {
 	int		i;
 	char	*tmp;
+	char	*tmp2;
 
 	i = 0;
 	while (av[i])
 	{
-		// printf("---{%s}---\n", av[i]);
 		av[i] = free_remove_quot(av[i]);
-		tmp = ft_replaceword(av[i], "\\", "");
+		tmp2 = ft_replaceword(av[i], "\\\\", "\375");
+		tmp = ft_replaceword(tmp2, "\\", "");
+		ft_strdel(&tmp2);
+		tmp2 = ft_replaceword(tmp, "\375", "\\");
+		ft_strdel(&tmp);
 		free(av[i]);
-		av[i] = tmp;
+		av[i] = tmp2;
 		i++;
 	}
 	return (av);

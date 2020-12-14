@@ -15,6 +15,7 @@
 
 # include "ttslist.h"
 # include "../libft/libft.h"
+# include "parse.h"
 # include "expansion.h"
 # include "dirent.h"
 # include "sys/stat.h"
@@ -68,5 +69,6 @@ char				*unescaped_string(char *expression);
 void				handle_star_mark(t_range_match *result);
 void				handle_interrogation_mark(t_range_match *result);
 char				**expand_pattern(char **argv);
-
+char**				list_to_tab_oz(t_list_head *arg_list);
+t_list_head			tab_to_list(char **argv);
 #endif

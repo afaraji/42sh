@@ -12,6 +12,26 @@
 
 #include "../../inc/pattern_matching.h"
 
+int	is_quoted(char *str, int index)
+{
+	int	flag;
+	int	i;
+
+	i = 0;
+	flag = 0;
+	while (str[i] != '\0')
+	{
+		if ((str[i] == QUOTE || str[i] == DQUOTE) && flag == 0)
+			flag = 1;
+		else if ((str[i] == QUOTE || str[i] == DQUOTE) && flag == 1)
+			flag = 0;
+		else if (index == i && flag == 1)
+			return (1);
+		i++;
+	}
+	return (0);
+}
+
 t_list_head	get_pattern_to_match(char *expression, int *index, int i)
 {
 	t_list_head		ranges;
@@ -31,17 +51,17 @@ t_list_head	get_pattern_to_match(char *expression, int *index, int i)
 		*result = (t_range_match){0, 0, MATCH_ONCE, "", 0};
 		if (expression[i] == '\\' && !escaped && (escaped = 1))
 			result->error = 1;
-		else if (expression[i] == '[' && !escaped)
+		else if (expression[i] == '[' && !escaped && !is_quoted(expression, i))
 			i = handle_opening_bracket(expression, i, result);
-		else if (expression[i] == '?' && !escaped)
+		else if (expression[i] == '?' && !escaped && !is_quoted(expression, i))
 			handle_interrogation_mark(result);
-		else if (expression[i] == '*' && !escaped)
+		else if (expression[i] == '*' && !escaped && !is_quoted(expression, i))
 			handle_star_mark(result);
-		else
+		else if (expression[i] != QUOTE && expression[i] != DQUOTE)
 			add_character_to_range(result, expression[i]);
 		if (expression[i] != '\\' && escaped)
 			escaped = 0;
-		if (!result->error)
+		if (!result->error && expression[i] != QUOTE && expression[i] != DQUOTE)
 			ranges.push(&ranges, result);
 	}
 	return (ranges);
