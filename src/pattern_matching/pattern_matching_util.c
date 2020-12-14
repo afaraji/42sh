@@ -26,7 +26,25 @@ int			is_dir(char *path)
 	return (0);
 }
 
-t_list_head	get_file_names(char *directory, unsigned char hidden)
+void swap(char **xp, char **yp) 
+{ 
+    char *temp = *xp; 
+    *xp = *yp; 
+    *yp = temp; 
+} 
+  
+void bubbleSort(char** arr, int n) 
+{ 
+   int i, j; 
+   for (i = 0; i < n-1; i++)
+       for (j = 0; j < n-i-1; j++)  
+           if (ft_strcmp(arr[j], arr[j+1]) > 0)
+		   {
+              swap(&arr[j], &arr[j+1]); 
+		   }
+}
+
+t_list_head	get_file_name(char *directory, unsigned char hidden)
 {
 	DIR				*dir;
 	struct dirent	*diread;
@@ -44,6 +62,19 @@ t_list_head	get_file_names(char *directory, unsigned char hidden)
 		}
 		closedir(dir);
 	}
+	return (files);
+}
+
+t_list_head	get_file_names(char *directory, unsigned char hidden)
+{
+	t_list_head		files;
+	char			**temp;
+
+	files = get_file_name(directory, hidden);
+	temp = list_to_tab_oz(&files);
+	bubbleSort(temp, files.size);
+	ttslist_purge(&files, free);
+	files = tab_to_list(temp);
 	return (files);
 }
 
