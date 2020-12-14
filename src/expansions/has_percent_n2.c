@@ -19,22 +19,6 @@
 #include "../../inc/readline.h"
 #include "../../inc/expansion.h"
 
-int		legal_do(char *word)
-{
-	int		i;
-	char	c;
-
-	i = 0;
-	while (word[++i])
-	{
-		c = word[i];
-		if (!ft_isalnum(c) && c != '_' && c != ':' && c != '?'
-			&& c != '$' && c != '!' && c != '*')
-			return (1);
-	}
-	return (0);
-}
-
 int		exp_qt(char **word)
 {
 	int		i;

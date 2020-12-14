@@ -19,27 +19,18 @@
 #include "../../inc/readline.h"
 #include "../../inc/expansion.h"
 
-char			*var_get_value(char *var, int typ)
+char			*var_get_value(char *key, int typ)
 {
-	int		i;
-	char	**env;
-	char	*tmp;
+	t_variable	*var;
 
-	i = -1;
-	env = env_to_tab(g_var.var, typ);
-	while (env[++i])
+	var = g_var.var;
+	while (var)
 	{
-		if (!ft_strncmp(var, env[i], ft_strlen(var))
-			&& env[i][ft_strlen(var)] == '=')
-		{
-			tmp = (env[i] + ft_strlen(var) + 1);
-			free_tab(env);
-			return (tmp);
-		}
+		if ((typ || var->env == typ) && !ft_strcmp(key, var->key))
+			return (var->value);
+		var = var->next;
 	}
-	tmp = "";
-	free_tab(env);
-	return (tmp);
+	return (NULL);
 }
 
 static void		ft_strdel_dispatcher(char *s1, char *s2, char p)
