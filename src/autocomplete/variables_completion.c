@@ -112,6 +112,7 @@ char			**var_search_1(char *str)
 		{
 			tmp2 = ft_strjoin("{", var->key);
 			var_list = get_var_list(tmp2, var_list);
+			ft_strdel(&tmp2);
 		}
 		var = var->next;
 	}
