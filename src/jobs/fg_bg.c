@@ -76,11 +76,15 @@ int		ft_fg(char **av)
 	if (j == NULL)
 		return (1);
 	ft_print(STDOUT, "%s\n", j->command);
+	give_current_job(j->pgid);
 	return (put_job_in_foreground(j, 1));
 }
 
 int		put_job_in_background(t_job *j, int cont)
 {
+	int		ret;
+	pid_t	pid;
+
 	if (g_current_job == 0)
 		g_current_job = j->pgid;
 	else if (g_previous_job == 0)
@@ -91,6 +95,11 @@ int		put_job_in_background(t_job *j, int cont)
 	{
 		if (kill(-j->pgid, SIGCONT) < 0)
 			system_calls("kill (SIGCONT)", 1, 1);
+		pid = waitpid(-j->pgid, &ret, WUNTRACED | WCONTINUED);
+		if (WIFCONTINUED(ret))
+		{
+			update_job(j, pid, ret);
+		}
 	}
 	else
 		ft_print(STDOUT, "[%d] %d\n", j->index, j->pgid);
