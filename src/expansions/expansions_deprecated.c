@@ -19,7 +19,7 @@
 #include "../../inc/readline.h"
 #include "../../inc/expansion.h"
 
-int			dollar_replace(char **argument, int i, int end)
+int		dollar_replace(char **argument, int i, int end)
 {
 	char	*to_change;
 	int		r;
