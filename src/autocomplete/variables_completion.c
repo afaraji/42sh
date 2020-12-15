@@ -63,7 +63,7 @@ t_l				*get_var_list(char *str, t_l *head)
 			return (NULL);
 		if (find_caracter(str, '{') == 1)
 			tmp = ft_strjoin(str, "}");
-		if (find_caracter(str, '{') == 0)
+		else
 			tmp = ft_strdup(str);
 		head->data = ft_strjoin("$", tmp);
 		ft_strdel(&tmp);

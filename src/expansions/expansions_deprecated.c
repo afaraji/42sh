@@ -19,7 +19,7 @@
 #include "../../inc/readline.h"
 #include "../../inc/expansion.h"
 
-int			dollar_replace(char **argument, int i, int end)
+int		dollar_replace(char **argument, int i, int end)
 {
 	char	*to_change;
 	int		r;
@@ -44,7 +44,7 @@ int		legal_do(char *word)
 	{
 		c = word[i];
 		if (!ft_isalnum(c) && c != '_' && c != ':' && c != '?'
-			&& c != '$' && c != '!' && c != '*')
+			&& c != '$' && c != '!')
 			return (1);
 	}
 	return (0);
