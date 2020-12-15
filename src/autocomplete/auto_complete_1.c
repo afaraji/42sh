@@ -18,29 +18,6 @@
 #include "../../inc/ft_free.h"
 #include "../../inc/readline.h"
 
-char			**completion_split_1(char **table)
-{
-	char	**tmp;
-	int		i;
-
-	i = 0;
-	tmp = NULL;
-	while (table[i])
-		i++;
-	if (!(tmp = (char **)malloc(sizeof(char *) * (i + 2))))
-		return (NULL);
-	i = 0;
-	while (table[i])
-	{
-		tmp[i] = ft_strdup(table[i]);
-		i++;
-	}
-	free_tab(table);
-	tmp[i] = ft_strdup("");
-	tmp[i + 1] = NULL;
-	return (tmp);
-}
-
 int				is_path(char *str)
 {
 	int	i;
@@ -55,28 +32,7 @@ int				is_path(char *str)
 	return (0);
 }
 
-char			**completion_split(char *line)
-{
-	char	**table;
-
-	table = NULL;
-	if (!ft_strcmp(line, ""))
-	{
-		if (!(table = (char **)malloc(sizeof(char *) * 2)))
-			return (NULL);
-		table[0] = ft_strdup("");
-		table[1] = NULL;
-		return (table);
-	}
-	table = ft_strsplit(line, ' ');
-	if (line[ft_strlen(line) - 1] == ' ')
-	{
-		return (completion_split_1(table));
-	}
-	return (table);
-}
-
-char			*completed_line(char *line, char *str)
+char			*completed_line(char *line, char *result)
 {
 	int		i;
 	char	*left;
@@ -90,7 +46,7 @@ char			*completed_line(char *line, char *str)
 		i--;
 	}
 	left = ft_strsub(line, 0, i + 1);
-	tmp = ft_strjoin(left, str);
+	tmp = ft_strjoin(left, result);
 	ft_strdel(&left);
 	ft_strdel(&line);
 	return (tmp);
@@ -116,4 +72,48 @@ int				get_home_path(char **str)
 		var = var->next;
 	}
 	return (0);
+}
+
+char			**completion_split_1(char **table)
+{
+	char	**tmp;
+	int		i;
+
+	i = 0;
+	tmp = NULL;
+	while (table[i])
+		i++;
+	if (!(tmp = (char **)malloc(sizeof(char *) * (i + 2))))
+		return (NULL);
+	i = 0;
+	while (table[i])
+	{
+		tmp[i] = ft_strdup(table[i]);
+		i++;
+	}
+	free_tab(table);
+	tmp[i] = ft_strdup("");
+	tmp[i + 1] = NULL;
+	return (tmp);
+}
+
+char			**completion_split(char *line)
+{
+	char	**table;
+
+	table = NULL;
+	if (!ft_strcmp(line, ""))
+	{
+		if (!(table = (char **)malloc(sizeof(char *) * 2)))
+			return (NULL);
+		table[0] = ft_strdup("");
+		table[1] = NULL;
+		return (table);
+	}
+	table = ft_strsplit(line, ' ');
+	if (line[ft_strlen(line) - 1] == ' ')
+	{
+		return (completion_split_1(table));
+	}
+	return (table);
 }

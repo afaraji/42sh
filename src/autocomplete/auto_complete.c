@@ -18,39 +18,37 @@
 #include "../../inc/ft_free.h"
 #include "../../inc/readline.h"
 
-char			**auto_completion_3(char **splited_line, int i)
+char			**auto_completion_3(char **args, int i)
 {
-	if (splited_line[i][1] == '{')
-		return (var_search_1(splited_line[i] + 1));
+	if (args[i][1] == '{')
+		return (var_search_1(args[i] + 1));
 	else
-		return (var_search_2(splited_line[i] + 1));
+		return (var_search_2(args[i] + 1));
 }
 
 char			**auto_completion_1(t_line *line)
 {
 	char	**result;
-	char	**splited_line;
+	char	**args;
 	int		i;
 
-	splited_line = completion_split(line->str);
+	args = completion_split(line->str);
 	result = NULL;
 	i = 0;
-	while (splited_line[i + 1])
+	while (args[i + 1])
 		i++;
-	if (splited_line[i][0] == '~' && splited_line[i][1] == '/')
-		get_home_path(&splited_line[i]);
-	if (splited_line[i][0] == '$')
-	{
-		result = auto_completion_3(splited_line, i);
-	}
-	else if (i == 0 && splited_line[0][0] == '.')
-		result = files_dirs_search(splited_line[0]);
-	else if (i != 0 || is_path(splited_line[i]) != 0)
-		result = files_dirs_search(splited_line[i]);
+	if (args[i][0] == '~' && args[i][1] == '/')
+		get_home_path(&args[i]);
+	if (args[i][0] == '$')
+		result = auto_completion_3(args, i);
+	else if (i == 0 && args[0][0] == '.')
+		result = files_dirs_search(args[0]);
+	else if (i != 0 || is_path(args[i]) != 0)
+		result = files_dirs_search(args[i]);
 	else
-		result = cmd_search(splited_line[0]);
-	if (splited_line)
-		free_tab(splited_line);
+		result = cmd_search(args[0]);
+	if (args)
+		free_tab(args);
 	return (result);
 }
 
@@ -81,9 +79,7 @@ int				auto_completion(t_line *line)
 
 	result = auto_completion_1(line);
 	if (!is_valid_tab(result))
-	{
 		return (0);
-	}
 	j = 0;
 	while (result && result[j + 1])
 		j++;
