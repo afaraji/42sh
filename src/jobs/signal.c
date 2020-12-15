@@ -18,7 +18,7 @@
 #include "../../inc/ft_free.h"
 #include "../../inc/readline.h"
 
-void	ft_signal(void)//not used yet
+void	ft_signal(void)
 {
 	g_var.shell_is_interactive = isatty (STDIN);
 	if (g_var.shell_is_interactive)
@@ -29,16 +29,7 @@ void	ft_signal(void)//not used yet
 		signal(SIGTTIN, SIG_IGN);
 		signal(SIGTTOU, SIG_IGN);
 		signal(SIGCHLD, SIG_DFL);
-		if (setpgid (g_var.shell_pid, g_var.shell_pid) < 0)
-		{
-			perror ("Couldn't put the shell in its own process group: ");//change it
-			exit (1);
-		}
+		system_calls("setpgid", setpgid (g_var.shell_pid, g_var.shell_pid), -1);
 		system_calls("Tcsetpgrp: ", tcsetpgrp (STDIN, g_var.shell_pid), -1);
-		// if (ft_set_attr(0))
-		// {
-		// 	perror ("Couldn't set attributes: ");
-		// 	exit (1);
-		// }
 	}
 }

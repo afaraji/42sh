@@ -57,7 +57,7 @@ int		alias_infinit_loop(char *str, char *sub, t_alias *aliases)
 	while (t[i] && !lol)
 	{
 		tmp = ft_strtrim(t[i]);
-		if (!ft_strncmp(str, tmp, ft_strlen(str)))
+		if (!ft_strcmp(str, tmp))
 			lol = 1;
 		if (!lol && (tmp2 = alias_check(tmp, aliases)) &&
 										alias_infinit_loop(str, tmp2, aliases))
