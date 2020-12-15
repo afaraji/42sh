@@ -71,24 +71,46 @@
 // 	return (ret);
 // }
 
-int		if_system_failure(int ret, int failure_value)
-{
-	extern const char *const	sys_errlist[];
-	extern int					errno;
+// int		if_system_failure(int ret, int failure_value)
+// {
+// 	extern const char *const	sys_errlist[];
+// 	extern int					errno;
 
-	if (ret != failure_value)
-		return (0);
-	printf("System call failure: %s\n", sys_errlist[errno]);
-	exit(42);
-}
+// 	if (ret != failure_value)
+// 		return (0);
+// 	printf("System call failure: %s\n", sys_errlist[errno]);
+// 	exit(42);
+// }
+
+// int		main(void)
+// {
+// 	char	*s;
+// 	int		i;
+
+// 	extern const char *const	sys_errlist[];
+// 	for (i = 0; sys_errlist[i]; i++)
+// 		printf("-[%d]-->%s\n", i, sys_errlist[i]);
+// 	return (0);
+// }
+#define E_1 "hello"
+#define E_2 "Naser"
 
 int		main(void)
 {
-	char	*s;
-	int		i;
+	char **error;
 
-	extern const char *const	sys_errlist[];
-	for (i = 0; sys_errlist[i]; i++)
-		printf("-[%d]-->%s\n", i, sys_errlist[i]);
+	error = (char *[]){
+	E_1, E_2, E_1, E_1, E_1, E_1, E_1, E_1, E_1,
+	E_1, E_1, E_1, E_1, E_1, E_1, E_1, E_1, E_1, E_1, E_1,
+	E_1, E_1, E_1, E_1, E_1, E_1, E_1, E_1, E_1, E_1, E_1,
+	E_1, E_1, E_1, E_1, E_1, E_1, E_1, E_1, E_1, E_1, E_1,
+	E_1, E_1, E_1, E_1, E_1, E_1, E_1, E_1, E_1, E_1, E_1,
+	E_1, E_1, E_1, E_1, E_1, E_1, E_1, E_1, E_1, E_1, E_1,
+	E_1, E_1, E_1, E_1, E_1, E_1, E_1, E_1, E_1, E_1, E_1,
+	E_1, E_1, E_1, E_1, E_1, E_1, E_1, E_1, E_1, E_1, E_1,
+	E_1, E_1, E_1, E_1, E_1, E_1, E_1, E_1, E_1, E_1, E_1,
+	E_1, E_1, E_1, E_1, E_1, E_1, E_1, E_1
+	};
+	printf("%s\n", error[1]);
 	return (0);
 }

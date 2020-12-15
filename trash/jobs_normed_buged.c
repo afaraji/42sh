@@ -1134,7 +1134,7 @@ int		ft_jobs(char **av)
 	return (ft_jobs_(&av[i]));
 }
 
-// sleep x --> ^Z --> bg
+// norm functions with "need norm" tag
 // fix builtins arg management
 // test leaks && sigfaults cases in get_cmdargs
 // remove tty
