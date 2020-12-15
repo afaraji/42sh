@@ -6,7 +6,7 @@
 #    By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/11/11 23:19:46 by afaraji           #+#    #+#              #
-#    Updated: 2020/12/14 19:03:14 by awali-al         ###   ########.fr        #
+#    Updated: 2020/12/15 20:08:56 by awali-al         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -49,7 +49,9 @@ FILE_READLINE = copy.c get_next_line.c get_unprintable_char.c go_left.c go_up.c\
 FILE_PARSE = append_and_verify.c ft_tokenize.c join_tokens.c reserved_words.c\
 	tokens_translate.c verify_tokens.c
 
-FILE_JOBS = proc_manage.c signal.c jobs.c
+FILE_JOBS = proc_manage.c signal.c jobs.c completed_job.c fg_bg.c find_job.c \
+	ft_strsignal.c get.c get_2.c job_actions.c job_control.c job_pipe.c \
+	job_report.c to_str.c to_str_2.c
 
 FILE_SEARCH = back_search_1.c back_search_2.c
 
