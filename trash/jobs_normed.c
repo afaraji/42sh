@@ -557,6 +557,7 @@ void	notify_user(void)
 	j = g_var.job;
 	while (j)
 	{
+		// fprintf(tty, "notify job:{pgid:%d}{index:%d}{notified?:%d}\n", j->pgid, j->index, j->notified);
 		report_to_user(j, 0);
 		j = j->next;
 	}
@@ -646,6 +647,9 @@ int		wait_for_job(t_job *j)
 
 int		put_job_in_background (t_job *j, int cont)
 {
+	int		ret;
+	pid_t	pid;
+
 	if (g_current_job == 0)
 		g_current_job = j->pgid;
 	else if (g_previous_job == 0)
@@ -656,6 +660,11 @@ int		put_job_in_background (t_job *j, int cont)
 	{
 		if (kill (-j->pgid, SIGCONT) < 0)
 			system_calls ("kill (SIGCONT)", 1, 1);
+		pid = waitpid(- j->pgid, &ret, WUNTRACED | WCONTINUED);
+		if (WIFCONTINUED(ret))
+		{
+			update_job(j, pid, ret);
+		}
 	}
 	else
 		ft_print(STDOUT, "[%d] %d\n", j->index, j->pgid);
@@ -664,8 +673,8 @@ int		put_job_in_background (t_job *j, int cont)
 
 int		put_job_in_foreground (t_job *j, int cont)
 {
-	int	ret;
-	pid_t pid;
+	int		ret;
+	pid_t	pid;
 
 	tcsetpgrp (STDIN, j->pgid);
 	if (cont)
@@ -993,6 +1002,7 @@ int		ft_bg(char **av)
 	c = (j->pgid == g_current_job) ? '+' : ' ';
 	c = (j->pgid == g_previous_job) ? '-' : c;
 	printf("-1-> [%d]%c  %s &\n", j->index, c, j->command);
+	give_current_job(j->pgid);
 	return (put_job_in_background(j, 1));
 }
 
@@ -1134,7 +1144,7 @@ int		ft_jobs(char **av)
 	return (ft_jobs_(&av[i]));
 }
 
-// norm functions with "need norm" tag
+// sleep x --> ^Z --> bg
 // fix builtins arg management
 // test leaks && sigfaults cases in get_cmdargs
 // remove tty
