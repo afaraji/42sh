@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   proc_manage.c                                      :+:      :+:    :+:   */
+/*   to_str_2.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/11/03 17:49:31 by afaraji           #+#    #+#             */
-/*   Updated: 2020/12/15 20:02:14 by awali-al         ###   ########.fr       */
+/*   Created: 2020/12/15 20:00:37 by awali-al          #+#    #+#             */
+/*   Updated: 2020/12/15 20:00:50 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,21 +17,28 @@
 #include "../../inc/exec.h"
 #include "../../inc/ft_free.h"
 #include "../../inc/readline.h"
+#include "../../inc/jobs.h"
 
-int		find_job_and_update(pid_t pid, int status);
-
-void	notify_user(void);
-
-void	bg_jobs(void)
+char	*args_to_str2(t_cmd_suffix *suff, char *s)
 {
-	// t_proc	*proc;
-	int		pid;
-	int		status;
+	char	*str;
+	char	*tmp;
+	char	*tmp2;
 
-	while ((pid = waitpid(-1, &status, WNOHANG | WUNTRACED)) > 0)
+	str = s;
+	while (suff)
 	{
-		// printf("debug_msg:updating proc [%d]-status[%d]\n", pid, status);
-		find_job_and_update(pid, status);
+		if (suff->word)
+			tmp = ft_strjoin(str, suff->word);
+		else if (suff->io_redirect)
+		{
+			tmp2 = io_redirect_to_str(suff->io_redirect);
+			tmp = ft_strjoin(str, tmp2);
+			ft_strdel(&tmp2);
+		}
+		ft_strdel(&str);
+		str = tmp;
+		suff = suff->suffix;
 	}
-	notify_user();
+	return (str);
 }

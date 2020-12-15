@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   signal.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: afaraji <afaraji@student.1337.ma>          +#+  +:+       +#+        */
+/*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/13 22:00:18 by sazouaka          #+#    #+#             */
-/*   Updated: 2020/10/29 23:56:26 by afaraji          ###   ########.fr       */
+/*   Updated: 2020/12/15 20:01:49 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 
 void	ft_signal(void)
 {
-	g_var.shell_is_interactive = isatty (STDIN);
+	g_var.shell_is_interactive = isatty(STDIN);
 	if (g_var.shell_is_interactive)
 	{
 		signal(SIGINT, SIG_IGN);
@@ -29,7 +29,7 @@ void	ft_signal(void)
 		signal(SIGTTIN, SIG_IGN);
 		signal(SIGTTOU, SIG_IGN);
 		signal(SIGCHLD, SIG_DFL);
-		system_calls("setpgid", setpgid (g_var.shell_pid, g_var.shell_pid), -1);
-		system_calls("Tcsetpgrp: ", tcsetpgrp (STDIN, g_var.shell_pid), -1);
+		system_calls("setpgid", setpgid(g_var.shell_pid, g_var.shell_pid), -1);
+		system_calls("Tcsetpgrp: ", tcsetpgrp(STDIN, g_var.shell_pid), -1);
 	}
 }

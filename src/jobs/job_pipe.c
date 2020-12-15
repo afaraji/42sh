@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   proc_manage.c                                      :+:      :+:    :+:   */
+/*   job_pipe.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/11/03 17:49:31 by afaraji           #+#    #+#             */
-/*   Updated: 2020/12/15 20:02:14 by awali-al         ###   ########.fr       */
+/*   Created: 2020/12/15 19:18:59 by awali-al          #+#    #+#             */
+/*   Updated: 2020/12/15 19:19:28 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,21 +17,32 @@
 #include "../../inc/exec.h"
 #include "../../inc/ft_free.h"
 #include "../../inc/readline.h"
+#include "../../inc/jobs.h"
 
-int		find_job_and_update(pid_t pid, int status);
-
-void	notify_user(void);
-
-void	bg_jobs(void)
+void	setup_pipe_parent(t_job *j, pid_t pid, int *infile, int outfile)
 {
-	// t_proc	*proc;
-	int		pid;
-	int		status;
-
-	while ((pid = waitpid(-1, &status, WNOHANG | WUNTRACED)) > 0)
+	if (g_var.shell_is_interactive)
 	{
-		// printf("debug_msg:updating proc [%d]-status[%d]\n", pid, status);
-		find_job_and_update(pid, status);
+		if (!j->pgid)
+			j->pgid = pid;
+		setpgid(pid, j->pgid);
 	}
-	notify_user();
+	if (*infile != j->fd_in)
+		close(*infile);
+	if (outfile != j->fd_out)
+		close(outfile);
+}
+
+int		get_pipe(int mypipe[2], t_process *p, int fd_out)
+{
+	int	outfile;
+
+	if (p->next)
+	{
+		system_calls("pipe", pipe(mypipe), -1);
+		outfile = mypipe[1];
+	}
+	else
+		outfile = fd_out;
+	return (outfile);
 }
