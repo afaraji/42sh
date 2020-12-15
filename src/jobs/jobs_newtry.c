@@ -456,6 +456,76 @@ int		remove_job(t_job *job)
 	return (0);
 }
 
+int		report_completed_job_2(t_job *j, t_process *p)
+{
+	char	c;
+	int		ret;
+
+	ret = 0;
+	c = (j->pgid == g_current_job) ? '+' : ' ';
+	c = (j->pgid == g_previous_job) ? '-' : c;
+	if (WIFEXITED(p->status) && WEXITSTATUS(p->status) == 0)
+		printf("*2*> [%d]%c  Done\t\t%s\n", j->index, c, j->command);
+	else if (WIFEXITED(p->status) && WEXITSTATUS(p->status) != 0)
+		printf("*3*> [%d]%c  Exit %d\t\t%s\n", j->index, c,
+											WEXITSTATUS(p->status), j->command);
+	else if (WIFSIGNALED(p->status))
+	{
+		ret = WTERMSIG(p->status);
+		printf("*4*> [%d]%c  %s %d\t\t%s\n", j->index, c, ft_strsignal(ret),
+															ret, j->command);
+	}
+	return (ret);
+}
+
+int		report_comleted_job(t_job *j, t_process *p, int fg)
+{
+	int 	ret;
+
+	ret = 0;
+	if (j->index == 0 || fg)
+	{
+		if (WIFEXITED(p->status))
+			ret = WEXITSTATUS(p->status);
+		else
+		{
+			ret = WTERMSIG(p->status);
+			if (ret != SIGINT)
+				printf("*1*> %s: %d\n", ft_strsignal(ret), ret);
+			if (ret == SIGINT)
+				printf("\n");
+		}
+	}
+	else
+	{
+		ret = report_completed_job_2(j, p);
+	}
+	if (remove_job(j) == 0)
+		printf("JOBS: job not found.\n");
+}
+
+int		report_stopped_job(t_job *j, t_process *p)
+{
+	int	ret;
+
+	ret = 0;
+	j->index = (j->index == 0) ? get_new_index() : j->index;
+	give_current_job(j->pgid);
+	p = j->first_process;
+	while (p)
+	{
+		if (p->stopped == 1)
+		{
+			ret = WSTOPSIG(p->status);
+			break ;
+		}
+		p = p->next;
+	}
+	printf("*5*> [%d]+  %s\t\t%s\n", j->index, ft_strsignal(ret), j->command);
+	j->notified = 1;
+	return (ret);
+}
+
 int		report_to_user(t_job *j, int fg)//need norm
 {
 	t_process	*p;
@@ -468,54 +538,12 @@ int		report_to_user(t_job *j, int fg)//need norm
 		p = p->next;
 	if (job_is_completed(j))
 	{
-		if (j->index == 0 || fg)
-		{
-			if (WIFEXITED(p->status))
-				ret = WEXITSTATUS(p->status);
-			else
-			{
-				ret = WTERMSIG(p->status);
-				if (ret != SIGINT)
-					printf("*1*> %s: %d\n", ft_strsignal(ret), ret);
-				if (ret == SIGINT)
-					printf("\n");
-			}
-		}
-		else
-		{
-			char	c;
-			c = (j->pgid == g_current_job) ? '+' : ' ';
-			c = (j->pgid == g_previous_job) ? '-' : c;
-			if (WIFEXITED(p->status) && WEXITSTATUS(p->status) == 0)
-				printf("*2*> [%d]%c  Done\t\t%s\n", j->index, c, j->command);
-			else if (WIFEXITED(p->status) && WEXITSTATUS(p->status) != 0)
-				printf("*3*> [%d]%c  Exit %d\t\t%s\n", j->index, c, WEXITSTATUS(p->status), j->command);
-			else if (WIFSIGNALED(p->status))
-			{
-				ret = WTERMSIG(p->status);
-				printf("*4*> [%d]%c  %s %d\t\t%s\n", j->index, c, ft_strsignal(ret), ret, j->command);
-			}
-		}
-		if (remove_job(j) == 0)
-			printf("JOBS: job not found.\n");
+		ret = report_comleted_job(j, p, fg);
 		return (ret);
 	}
 	if (job_is_stopped_completed(j))
 	{
-		j->index = (j->index == 0) ? get_new_index() : j->index;
-		give_current_job(j->pgid);
-		p = j->first_process;
-		while (p)
-		{
-			if (p->stopped == 1)
-			{
-				ret = WSTOPSIG(p->status);
-				break ;
-			}
-			p = p->next;
-		}
-		printf("*5*> [%d]+  %s\t\t%s\n", j->index, ft_strsignal(ret), j->command);
-		j->notified = 1;
+		ret = report_stopped_job(j, p);
 		return (ret);
 	}
 	return (1);

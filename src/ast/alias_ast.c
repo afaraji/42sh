@@ -57,7 +57,7 @@ int		alias_infinit_loop(char *str, char *sub, t_alias *aliases)
 	while (t[i] && !lol)
 	{
 		tmp = ft_strtrim(t[i]);
-		if (!ft_strncmp(str, tmp, ft_strlen(str)))
+		if (!ft_strcmp(str, tmp))
 			lol = 1;
 		if (!lol && (tmp2 = alias_check(tmp, aliases)) &&
 										alias_infinit_loop(str, tmp2, aliases))
@@ -81,6 +81,7 @@ int		alias_sub(t_list_token *word, t_alias *aliases)
 		{
 			if (!alias_infinit_loop(node->key, node->sub, aliases))
 			{
+				printf("+--------1------\n");
 				ft_strdel(&(word->data));
 				if (ft_isspace(node->sub[ft_strlen(node->sub) - 1]))
 				{
@@ -91,6 +92,11 @@ int		alias_sub(t_list_token *word, t_alias *aliases)
 						alias_sub(tmp, aliases);
 				}
 				return ((word->data = ft_strdup(node->sub)) ? 1 : 1);
+			}
+			else
+			{
+				printf("+--------2------\n");
+				return (42);
 			}
 		}
 		node = node->next;

@@ -71,10 +71,36 @@ int		ft_or(int m, int a, int b, int c)
 	return ((m == a || m == b || m == c) ? 1 : 0);
 }
 
-int		keywords_alias_sub_2(t_list_token **cmd_token, t_list_token *node)
+int		alias_replace(t_list_token **token, t_list_token *node, char *key)
 {
-	parse_and_replace(cmd_token, node);
-	if (keywords_alias_sub(cmd_token))
+	char	*sub;
+	char	*tmp;
+	char	**t;
+	int		i;
+
+	sub = ft_strdup(alias_check(key, g_var.aliases));
+	t = strsplit_str(sub, "&|;");
+	i = 0;
+	while (t[i])
+	{
+		tmp = ft_strtrim(t[i]);
+
+		i++;
+	}
+}
+
+int		keywords_alias_sub_2(t_list_token **token, t_list_token *node, int ret)
+{
+	if (ret == 42)
+	{
+		node->data = ft_strdup(alias_check(node->data, g_var.aliases));
+		printf("+++++++++[%s]\n", node->data);
+		parse_and_replace(token, node);
+
+		return (0);
+	}
+	parse_and_replace(token, node);
+	if (keywords_alias_sub(token))
 	{
 		return (1);
 	}
@@ -84,6 +110,7 @@ int		keywords_alias_sub_2(t_list_token **cmd_token, t_list_token *node)
 int		keywords_alias_sub(t_list_token **cmd_token)
 {
 	t_list_token	*node;
+	int				ret;
 
 	node = *cmd_token;
 	while (node)
@@ -101,8 +128,8 @@ int		keywords_alias_sub(t_list_token **cmd_token)
 				return (1);
 			}
 			else if (node && node->type == WORD)
-				if (alias_sub(node, g_var.aliases))
-					return (keywords_alias_sub_2(cmd_token, node));
+				if ((ret = alias_sub(node, g_var.aliases)))
+					return (keywords_alias_sub_2(cmd_token, node, ret));
 		}
 		if (node)
 			node = node->next;
