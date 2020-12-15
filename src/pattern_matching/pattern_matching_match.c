@@ -69,6 +69,8 @@ t_list_head	get_pattern_to_match(char *expression, int *index, int i,
 			escaped = 0;
 		if (!result->error && expression[i] != QUOTE && expression[i] != DQUOTE)
 			ranges.push(&ranges, result);
+		else
+			free(result);
 	}
 	return (ranges);
 }

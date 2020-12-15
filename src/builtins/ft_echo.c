@@ -40,8 +40,6 @@ int	ft_echo(char **av)
 		ft_putchar('\n');
 		return (0);
 	}
-	if (av[1] && ft_strcmp(av[1], "-n") == 0)
-		i++;
 	while (av[i])
 	{
 		ft_putstr(av[i]);
@@ -49,9 +47,6 @@ int	ft_echo(char **av)
 			ft_putchar(' ');
 		i++;
 	}
-	if (ft_strcmp(av[1], "-n") == 0)
-		return (0);
-	else
-		ft_putchar('\n');
+	ft_putchar('\n');
 	return (0);
 }
