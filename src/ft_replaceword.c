@@ -22,7 +22,9 @@ int		system_calls(char *func, int ret, int failure_value)// we can t use sys_err
 {
 	extern const char *const	sys_errlist[];
 	extern int					errno;
-
+	// char		*err_list[107] = {
+	// 	#include "../inc/parse.h"
+	// 	};
 	if (ret != failure_value)
 		return (ret);
 	ft_print(STDERR, "System call failure: %s: %s\n", func, sys_errlist[errno]);

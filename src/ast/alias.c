@@ -18,10 +18,15 @@
 #include "../../inc/ft_free.h"
 #include "../../inc/readline.h"
 
-void	insert_alias(char *key, char *sub)
+int		insert_alias(char *key, char *sub)
 {
 	t_alias		*node;
 
+	if (is_valid_word(key) == 0)
+	{
+		ft_print(STDERR, "Shell: alias: %s: invalid alias name\n", key);
+		return (1);
+	}
 	if (g_var.aliases)
 	{
 		node = g_var.aliases;
@@ -39,6 +44,7 @@ void	insert_alias(char *key, char *sub)
 		g_var.aliases->key = ft_strdup(key);
 		g_var.aliases->sub = ft_strdup(sub);
 	}
+	return (0);
 }
 
 void	print_alias(t_alias *alias)
@@ -99,9 +105,9 @@ int		alias_insert(char *str)
 			node = node->next;
 		}
 	}
-	insert_alias(key, &str[i]);
+	i = insert_alias(key, &str[i]);
 	ft_strdel(&key);
-	return (0);
+	return (i);
 }
 
 int		ft_alias(char **av)

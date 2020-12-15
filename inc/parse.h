@@ -165,7 +165,7 @@ char			*ft_strsub_delimit(char *s, char c);
 int				alias_infinit_loop(char *str, char *s, t_alias *aliases);
 int				alias_sub(t_list_token *word, t_alias *aliases);
 int				is_reserved(char *str);
-void			insert_alias(char *key, char *sub);
+int				insert_alias(char *key, char *sub);
 t_list_token	*ft_tokenize(char *str);
 void			token_print(t_list_token *node);
 void			parse_and_replace(t_list_token **cmd_token, t_list_token *node);
@@ -196,5 +196,6 @@ int				is_char_in_str(char c, char *s);
 int				list_count(t_l *list);
 char			**strsplit_str(char const *s, char *c);
 char			*free_remove_quot(char *s);
+char			*alias_check(char *s, t_alias *list);
 
 #endif
