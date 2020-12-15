@@ -6,7 +6,7 @@
 /*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/03/01 17:43:17 by sazouaka          #+#    #+#             */
-/*   Updated: 2020/12/14 12:51:27 by awali-al         ###   ########.fr       */
+/*   Updated: 2020/12/15 07:03:20 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,11 +72,11 @@ int		ft_cd_1(char *flag, char **env)
 	return (0);
 }
 
-int		ft_cd_2(char *flag)
+int		ft_cd_2(char *path, char *flag)
 {
 	ft_putstr_fd("cd: no such file or directory: ", 2);
 	ft_putendl_fd(flag, 2);
-	ft_strdel(&flag);
+	ft_strdel(&path);
 	return (1);
 }
 
@@ -114,7 +114,7 @@ int		ft_cd(char *flag, char **env)
 	if (typ == 1)
 		return (ft_cd_3(path, env));
 	else if (typ == -1)
-		return (ft_cd_2(path));
+		return (ft_cd_2(path, flag));
 	else if (typ == 2)
 	{
 		ft_putstr_fd("cd: not a directory: ", 2);
