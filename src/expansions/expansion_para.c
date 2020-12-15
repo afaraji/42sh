@@ -58,7 +58,7 @@ int		normal_case(char **word)
 		return (0);
 	}
 	check = param_is_set(operate[0]);
-	if (dollared(operate[0]))
+	if (dollared(operate[0]) || legal_do(operate[0]))
 		return (exp_err("Shell: Bad substitution"));
 	if (operate[1] && dollared(operate[1]))
 		ques_dollar(&(operate[1]));
@@ -82,7 +82,7 @@ int		sep_count(char **word)
 		else if ((*word)[i] == ':' && (*word)[i + 1] == '=')
 		{
 			tmp = ft_strsub((*word), 0, i);
-			if (dollared(tmp))
+			if (dollared(tmp) || legal_do(tmp))
 			{
 				tmp ? ft_strdel(&tmp) : 0;
 				return (0);

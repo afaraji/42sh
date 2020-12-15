@@ -44,7 +44,7 @@ int		legal_do(char *word)
 	{
 		c = word[i];
 		if (!ft_isalnum(c) && c != '_' && c != ':' && c != '?'
-			&& c != '$' && c != '!' && c != '*')
+			&& c != '$' && c != '!')
 			return (1);
 	}
 	return (0);
