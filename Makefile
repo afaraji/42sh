@@ -6,7 +6,7 @@
 #    By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/11/11 23:19:46 by afaraji           #+#    #+#              #
-#    Updated: 2020/12/15 20:08:56 by awali-al         ###   ########.fr        #
+#    Updated: 2020/12/16 13:54:08 by awali-al         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,7 +25,7 @@ SRC_SHL = ./objs/main.o ./objs/list_to_tab.o ./objs/my_printf.o \
 
 FILE_AST = add_redirect.o add_tokens.o alias.o alias_ast.o ast.o dollar_sub.o\
 	get_pipe_sec.o get_splited_and_or.o get_suffix.o here_doc.o lexer.o		\
-	tilde_sub.o
+	tilde_sub.o cmd_name.o free_remove_quote.o
 
 FILE_AUTOCMPLT = auto_complete.o auto_complete_2.o cmd_completion_1.o		\
 	f_d_completion_1.o f_d_completion_3.o variables_completion.o 			\

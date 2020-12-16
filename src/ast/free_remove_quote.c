@@ -6,11 +6,12 @@
 /*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/16 13:42:31 by awali-al          #+#    #+#             */
-/*   Updated: 2020/12/16 13:42:49 by awali-al         ###   ########.fr       */
+/*   Updated: 2020/12/16 13:54:58 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../inc/parse.h"
+#include "../../inc/ast.h"
 
 char			*free_remove_quot(char *s)
 {
