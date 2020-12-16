@@ -31,7 +31,7 @@ int		exec_simple_cmd(t_simple_cmd *cmd)
 	args = get_arg_var_sub(cmd);
 	if (!args || !args[0])
 		exit(0);
-	env = env_to_tab(g_var.var, 0);//ft_print(STDOUT, "executingcmd:[%s]\n", cmd->command);
+	env = env_to_tab(g_var.var, 0);
 	if (is_builtin(args[0]))
 	{
 		return (builtins(args[0], args, env));
@@ -126,3 +126,5 @@ int		execute(t_and_or *cmd, int pgid)
 	}
 	return (ret);
 }
+
+// i didn t use all thos functions

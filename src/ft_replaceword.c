@@ -18,17 +18,43 @@
 #include "../inc/ft_free.h"
 #include "../inc/readline.h"
 
-int		system_calls(char *func, int ret, int failure_value)// we can t use sys_errlist
+char	*errlist(int err_no)
 {
-	extern const char *const	sys_errlist[];
-	extern int					errno;
-	// char		*err_list[107] = {
-	// 	#include "../inc/parse.h"
-	// 	};
+	static char	*s[19];
+
+	if (!s[0])
+	{
+		s[0] = "Undefined error: 0";
+		s[1] = "Operation not permitted";
+		s[2] = "No such file or directory";
+		s[3] = "No such process";
+		s[4] = "Interrupted system call";
+		s[5] = "Input/output error";
+		s[6] = "Device not configured";
+		s[7] = "Argument list too long";
+		s[8] = "Exec format error";
+		s[9] = "Bad file descriptor";
+		s[10] = "No child processes";
+		s[11] = "Resource deadlock avoided";
+		s[12] = "Cannot allocate memory";
+		s[13] = "Permission denied";
+		s[14] = "Bad address";
+		s[15] = "Block device required";
+		s[16] = "Resource busy";
+		s[17] = "File exists";
+		s[18] = "Cross-device link";
+	}
+	return ((err_no < 19) ? s[err_no] : err_list_1(err_no - 19));
+}
+
+int		system_calls(char *func, int ret, int failure_value)
+{
+	extern int	errno;
+
 	if (ret != failure_value)
 		return (ret);
-	ft_print(STDERR, "System call failure: %s: %s\n", func, sys_errlist[errno]);
-	exit(42);
+	ft_print(STDERR, "System call failure: %s: %s\n", func, errlist(errno));
+	exit(errno);
 }
 
 void	*ft_malloc(size_t size)

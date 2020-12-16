@@ -13,11 +13,12 @@
 NAME = 42sh
 
 OBJS = objs
+
 AST_PATH = ast
 
-HEADER_FILES =	inc/ast.h inc/builtins.h inc/exec.h inc/expansion.h inc/ft_21sh.h\
- 				inc/ft_free.h inc/hash_table.h inc/jobs.h inc/parse.h\
-				 inc/pattern_matching.h inc/readline.h inc/test.h inc/ttslist.h
+HEADER_FILES =	inc/ast.h inc/builtins.h inc/exec.h inc/expansion.h 		\
+	inc/ft_21sh.h inc/ft_free.h inc/hash_table.h inc/jobs.h inc/parse.h		\
+	inc/pattern_matching.h inc/readline.h inc/test.h inc/ttslist.h
 
 SRC_SHL = ./objs/main.o ./objs/list_to_tab.o ./objs/my_printf.o \
 	./objs/verify_type.o ./objs/ft_replaceword.o ./objs/list_to_tab_1.o
@@ -41,6 +42,7 @@ FILE_HASHTABLE = ft_str2del.o ft_strappend.o ft_strstich.o hash_add.o		\
 
 FILE_EXEC = do_assignement.o do_sufix_prefix.o exec.o exec_nofork.o			\
 	exit_status.o get_cmdargs.o get_cmdpath.o io_redirect.o io_redirect_aggr.o\
+	error_list.o
 
 FILE_FREE = ft_free.o ft_free_ast.o ft_free_g_var.o ft_strsplit_2.o
 
@@ -120,11 +122,11 @@ all : msg $(NAME)
 $(NAME) : $(OBJ) $(HEADER_FILES)
 	make -C ./libft
 	printf "linking OBJ files... "
-	gcc $(CFLAGS) $(OBJ) $(LIBFTA) -ltermcap -o $(NAME)
+	$(CC) $(CFLAGS) $(OBJ) $(LIBFTA) -ltermcap -o $(NAME)
 	echo "done"
 
 clean :
-	printf "removing OBJ files ./src/\n"
+	printf "removing OBJ files.\n"
 	/bin/rm -fr $(OBJS)
 	$(MAKE) -C ./libft/ clean
 
