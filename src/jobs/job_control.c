@@ -19,8 +19,6 @@
 #include "../../inc/readline.h"
 #include "../../inc/jobs.h"
 
-extern FILE	*tty;
-
 void	grouped_job(t_and_or *cmd)
 {
 	int		pid;
@@ -137,8 +135,6 @@ int		job_control(t_and_or *cmd, int bg)
 	int			dp;
 	int			ret;
 
-	if (tty == NULL)// to be deleted
-		tty = fopen("/dev/ttys003", "w");
 	ret = 0;
 	if (bg && cmd->next)
 	{

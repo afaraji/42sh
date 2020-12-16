@@ -21,7 +21,6 @@
 
 pid_t	g_current_job = 0;
 pid_t	g_previous_job = 0;
-FILE	*tty = NULL;
 
 void	job_print(t_job *j, int l)
 {
@@ -143,8 +142,3 @@ int		ft_jobs(char **av)
 	}
 	return (ft_jobs_(&av[i]));
 }
-
-// sleep x --> ^Z --> bg
-// fix builtins arg management
-// test leaks && sigfaults cases in get_cmdargs
-// remove tty
