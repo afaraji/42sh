@@ -85,6 +85,7 @@ int			need_append(t_list_token *tokens)
 		{
 			if (!(tmp = read_to_append(node)))
 				return (1);
+			(!ft_strcmp(tmp, "") && node->type == -12) ? node->type = SPACE : 0;
 			node->next = ft_tokenize(tmp);
 		}
 		tmp ? ft_strdel(&tmp) : 0;
