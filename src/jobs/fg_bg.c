@@ -58,7 +58,7 @@ int		ft_bg(char **av)
 		return (1);
 	c = (j->pgid == g_current_job) ? '+' : ' ';
 	c = (j->pgid == g_previous_job) ? '-' : c;
-	printf("-1-> [%d]%c  %s &\n", j->index, c, j->command);
+	ft_print(STDOUT, "[%d]%c  %s &\n", j->index, c, j->command);
 	return (put_job_in_background(j, 1));
 }
 

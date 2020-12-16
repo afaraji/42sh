@@ -31,15 +31,15 @@ int		report_completed_job_2(t_job *j, t_process *p)
 	c = (j->pgid == g_current_job) ? '+' : ' ';
 	c = (j->pgid == g_previous_job) ? '-' : c;
 	if (WIFEXITED(p->status) && WEXITSTATUS(p->status) == 0)
-		printf("*2*> [%d]%c  Done\t\t%s\n", j->index, c, j->command);
+		ft_print(STDOUT, "[%d]%c  Done\t\t%s\n", j->index, c, j->command);
 	else if (WIFEXITED(p->status) && WEXITSTATUS(p->status) != 0)
-		printf("*3*> [%d]%c  Exit %d\t\t%s\n", j->index, c,
+		ft_print(STDOUT, "[%d]%c  Exit %d\t\t%s\n", j->index, c,
 											WEXITSTATUS(p->status), j->command);
 	else if (WIFSIGNALED(p->status))
 	{
 		ret = WTERMSIG(p->status);
-		printf("*4*> [%d]%c  %s: %d\t\t%s\n", j->index, c, ft_strsignal(ret),
-															ret, j->command);
+		ft_print(STDOUT, "[%d]%c  %s: %d\t\t%s\n", j->index, c,
+											ft_strsignal(ret), ret, j->command);
 	}
 	return (ret);
 }
@@ -57,9 +57,9 @@ int		report_comleted_job(t_job *j, t_process *p, int fg)
 		{
 			ret = WTERMSIG(p->status);
 			if (ret != SIGINT)
-				printf("*1*> %s: %d\n", ft_strsignal(ret), ret);
+				ft_print(STDOUT, "%s: %d\n", ft_strsignal(ret), ret);
 			if (ret == SIGINT)
-				printf("\n");
+				ft_print(STDOUT, "\n");
 		}
 	}
 	else
@@ -67,7 +67,7 @@ int		report_comleted_job(t_job *j, t_process *p, int fg)
 		ret = report_completed_job_2(j, p);
 	}
 	if (remove_job(j) == 0)
-		printf("JOBS: job not found.\n");
+		ft_print(STDERR, "JOBS: job not found.\n");
 	return (ret);
 }
 
@@ -88,7 +88,8 @@ int		report_stopped_job(t_job *j, t_process *p)
 		}
 		p = p->next;
 	}
-	printf("*5*> [%d]+  %s\t\t%s\n", j->index, ft_strsignal(ret), j->command);
+	ft_print(STDOUT, "[%d]+  %s\t\t%s\n", j->index, ft_strsignal(ret),
+																	j->command);
 	j->notified = 1;
 	return (ret);
 }
