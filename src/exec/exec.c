@@ -126,5 +126,3 @@ int		execute(t_and_or *cmd, int pgid)
 	}
 	return (ret);
 }
-
-// i didn t use all thos functions

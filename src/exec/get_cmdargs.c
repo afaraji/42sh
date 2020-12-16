@@ -89,100 +89,6 @@ int		is_builtin(char *str)
 	return (0);
 }
 
-char	*read_and_join(int fd)
-{
-	char	*tmp;
-	char	*line;
-	char	*str;
-	char	*tmp2;
-
-	str = ft_strdup("");
-	while (get_next_line(fd, &line))
-	{
-		tmp = ft_strtrim(line);
-		ft_strdel(&line);
-		tmp2 = ft_4strjoin(str, " ", tmp, "");
-		ft_strdel(&tmp);
-		ft_strdel(&str);
-		str = tmp2;
-	}
-	close(fd);
-	return (str);
-}
-
-char	*cmd_substitute2(char *s)
-{
-	char	*tmp;
-	int		fd;
-	pid_t	pid;
-
-	tmp = ft_strjoin(s, " > /tmp/cmd_sub");
-	system_calls("fork", pid = fork(), -1);
-	if (pid == 0)
-	{
-		fd = open("/tmp/cmd_sub", O_CREAT | O_TRUNC | O_WRONLY, 0644);
-		if (fd < 0)
-			exit(1);
-		dup2(STDOUT, fd);
-		main_parse(tmp);
-	}
-	waitpid(pid, &fd, 0);
-	fd = open("/tmp/cmd_sub", O_RDONLY);
-	if (fd < 0)
-		return (NULL);
-	ft_strdel(&tmp);
-	return (read_and_join(fd));
-}
-
-int		cmd_substitute(t_l *p)
-{
-	int		i;
-	char	*tosub;
-	char	*tmp;
-	char	*tmp2;
-
-	i = -1;
-	tmp = ft_strstr(p->data, "$(");
-	// printf("---------1--------\n");
-	if (tmp != p->data && *(tmp - 1) == '\\')
-		return (0);
-	while (tmp[++i])
-	{
-		if (tmp[i] == ')' && tmp[i - 1] != '\\')
-			break ;
-	}
-	// printf("---------2------[%c]--\n", tmp[i - 1]);
-	if (tmp[i] != ')')
-		return (1);
-	tosub = ft_strsub(tmp, 0, i + 2);
-	tmp = cmd_substitute2(tosub);
-	tmp2 = p->data;
-	p->data = ft_replaceword(p->data, tosub, tmp);
-	// should split new p->data using whitespaces
-	ft_strdel(&tmp2);
-	ft_strdel(&tmp);
-	ft_strdel(&tosub);
-	return (0);
-}
-
-int		cmd_sub(t_l *list)
-{
-	t_l	*node;
-
-	return (0);
-	node = list;
-	while (node)
-	{
-		if (ft_strstr(node->data, "$(") && cmd_substitute(node))
-		{
-			ft_print(STDERR, "shell: command sub error: ')' missing\n");
-			return (1);
-		}
-		node = node->next;
-	}
-	return (0);
-}
-
 void	push_to_list(t_l **head, char *s)
 {
 	t_l		*node;
@@ -238,12 +144,10 @@ t_l		*var_sub(t_l *head)
 	next_node = head->next;
 	if (expansions_dispatcher(&(head->data)))
 	{
-		// free_l(head);
 		g_var.errno = 11;
 		return (head);
 	}
 	t = split_expanssion(head->data);
-	// printf("+++{%s}++++\n", head->data);
 	ft_strdel(&(head->data));
 	i = 1;
 	if (!t || !t[0])
@@ -312,24 +216,14 @@ char	**get_arg_var_sub(t_simple_cmd *cmd)
 
 	if ((list = get_args(cmd)) == NULL)
 		return (NULL);
-	// FILE *tot;
-	// tot = fopen("/dev/ttys006", "w");
-	// fprintf(tot, "\033[H\033[2J");
-	// for (t_l *p = list; p ; p = p->next)
-	// 	fprintf(tot, "-1-->[%s]<---\n", p->data);
-	// fprintf(tot, "------------------------------\n");
-	if (param_expand(list) || cmd_sub(list))
+	if (param_expand(list))
 		return (NULL);
-	// for (t_l *p = list; p ; p = p->next)
-	// 	fprintf(tot, "-2-->[%s]<---\n", p->data);
-	// fprintf(tot, "------------------------------\n");
 	if ((table = list_to_tab(list)) == NULL)
 		return (NULL);
 	table = expand_pattern(table);
 	table = quote_removal(table);
 	return (table);
 }
-
 
 /*
 ** Shell Parameter Expansion

@@ -120,10 +120,8 @@ int			exec_no_fork(t_pipe_seq *cmd, char **av, int bg)
 		if (av && is_builtin(av[0]))
 		{
 			status = exec_no_fork_builtin(cmd->left, av);
-			// free_tab(av);
 			return (status);
 		}
-		// free_tab(av);
 		if (!(cmd->left->name) && !(cmd->left->word))
 		{
 			reset_in_out(SETDFL);

@@ -58,7 +58,6 @@ int		manage_cmd_list(t_cmdlist *cmdlist)
 	ret = 0;
 	while (node)
 	{
-		// ret = execute(node->and_or, node->bg);
 		ret = job_control(node->and_or, node->bg);
 		node = node->next;
 	}
@@ -78,7 +77,7 @@ int		join_escape(t_list_token *token)
 			node->type = WORD;
 			node->data[0] = '\0';
 		}
-		if (node->type == DQUOTE && node->is_ok)//recently added [need to be verified in other situations]
+		if (node->type == DQUOTE && node->is_ok)
 		{
 			node->data = delete_escape(node->data);
 		}
