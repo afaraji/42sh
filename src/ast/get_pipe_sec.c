@@ -18,7 +18,7 @@
 #include "../../inc/ft_free.h"
 #include "../../inc/readline.h"
 
-char			*get_cmd_from_tokens(t_list_token *start, t_list_token *end)// need testing
+char			*get_cmd_from_tokens(t_list_token *start, t_list_token *end)
 {
 	t_list_token	*node;
 	char			*str;

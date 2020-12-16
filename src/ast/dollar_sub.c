@@ -110,8 +110,6 @@ char	*str_dollar_sub(char *str)
 	return (str);
 }
 
-int		expansions_dispatcher(char **av);
-
 int		dollar_sub(t_list_token **cmd_token)
 {
 	t_list_token	*node;
