@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ast.h                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: afaraji <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/14 23:23:11 by afaraji           #+#    #+#             */
-/*   Updated: 2020/01/14 23:23:26 by afaraji          ###   ########.fr       */
+/*   Updated: 2020/12/16 13:44:33 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,5 +59,6 @@ int				main_parse(char *line);
 t_list_token	*get_last_node_toappend(t_list_token *tokens);
 char			*ft_4strjoin(char *s1, char *s2, char *s3, char *s4);
 char			**strsplit_str(char const *s, char *c);
+char			*cmd_name(t_list_token **cmd, t_list_token **end);
 
 #endif

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_pipe_sec.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: afaraji <afaraji@student.1337.ma>          +#+  +:+       +#+        */
+/*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/03 17:37:02 by afaraji           #+#    #+#             */
-/*   Updated: 2020/11/03 17:37:30 by afaraji          ###   ########.fr       */
+/*   Updated: 2020/12/16 13:43:50 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,24 +17,6 @@
 #include "../../inc/exec.h"
 #include "../../inc/ft_free.h"
 #include "../../inc/readline.h"
-
-char			*cmd_name(t_list_token **cmd, t_list_token **end)
-{
-	char	*name;
-
-	while (*cmd && (*cmd)->type == SPACE && *cmd != *end)
-		*cmd = (*cmd)->next;
-	if (!cmd || !(*cmd) || g_var.errno)
-		return (NULL);
-	if (((*cmd)->type == WORD || (*cmd)->type == QUOTE ||
-		(*cmd)->type == DQUOTE))
-	{
-		name = ft_strdup((*cmd)->data);
-		*cmd = (*cmd)->next;
-		return (name);
-	}
-	return (NULL);
-}
 
 char			*get_cmd_from_tokens(t_list_token *start, t_list_token *end)// need testing
 {
