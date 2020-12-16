@@ -44,7 +44,8 @@ FILE_EXEC = do_assignement.o do_sufix_prefix.o exec.o exec_nofork.o			\
 	exit_status.o get_cmdargs.o get_cmdpath.o io_redirect.o io_redirect_aggr.o\
 	error_list.o
 
-FILE_FREE = ft_free.o ft_free_ast.o ft_free_g_var.o ft_strsplit_2.o
+FILE_FREE = ft_free.o ft_free_ast.o ft_free_g_var.o ft_strsplit_2.o			\
+	free_token_node.o
 
 FILE_HIST = history_search.o manage_history.o navigate_history.o			\
 	navigate_history_2.o
@@ -60,7 +61,7 @@ FILE_READLINE = copy.o get_next_line.o get_unprintable_char.o go_left.o go_up.o\
 	right_select.o
 
 FILE_PARSE = append_and_verify.o ft_tokenize.o join_tokens.o reserved_words.o\
-	tokens_translate.o verify_tokens.o
+	tokens_translate.o verify_tokens.o quot_close.o
 
 FILE_SEARCH = back_search_1.o back_search_2.o
 
