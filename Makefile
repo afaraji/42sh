@@ -48,7 +48,7 @@ FILE_FREE = ft_free.o ft_free_ast.o ft_free_g_var.o ft_strsplit_2.o			\
 	free_token_node.o
 
 FILE_HIST = history_search.o manage_history.o navigate_history.o			\
-	navigate_history_2.o
+	navigate_history_2.o history_sub.o
 
 FILE_JOBS = proc_manage.o signal.o jobs.o completed_job.o fg_bg.o find_job.o \
 	ft_strsignal.o get.o get_2.o job_actions.o job_control.o job_pipe.o \

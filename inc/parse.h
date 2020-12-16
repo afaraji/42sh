@@ -97,5 +97,6 @@ char			*err_list_4(int err);
 char			*err_list_5(int err);
 int				close_quotes(t_list_token *node);
 char			*read_to_append(t_list_token *node);
+int				history_sub(t_list_token *tokens);
 
 #endif
