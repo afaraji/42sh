@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pattern_matching_match.c                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ozaazaa <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/10 10:37:41 by ozaazaa           #+#    #+#             */
-/*   Updated: 2020/12/10 14:29:39 by ozaazaa          ###   ########.fr       */
+/*   Updated: 2020/12/16 12:52:25 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,34 +43,31 @@ int			get_pattern_to_match_init(t_list_head *ranges, int *index,
 	return (i);
 }
 
-t_list_head	get_pattern_to_match(char *expression, int *index, int i,
-					int expression_size)
+t_list_head	get_pattern_to_match(char *xprsn, int *index, int i, int xprsn_size)
 {
 	t_list_head		ranges;
-	t_range_match	*result;
+	t_range_match	*rslt;
 	unsigned char	escaped;
 
 	i = get_pattern_to_match_init(&ranges, index, &escaped);
-	while (++i < expression_size)
+	while (++i < xprsn_size)
 	{
-		result = ft_memalloc(sizeof(t_range_match));
-		*result = (t_range_match){0, 0, MATCH_ONCE, "", 0};
-		if (expression[i] == '\\' && !escaped && (escaped = 1))
-			result->error = 1;
-		else if (expression[i] == '[' && !escaped && !is_quoted(expression, i))
-			i = handle_opening_bracket(expression, i, result);
-		else if (expression[i] == '?' && !escaped && !is_quoted(expression, i))
-			handle_interrogation_mark(result);
-		else if (expression[i] == '*' && !escaped && !is_quoted(expression, i))
-			handle_star_mark(result);
-		else if (expression[i] != QUOTE && expression[i] != DQUOTE)
-			add_character_to_range(result, expression[i]);
-		if (expression[i] != '\\' && escaped)
+		rslt = ft_memalloc(sizeof(t_range_match));
+		*rslt = (t_range_match){0, 0, MATCH_ONCE, "", 0};
+		if (xprsn[i] == '\\' && !escaped && (escaped = 1))
+			rslt->error = 1;
+		else if (xprsn[i] == '[' && !escaped && !is_quoted(xprsn, i))
+			i = handle_opening_bracket(xprsn, i, rslt);
+		else if (xprsn[i] == '?' && !escaped && !is_quoted(xprsn, i))
+			handle_interrogation_mark(rslt);
+		else if (xprsn[i] == '*' && !escaped && !is_quoted(xprsn, i))
+			handle_star_mark(rslt);
+		else if (xprsn[i] != QUOTE && xprsn[i] != DQUOTE)
+			add_character_to_range(rslt, xprsn[i]);
+		if (xprsn[i] != '\\' && escaped)
 			escaped = 0;
-		if (!result->error && expression[i] != QUOTE && expression[i] != DQUOTE)
-			ranges.push(&ranges, result);
-		else
-			free(result);
+		!rslt->error && xprsn[i] != QUOTE && xprsn[i] != DQUOTE ?
+				ranges.push(&ranges, rslt) : free(rslt);
 	}
 	return (ranges);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   join_tokens.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: afaraji <afaraji@student.1337.ma>          +#+  +:+       +#+        */
+/*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/03 17:41:39 by afaraji           #+#    #+#             */
-/*   Updated: 2020/11/03 17:42:31 by afaraji          ###   ########.fr       */
+/*   Updated: 2020/12/16 12:53:43 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,13 +61,6 @@ t_list_token	*list_sub(t_list_token *start, t_list_token *end)
 		start = start->next;
 	}
 	return (head);
-}
-
-void			free_token_node(t_list_token **todel)
-{
-	ft_strdel(&((*todel)->data));
-	free(*todel);
-	*todel = NULL;
 }
 
 void			join_nodes(t_list_token *dst, t_list_token *todel)

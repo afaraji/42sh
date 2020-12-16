@@ -6,7 +6,7 @@
 /*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/03 18:19:11 by afaraji           #+#    #+#             */
-/*   Updated: 2020/12/10 11:29:16 by awali-al         ###   ########.fr       */
+/*   Updated: 2020/12/16 13:02:23 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,7 +141,6 @@ int		cmd_substitute(t_l *p)
 	char	*tmp;
 	char	*tmp2;
 
-
 	i = -1;
 	tmp = ft_strstr(p->data, "$(");
 	// printf("---------1--------\n");
@@ -169,7 +168,8 @@ int		cmd_substitute(t_l *p)
 int		cmd_sub(t_l *list)
 {
 	t_l	*node;
-return (0);
+
+	return (0);
 	node = list;
 	while (node)
 	{
@@ -272,7 +272,6 @@ int		param_expand(t_l *list)
 	node = list;
 	while (node)
 	{
-
 		node = var_sub(node);
 		if (g_var.errno)
 		{

@@ -6,7 +6,7 @@
 /*   By: awali-al <awali-al@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/14 23:23:11 by afaraji           #+#    #+#             */
-/*   Updated: 2020/12/03 20:21:35 by awali-al         ###   ########.fr       */
+/*   Updated: 2020/12/16 12:58:58 by awali-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -202,5 +202,6 @@ char			*err_list_2(int err);
 char			*err_list_3(int err);
 char			*err_list_4(int err);
 char			*err_list_5(int err);
+int				close_quotes(t_list_token *node);
 
 #endif
