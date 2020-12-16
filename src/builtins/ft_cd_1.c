@@ -32,6 +32,8 @@ int		ft_cd_home(char **env)
 	if (chdir(path))
 	{
 		ft_print(STDERR, "cd: %s: no such file or diroctory\n", path);
+		if (oldpwd)
+			ft_strdel(&oldpwd);
 		free(path);
 		return (1);
 	}
