@@ -48,5 +48,7 @@ int			ft_bg(char **av);
 int			ft_fg(char **av);
 int			update_proc(pid_t pid, int status, int bg);
 int			ft_set_var_env(char **av, int env);
+t_l			*fill_get_args(char *str);
+int			param_expand(t_l *list);
 
 #endif

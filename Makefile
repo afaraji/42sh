@@ -42,7 +42,7 @@ FILE_HASHTABLE = ft_str2del.o ft_strappend.o ft_strstich.o hash_add.o		\
 
 FILE_EXEC = do_assignement.o do_sufix_prefix.o exec.o exec_nofork.o			\
 	exit_status.o get_cmdargs.o get_cmdpath.o io_redirect.o io_redirect_aggr.o\
-	error_list.o
+	error_list.o var_expand.o
 
 FILE_FREE = ft_free.o ft_free_ast.o ft_free_g_var.o ft_strsplit_2.o			\
 	free_token_node.o
